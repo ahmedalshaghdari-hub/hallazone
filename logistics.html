@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>لوجستك | حلا زون</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Cairo,Arial,sans-serif;direction:rtl;background:#0B1827;color:#E0F2F1;min-height:100vh}
+input,select,textarea{font-family:Cairo,Arial,sans-serif;direction:rtl;background:#162D45;border:1.5px solid rgba(42,157,143,0.3);color:#E0F2F1;border-radius:8px;padding:10px 12px;width:100%;font-size:14px;outline:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#2A9D8F}
+input::placeholder,textarea::placeholder{color:#3D6060}
+select option{background:#162D45}
+button{font-family:Cairo,Arial,sans-serif;cursor:pointer;border:none;border-radius:8px;font-weight:700;font-size:13px}
+.card{background:#112233;border-radius:12px;border:1px solid rgba(42,157,143,0.25);padding:14px;margin-bottom:12px}
+.btn-p{background:#2A9D8F;color:#0B1827;padding:10px 18px;border:none}
+.btn-g{background:transparent;color:#6BA8A3;padding:10px 18px;border:1px solid rgba(42,157,143,0.28)}
+.btn-d{background:rgba(248,113,113,0.1);color:#F87171;padding:10px 18px;border:1px solid rgba(248,113,113,0.3)}
+.btn-s{background:rgba(74,222,128,0.1);color:#4ADE80;padding:10px 18px;border:1px solid rgba(74,222,128,0.3)}
+.btn-wa{background:rgba(37,211,102,0.15);color:#4ADE80;padding:10px 18px;border:1px solid rgba(37,211,102,0.3)}
+.lbl{font-size:11px;color:#6BA8A3;display:block;margin-bottom:4px}
+.hidden{display:none!important}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.nav{background:#112233;border-bottom:1px solid rgba(42,157,143,0.25);position:sticky;top:0;z-index:50}
+.nav-top{padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.nav-tabs{display:flex;overflow-x:auto;padding:0 8px}
+.nav-tab{padding:9px 12px;background:transparent;color:#6BA8A3;border:none;border-bottom:2px solid transparent;font-size:12px;white-space:nowrap;cursor:pointer;font-family:Cairo,Arial,sans-serif}
+.nav-tab.active{color:#2A9D8F;border-bottom-color:#2A9D8F;font-weight:700}
+.page{padding:14px;max-width:720px;margin:0 auto;padding-bottom:40px}
+.ship-row{background:#112233;border-radius:10px;border:1px solid rgba(42,157,143,0.25);padding:12px 14px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start}
+.ship-row:hover{border-color:#2A9D8F}
+.ship-row.late{border-color:rgba(248,113,113,0.35)}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.st-received{background:rgba(37,99,235,.12);color:#93C5FD}
+.st-preparing{background:rgba(217,119,6,.12);color:#FCD34D}
+.st-ready{background:rgba(5,150,105,.12);color:#6EE7B7}
+.st-in_transit{background:rgba(8,145,178,.12);color:#67E8F9}
+.st-delivered{background:rgba(109,40,217,.12);color:#C4B5FD}
+.st-cancelled{background:rgba(220,38,38,.12);color:#FCA5A5}
+.prog-bg{height:8px;background:#162D45;border-radius:4px;overflow:hidden;margin:12px 0}
+.prog-fill{height:100%;background:linear-gradient(90deg,#0F766E,#2A9D8F,#06B6D4);border-radius:4px;transition:width .8s ease}
+.tl-wrap{position:relative;padding-right:22px}
+.tl-wrap::before{content:"";position:absolute;right:9px;top:14px;bottom:10px;width:2px;background:rgba(42,157,143,.2)}
+.tl-item{position:relative;padding:8px 16px 8px 0;margin-bottom:4px}
+.tl-dot{position:absolute;right:-6px;top:12px;width:14px;height:14px;border-radius:50%;background:#2A9D8F;border:2.5px solid #0B1827}
+.tl-dot.old{background:#475569}
+.alert-ok{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);border-radius:12px;padding:14px;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(42,157,143,.3);border-top-color:#2A9D8F;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="pg-login">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
+    <div class="card" style="width:100%;max-width:340px;padding:36px">
+      <div style="text-align:center;margin-bottom:28px">
+        <div style="font-size:28px;margin-bottom:8px">🚚</div>
+        <div style="color:#2A9D8F;font-size:18px;font-weight:900;margin-bottom:4px">لوحة اللوجستك</div>
+        <p style="color:#6BA8A3;font-size:12px">حلا زون</p>
+      </div>
+      <div style="margin-bottom:14px">
+        <label class="lbl">اسم المستخدم</label>
+        <input id="l-un" placeholder="اسم المستخدم">
+      </div>
+      <div style="margin-bottom:12px;position:relative">
+        <label class="lbl">كلمة السر</label>
+        <input id="l-pw" type="password" placeholder="كلمة السر" style="padding-left:60px">
+        <button id="l-show" style="position:absolute;left:10px;top:34px;background:none;color:#6BA8A3;font-size:11px;padding:0;border:none">إظهار</button>
+      </div>
+      <p id="l-err" class="hidden" style="color:#F87171;font-size:12px;text-align:center;margin-bottom:10px">بيانات الدخول غير صحيحة</p>
+      <button id="l-btn" class="btn-p" style="width:100%;padding:14px;font-size:15px">دخول</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="pg-app" class="hidden">
+  <div class="nav">
+    <div class="nav-top">
+      <div>
+        <div style="color:#2A9D8F;font-size:14px;font-weight:900">حلازون | لوجستك</div>
+        <div style="color:#6BA8A3;font-size:9px;letter-spacing:2px">LOGISTICS</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span id="nav-name" style="color:#6BA8A3;font-size:11px"></span>
+        <a href="track.html" target="_blank" style="background:rgba(42,157,143,.1);color:#2A9D8F;border:1px solid rgba(42,157,143,.28);border-radius:8px;padding:5px 10px;font-size:11px;text-decoration:none;font-weight:700">🔗 تتبع</a>
+        <button id="nav-logout" class="btn-d" style="padding:5px 10px;font-size:11px">خروج</button>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-page="dash">🏠 الرئيسية</button>
+      <button class="nav-tab" data-page="add">➕ شحنة جديدة</button>
+      <button class="nav-tab" data-page="list">📦 الشحنات</button>
+    </div>
+  </div>
+
+  <!-- SYNC BAR -->
+  <div id="sync-bar" class="hidden" style="background:rgba(42,157,143,.08);border-bottom:1px solid rgba(42,157,143,.15);padding:5px 14px;text-align:center;font-size:11px;color:#2A9D8F">🔄 جاري التحديث...</div>
+
+  <!-- DASHBOARD -->
+  <div id="pg-dash" class="page">
+    <p id="dash-date" style="color:#6BA8A3;font-size:11px;margin-bottom:14px"></p>
+    <div class="grid3" style="margin-bottom:12px">
+      <div class="card" style="text-align:center;padding:12px 8px"><div style="font-size:18px;margin-bottom:3px">📅</div><div id="s-today" style="font-size:22px;font-weight:900;color:#38BDF8;margin-bottom:2px">0</div><div style="font-size:10px;color:#6BA8A3">اليوم</div></div>
+      <div class="card" style="text-align:center;padding:12px 8px"><div style="font-size:18px;margin-bottom:3px">🚚</div><div id="s-transit" style="font-size:22px;font-weight:900;color:#2A9D8F;margin-bottom:2px">0</div><div style="font-size:10px;color:#6BA8A3">في الطريق</div></div>
+      <div class="card" style="text-align:center;padding:12px 8px"><div style="font-size:18px;margin-bottom:3px">⚠️</div><div id="s-late" style="font-size:22px;font-weight:900;color:#F87171;margin-bottom:2px">0</div><div style="font-size:10px;color:#6BA8A3">تأخرت</div></div>
+    </div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="card" style="text-align:center"><div style="font-size:13px;color:#FCD34D;font-weight:700;margin-bottom:3px">⚙️ جاري التجهيز</div><div id="s-prep" style="font-size:20px;font-weight:900;color:#FCD34D">0</div></div>
+      <div class="card" style="text-align:center"><div style="font-size:13px;color:#6EE7B7;font-weight:700;margin-bottom:3px">✅ جاهز</div><div id="s-ready" style="font-size:20px;font-weight:900;color:#6EE7B7">0</div></div>
+    </div>
+    <h3 style="color:#E0F2F1;font-size:13px;font-weight:700;margin:0 0 10px">🚚 في الطريق</h3>
+    <div id="dash-transit"></div>
+    <div class="grid2" style="margin-top:14px">
+      <button class="btn-p" data-page="add" style="padding:12px;font-size:13px">➕ شحنة جديدة</button>
+      <button class="btn-g" data-page="list" style="padding:12px;font-size:13px">📦 جميع الشحنات</button>
+    </div>
+  </div>
+
+  <!-- ADD -->
+  <div id="pg-add" class="page hidden">
+    <h2 style="color:#E0F2F1;font-size:15px;font-weight:700;margin:0 0 14px">➕ إضافة شحنة جديدة</h2>
+    <div id="add-ok" class="alert-ok hidden">
+      <p style="color:#4ADE80;font-weight:700;font-size:13px;margin:0 0 8px">✅ تمت إضافة الشحنة!</p>
+      <p style="color:#6BA8A3;font-size:11px;margin:0 0 6px">رابط التتبع:</p>
+      <div id="add-link" style="background:#162D45;border-radius:8px;padding:8px 12px;font-size:11px;color:#2A9D8F;word-break:break-all;margin-bottom:8px"></div>
+      <div style="display:flex;gap:8px">
+        <button id="add-copy" class="btn-p" style="font-size:12px;padding:7px 14px">نسخ الرابط</button>
+        <button id="add-wa" class="btn-wa" style="font-size:12px;padding:7px 14px">إرسال واتساب</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="grid2" style="margin-bottom:10px">
+        <div><label class="lbl">رقم الطلب *</label><input id="a-oid" placeholder="مثال: Q001"></div>
+        <div><label class="lbl">اسم العميل *</label><input id="a-cust" placeholder="اسم المحل"></div>
+      </div>
+      <div class="grid2" style="margin-bottom:10px">
+        <div><label class="lbl">رقم الجوال</label><input id="a-phone" placeholder="+966..."></div>
+        <div><label class="lbl">المندوب</label><input id="a-rep"></div>
+      </div>
+      <div style="margin-bottom:10px"><label class="lbl">📅 تاريخ التسليم المتوقع</label><input id="a-eta" type="date"></div>
+      <div style="margin-bottom:12px"><label class="lbl">ملاحظات</label><textarea id="a-notes" rows="2" placeholder="اختياري..."></textarea></div>
+      <button id="a-btn" class="btn-p" style="width:100%;padding:13px;font-size:14px">📦 إضافة الشحنة</button>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div id="pg-list" class="page hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h2 style="color:#E0F2F1;font-size:15px;font-weight:700;margin:0">📦 الشحنات</h2>
+      <span id="list-count" style="color:#6BA8A3;font-size:11px">0 شحنة</span>
+    </div>
+    <input id="list-srch" placeholder="بحث برقم الطلب أو اسم العميل..." style="margin-bottom:10px">
+    <div id="list-filters" style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap"></div>
+    <div id="list-items"></div>
+  </div>
+
+  <!-- DETAIL -->
+  <div id="pg-detail" class="page hidden">
+    <button id="detail-back" class="btn-g" style="margin-bottom:12px;padding:7px 13px;font-size:12px">← رجوع</button>
+    <div id="detail-body"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+var USERS = [
+  {un:'admin',    pw:'HZ@Admin2026',name:'المدير العام',   role:'admin'},
+  {un:'ahmed',    pw:'HZ@Ahmed2026',name:'أحمد',           role:'marketing'},
+  {un:'warehouse',pw:'HZ@Store2026',name:'مسؤول المستودع', role:'warehouse'},
+  {un:'mkhaled',  pw:'HZ@MK2026',   name:'محمد خالد',      role:'sales'},
+  {un:'sha3lan',  pw:'HZ@Sha2026',  name:'شعلان',          role:'sales'},
+  {un:'adel',     pw:'HZ@Adel2026', name:'عادل',           role:'sales'},
+  {un:'rawan',    pw:'HZ@Rawan2026',name:'روان',           role:'sales'},
+  {un:'zakhraf',  pw:'HZ@Zakh2026', name:'زخرف',           role:'sales'},
+  {un:'rania',    pw:'HZ@Rania2026',name:'رانيا',          role:'sales'},
+  {un:'fidaa',    pw:'HZ@Fidaa2026',name:'فداء',           role:'sales'},
+  {un:'ghaida',   pw:'HZ@Ghaid2026',name:'غيداء',          role:'sales'}
+];
+
+var STAGES = [
+  {key:'received',  label:'تم الاستلام',  icon:'📋', pct:0},
+  {key:'preparing', label:'جاري التجهيز', icon:'⚙️', pct:25},
+  {key:'ready',     label:'جاهز للشحن',   icon:'✅', pct:50},
+  {key:'in_transit',label:'في الطريق',    icon:'🚚', pct:75},
+  {key:'delivered', label:'تم التسليم',   icon:'🎉', pct:100},
+  {key:'cancelled', label:'ملغي',         icon:'❌', pct:0}
+];
+
+var DB = 'https://hallazone-default-rtdb.firebaseio.com';
+var currentUser = null;
+var ships = [];
+var listFilter = 'all';
+var currentDetailId = null;
+var addedUrl = '';
+var addedPhone = '';
+var refreshTimer = null;
+
+// ── UTILS ──
+function today() { return new Date().toISOString().split('T')[0]; }
+function nowISO() { return new Date().toISOString(); }
+function addDays(n) { var d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().split('T')[0]; }
+function fmtD(s) { if (!s) return ''; var p = s.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
+function getStage(key) {
+  for (var i = 0; i < STAGES.length; i++) {
+    if (STAGES[i].key === key) return STAGES[i];
+  }
+  return STAGES[0];
+}
+function getNextStage(key) {
+  var map = {received:'preparing', preparing:'ready', ready:'in_transit', in_transit:'delivered'};
+  return map[key] ? getStage(map[key]) : null;
+}
+function isLate(s) {
+  return s.estimatedDelivery && s.estimatedDelivery < today() && s.status !== 'delivered' && s.status !== 'cancelled';
+}
+
+// ── FIREBASE ──
+function fbGet(path, fallback) {
+  return fetch(DB + '/' + path + '.json')
+    .then(function(r) { return r.json(); })
+    .then(function(d) { return (d !== null && d !== undefined) ? d : fallback; })
+    .catch(function() { return fallback; });
+}
+function fbSet(path, data) {
+  return fetch(DB + '/' + path + '.json', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+}
+
+// ── NAVIGATION ──
+function showPage(name) {
+  var pages = ['login', 'dash', 'add', 'list', 'detail'];
+  pages.forEach(function(p) {
+    var el = document.getElementById('pg-' + p);
+    if (el) el.classList.add('hidden');
+  });
+  var target = document.getElementById('pg-' + name);
+  if (target) target.classList.remove('hidden');
+  // Update nav tabs
+  document.querySelectorAll('.nav-tab').forEach(function(t) {
+    t.classList.remove('active');
+    if (t.getAttribute('data-page') === name) t.classList.add('active');
+  });
+  // Render page data when navigating
+  if (name === 'list') renderList();
+  if (name === 'dash') renderDash();
+}
+
+// ── AUTH ──
+document.getElementById('l-show').addEventListener('click', function() {
+  var inp = document.getElementById('l-pw');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  this.textContent = inp.type === 'password' ? 'إظهار' : 'إخفاء';
+});
+
+document.getElementById('l-btn').addEventListener('click', doLogin);
+document.getElementById('l-un').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+document.getElementById('l-pw').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+
+function doLogin() {
+  var un = document.getElementById('l-un').value.trim();
+  var pw = document.getElementById('l-pw').value;
+  var found = null;
+  for (var i = 0; i < USERS.length; i++) {
+    if (USERS[i].un === un && USERS[i].pw === pw) { found = USERS[i]; break; }
+  }
+  if (!found) {
+    document.getElementById('l-err').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('l-err').classList.add('hidden');
+  currentUser = found;
+  document.getElementById('pg-login').classList.add('hidden');
+  document.getElementById('pg-app').classList.remove('hidden');
+  document.getElementById('nav-name').textContent = found.name;
+  document.getElementById('a-rep').value = found.name;
+  document.getElementById('a-eta').value = addDays(1);
+  document.getElementById('dash-date').textContent = today();
+  loadShips();
+  refreshTimer = setInterval(loadShips, 15000);
+  showPage('dash');
+}
+
+document.getElementById('nav-logout').addEventListener('click', function() {
+  clearInterval(refreshTimer);
+  currentUser = null; ships = [];
+  document.getElementById('pg-app').classList.add('hidden');
+  document.getElementById('pg-login').classList.remove('hidden');
+  document.getElementById('l-un').value = '';
+  document.getElementById('l-pw').value = '';
+});
+
+// Nav tabs
+document.querySelectorAll('.nav-tab, [data-page]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var p = this.getAttribute('data-page');
+    if (p) showPage(p);
+  });
+});
+
+document.getElementById('detail-back').addEventListener('click', function() {
+  showPage('list');
+});
+
+// ── LOAD DATA ──
+function loadShips() {
+  document.getElementById('sync-bar').classList.remove('hidden');
+  fbGet('hz4_shipments', {}).then(function(d) {
+    ships = (d && typeof d === 'object') ? Object.values(d) : [];
+    document.getElementById('sync-bar').classList.add('hidden');
+    renderDash();
+    renderList();
+    if (currentDetailId) {
+      var updated = ships.find(function(s) { return s.orderId === currentDetailId; });
+      if (updated) renderDetail(updated);
+    }
+  }).catch(function() {
+    document.getElementById('sync-bar').classList.add('hidden');
+  });
+}
+
+// ── DASHBOARD ──
+function renderDash() {
+  var todayC = 0, transitC = 0, lateC = 0, prepC = 0, readyC = 0;
+  for (var i = 0; i < ships.length; i++) {
+    var s = ships[i];
+    if (s.createdAt === today()) todayC++;
+    if (s.status === 'in_transit') transitC++;
+    if (isLate(s)) lateC++;
+    if (s.status === 'preparing') prepC++;
+    if (s.status === 'ready') readyC++;
+  }
+  // Animate counters
+  function numAnim(id, val) {
+    var el = document.getElementById(id); if (!el) return;
+    var dur = 500, st = null;
+    function step(ts) {
+      if (!st) st = ts;
+      var p = Math.min((ts-st)/dur, 1);
+      el.textContent = Math.floor(p * val);
+      if (p < 1) requestAnimationFrame(step); else el.textContent = val;
+    }
+    requestAnimationFrame(step);
+  }
+  numAnim('s-today', todayC);
+  numAnim('s-transit', transitC);
+  numAnim('s-late', lateC);
+  numAnim('s-prep', prepC);
+  numAnim('s-ready', readyC);
+
+  var container = document.getElementById('dash-transit');
+  container.innerHTML = '';
+  var transitShips = ships.filter(function(s) { return s.status === 'in_transit'; });
+  if (transitShips.length === 0) {
+    container.innerHTML = '<p style="color:#6BA8A3;font-size:13px;text-align:center;padding:20px">لا توجد شحنات في الطريق</p>';
+    return;
+  }
+  transitShips.forEach(function(s) {
+    var div = document.createElement('div');
+    div.className = 'ship-row' + (isLate(s) ? ' late' : '');
+    div.innerHTML = '<div>' +
+      '<p style="color:#2A9D8F;font-weight:700;font-size:14px;margin:0 0 2px">' + s.orderId + ' — ' + s.customer + '</p>' +
+      '<p style="color:#6BA8A3;font-size:11px;margin:0">' + (s.repName || '') + (s.estimatedDelivery ? ' · تسليم: ' + fmtD(s.estimatedDelivery) : '') + '</p>' +
+      (isLate(s) ? '<p style="color:#F87171;font-size:10px;font-weight:700;margin:2px 0 0">⚠️ تأخر</p>' : '') +
+      '</div><span style="font-size:22px">🚚</span>';
+    div.addEventListener('click', function() { openDetail(s.orderId); });
+    container.appendChild(div);
+  });
+}
+
+// ── LIST ──
+document.getElementById('list-srch').addEventListener('input', renderList);
+
+function renderList() {
+  var srch = document.getElementById('list-srch').value.toLowerCase();
+  // Filters
+  var filterDiv = document.getElementById('list-filters');
+  filterDiv.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.textContent = 'الكل (' + ships.length + ')';
+  allBtn.className = listFilter === 'all' ? 'btn-p' : 'btn-g';
+  allBtn.style.cssText = 'padding:5px 10px;border-radius:20px;font-size:10px';
+  allBtn.addEventListener('click', function() { listFilter = 'all'; renderList(); });
+  filterDiv.appendChild(allBtn);
+
+  STAGES.forEach(function(st) {
+    var cnt = ships.filter(function(s) { return s.status === st.key; }).length;
+    var btn = document.createElement('button');
+    btn.textContent = st.icon + ' ' + st.label + ' (' + cnt + ')';
+    btn.className = listFilter === st.key ? 'btn-p' : 'btn-g';
+    btn.style.cssText = 'padding:5px 10px;border-radius:20px;font-size:10px';
+    btn.addEventListener('click', function(key) {
+      return function() { listFilter = key; renderList(); };
+    }(st.key));
+    filterDiv.appendChild(btn);
+  });
+
+  var filtered = ships.filter(function(s) {
+    var mf = listFilter === 'all' || s.status === listFilter;
+    var ms = !srch || s.orderId.toLowerCase().indexOf(srch) > -1 || (s.customer && s.customer.indexOf(srch) > -1);
+    return mf && ms;
+  }).sort(function(a, b) { return (b.createdAt || '') > (a.createdAt || '') ? 1 : -1; });
+
+  document.getElementById('list-count').textContent = filtered.length + ' شحنة';
+  var container = document.getElementById('list-items');
+  container.innerHTML = '';
+  if (filtered.length === 0) {
+    container.innerHTML = '<p style="color:#6BA8A3;text-align:center;padding:30px">لا توجد شحنات</p>';
+    return;
+  }
+  filtered.forEach(function(s) {
+    var st = getStage(s.status);
+    var div = document.createElement('div');
+    div.className = 'ship-row' + (isLate(s) ? ' late' : '');
+    div.innerHTML = '<div>' +
+      '<p style="color:#2A9D8F;font-weight:700;font-size:14px;margin:0 0 3px">' + s.orderId + ' — ' + s.customer + '</p>' +
+      '<p style="color:#6BA8A3;font-size:11px;margin:0 0 2px">' + (s.repName || '') + ' · ' + fmtD(s.createdAt) + '</p>' +
+      (s.estimatedDelivery ? '<p style="color:' + (isLate(s) ? '#F87171' : '#6BA8A3') + ';font-size:10px;margin:0">تسليم: ' + fmtD(s.estimatedDelivery) + (isLate(s) ? ' ⚠️' : '') + '</p>' : '') +
+      '</div><span class="badge st-' + s.status + '">' + st.icon + ' ' + st.label + '</span>';
+    div.addEventListener('click', function(oid) {
+      return function() { openDetail(oid); };
+    }(s.orderId));
+    container.appendChild(div);
+  });
+}
+
+// ── DETAIL ──
+function openDetail(oid) {
+  currentDetailId = oid;
+  var s = ships.find(function(x) { return x.orderId === oid; });
+  if (!s) return;
+  renderDetail(s);
+  showPage('detail');
+}
+
+function renderDetail(s) {
+  var trackUrl = location.origin + location.pathname.replace('logistics.html', 'track.html') + '?order=' + s.orderId;
+  var st = getStage(s.status);
+  var siIdx = STAGES.findIndex(function(x) { return x.key === s.status; });
+  var pct = STAGES[siIdx] ? STAGES[siIdx].pct : 0;
+  var nextSt = getNextStage(s.status);
+  var body = document.getElementById('detail-body');
+  body.innerHTML = '';
+
+  // Main card
+  var card1 = document.createElement('div');
+  card1.className = 'card';
+
+  // Header
+  var header = document.createElement('div');
+  header.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(42,157,143,0.25)';
+  header.innerHTML = '<div>' +
+    '<h3 style="color:#2A9D8F;font-size:20px;font-weight:900;margin:0 0 4px">' + s.orderId + '</h3>' +
+    '<p style="color:#E0F2F1;font-weight:700;font-size:15px;margin:0 0 2px">👤 ' + s.customer + '</p>' +
+    (s.phone ? '<p style="color:#6BA8A3;font-size:12px;margin:0 0 2px">' + s.phone + '</p>' : '') +
+    '<p style="color:#6BA8A3;font-size:11px;margin:0">مندوب: ' + (s.repName || '') + '</p>' +
+    '</div><span class="badge st-' + s.status + '">' + st.icon + ' ' + st.label + '</span>';
+  card1.appendChild(header);
+
+  // ETA
+  if (s.estimatedDelivery) {
+    var eta = document.createElement('div');
+    eta.style.cssText = 'background:rgba(42,157,143,0.08);border:1px solid rgba(42,157,143,0.2);border-radius:10px;padding:10px 12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center';
+    eta.innerHTML = '<div><p style="color:#6BA8A3;font-size:10px;margin:0 0 2px">التسليم المتوقع</p><p style="color:#E0F2F1;font-weight:700;font-size:14px;margin:0">' + fmtD(s.estimatedDelivery) + '</p></div>' +
+      (isLate(s) ? '<span style="color:#F87171;font-size:11px;font-weight:700">⚠️ متأخر</span>' : '<span style="color:#4ADE80;font-size:11px;font-weight:700">✅ في الموعد</span>');
+    card1.appendChild(eta);
+  }
+
+  // Progress steps
+  var stepsRow = document.createElement('div');
+  stepsRow.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px';
+  STAGES.slice(0, 5).forEach(function(st2, i) {
+    var done = i <= siIdx; var active = i === siIdx;
+    var step = document.createElement('div');
+    step.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center';
+    step.innerHTML = '<div style="width:32px;height:32px;border-radius:50%;background:' + (active ? '#2A9D8F' : done ? 'rgba(42,157,143,0.2)' : 'rgba(42,157,143,0.05)') + ';border:2px solid ' + (done ? '#2A9D8F' : 'rgba(42,157,143,0.2)') + ';display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:4px' + (active ? ';box-shadow:0 0 0 6px rgba(42,157,143,0.15)' : '') + '">' + st2.icon + '</div>' +
+      '<div style="font-size:9px;color:' + (done ? '#2A9D8F' : '#6BA8A3') + ';text-align:center;font-weight:' + (done ? 700 : 400) + ';max-width:55px">' + st2.label + '</div>';
+    stepsRow.appendChild(step);
+  });
+  card1.appendChild(stepsRow);
+
+  var progBg = document.createElement('div');
+  progBg.className = 'prog-bg';
+  progBg.innerHTML = '<div class="prog-fill" style="width:' + pct + '%"></div>';
+  card1.appendChild(progBg);
+
+  if (s.notes) {
+    var notesDiv = document.createElement('div');
+    notesDiv.style.cssText = 'background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:9px 12px;margin-top:8px';
+    notesDiv.innerHTML = '<p style="color:#FBBF24;font-size:12px;margin:0">📝 ' + s.notes + '</p>';
+    card1.appendChild(notesDiv);
+  }
+  body.appendChild(card1);
+
+  // Update status card
+  if (s.status !== 'delivered' && s.status !== 'cancelled') {
+    var updateCard = document.createElement('div');
+    updateCard.className = 'card';
+    updateCard.innerHTML = '<h4 style="color:#E0F2F1;font-size:13px;font-weight:700;margin:0 0 12px">تحديث الحالة</h4>' +
+      '<div style="margin-bottom:10px"><label class="lbl">ملاحظة (اختيارية)</label><input id="det-note" placeholder="مثال: السائق في الطريق..."></div>' +
+      '<div class="grid2"></div>';
+    var btnsRow = updateCard.querySelector('.grid2');
+    if (nextSt) {
+      var nextBtn = document.createElement('button');
+      nextBtn.className = 'btn-p';
+      nextBtn.style.cssText = 'padding:12px;font-size:13px;width:100%';
+      nextBtn.textContent = nextSt.icon + ' ' + nextSt.label;
+      nextBtn.addEventListener('click', function(oid, nk) {
+        return function() { updateStatus(oid, nk); };
+      }(s.orderId, nextSt.key));
+      btnsRow.appendChild(nextBtn);
+    }
+    var cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn-d';
+    cancelBtn.style.cssText = 'padding:12px;font-size:13px;width:100%';
+    cancelBtn.textContent = '❌ إلغاء الشحنة';
+    cancelBtn.addEventListener('click', function(oid) {
+      return function() { updateStatus(oid, 'cancelled'); };
+    }(s.orderId));
+    btnsRow.appendChild(cancelBtn);
+    body.appendChild(updateCard);
+  }
+
+  // Timeline
+  if (s.timeline && s.timeline.length > 0) {
+    var tlCard = document.createElement('div');
+    tlCard.className = 'card';
+    tlCard.innerHTML = '<h4 style="color:#E0F2F1;font-size:13px;font-weight:700;margin:0 0 12px">📍 سجل الشحنة</h4>';
+    var tlWrap = document.createElement('div');
+    tlWrap.className = 'tl-wrap';
+    var reversed = s.timeline.slice().reverse();
+    reversed.forEach(function(t, i) {
+      var tst = getStage(t.status);
+      var dt = t.time ? new Date(t.time) : null;
+      var ts = dt ? dt.toLocaleDateString('ar-SA', {weekday:'short',month:'short',day:'numeric'}) + ' ' + dt.toLocaleTimeString('ar-SA', {hour:'2-digit',minute:'2-digit'}) : '';
+      var item = document.createElement('div');
+      item.className = 'tl-item';
+      item.innerHTML = '<div class="tl-dot' + (i > 0 ? ' old' : '') + '"></div>' +
+        '<div style="font-size:10px;color:#6B7280;margin-bottom:2px">' + ts + '</div>' +
+        '<div style="font-size:13px;color:#E0F2F1;font-weight:600">' + tst.icon + ' ' + tst.label + '</div>' +
+        (t.note ? '<div style="font-size:11px;color:#6B7280;margin-top:1px">' + t.note + '</div>' : '');
+      tlWrap.appendChild(item);
+    });
+    tlCard.appendChild(tlWrap);
+    body.appendChild(tlCard);
+  }
+
+  // Share card
+  var shareCard = document.createElement('div');
+  shareCard.className = 'card';
+  shareCard.innerHTML = '<h4 style="color:#E0F2F1;font-size:13px;font-weight:700;margin:0 0 12px">مشاركة التتبع</h4>' +
+    '<div style="background:#162D45;border-radius:8px;padding:8px 12px;font-size:11px;color:#2A9D8F;word-break:break-all;margin-bottom:10px">' + trackUrl + '</div>' +
+    '<div class="grid2"></div>';
+  var shareBtns = shareCard.querySelector('.grid2');
+  var copyBtn = document.createElement('button');
+  copyBtn.className = 'btn-g';
+  copyBtn.style.cssText = 'padding:10px;font-size:12px;width:100%';
+  copyBtn.textContent = '🔗 نسخ الرابط';
+  copyBtn.addEventListener('click', function(url) {
+    return function() {
+      navigator.clipboard.writeText(url);
+      this.textContent = '✅ تم النسخ!';
+      var b = this;
+      setTimeout(function() { b.textContent = '🔗 نسخ الرابط'; }, 2000);
+    };
+  }(trackUrl));
+  shareBtns.appendChild(copyBtn);
+  var waBtn = document.createElement('button');
+  waBtn.className = 'btn-wa';
+  waBtn.style.cssText = 'padding:10px;font-size:12px;width:100%';
+  waBtn.textContent = '📱 واتساب العميل';
+  waBtn.addEventListener('click', function(oid, url, phone) {
+    return function() {
+      var msg = 'مرحباً 👋\nيمكنك تتبع طلبك رقم ' + oid + ' من حلا زون:\n\n' + url;
+      window.open('https://wa.me/' + (phone ? phone.replace('+','') : '') + '?text=' + encodeURIComponent(msg), '_blank');
+    };
+  }(s.orderId, trackUrl, s.phone || ''));
+  shareBtns.appendChild(waBtn);
+  body.appendChild(shareCard);
+}
+
+// ── UPDATE STATUS ──
+function updateStatus(oid, newStatus) {
+  var s = ships.find(function(x) { return x.orderId === oid; });
+  if (!s) return;
+  var noteEl = document.getElementById('det-note');
+  var note = noteEl ? noteEl.value : '';
+  var tl = s.timeline ? s.timeline.slice() : [];
+  tl.push({status: newStatus, time: nowISO(), note: note});
+  var updated = Object.assign({}, s, {status: newStatus, timeline: tl, updatedAt: nowISO()});
+  fbSet('hz4_shipments/' + oid, updated).then(function() {
+    ships = ships.map(function(x) { return x.orderId === oid ? updated : x; });
+    renderDash();
+    renderDetail(updated);
+  });
+}
+
+// ── ADD SHIPMENT ──
+document.getElementById('a-btn').addEventListener('click', function() {
+  var oid = document.getElementById('a-oid').value.trim().toUpperCase();
+  var cust = document.getElementById('a-cust').value.trim();
+  if (!oid || !cust) { alert('الرجاء إدخال رقم الطلب واسم العميل'); return; }
+  this.innerHTML = '<span class="spinner"></span> جاري الحفظ...';
+  document.getElementById('add-ok').classList.add('hidden');
+  var ship = {
+    orderId: oid,
+    customer: cust,
+    phone: document.getElementById('a-phone').value.trim(),
+    repName: document.getElementById('a-rep').value.trim() || (currentUser ? currentUser.name : ''),
+    status: 'received',
+    createdAt: today(),
+    estimatedDelivery: document.getElementById('a-eta').value || addDays(1),
+    notes: document.getElementById('a-notes').value.trim(),
+    timeline: [{status: 'received', time: nowISO(), note: 'تم استلام الطلب'}]
+  };
+  var btn = this;
+  fbSet('hz4_shipments/' + oid, ship).then(function() {
+    ships = ships.filter(function(s) { return s.orderId !== oid; }).concat([ship]);
+    var trackUrl = location.origin + location.pathname.replace('logistics.html', 'track.html') + '?order=' + oid;
+    addedUrl = trackUrl;
+    addedPhone = ship.phone;
+    document.getElementById('add-link').textContent = trackUrl;
+    document.getElementById('add-ok').classList.remove('hidden');
+    btn.textContent = '📦 إضافة الشحنة';
+    document.getElementById('a-oid').value = '';
+    document.getElementById('a-cust').value = '';
+    document.getElementById('a-phone').value = '';
+    document.getElementById('a-notes').value = '';
+    renderDash();
+  }).catch(function() {
+    btn.textContent = '📦 إضافة الشحنة';
+    alert('خطأ في الحفظ، تحقق من الاتصال');
+  });
+});
+
+document.getElementById('add-copy').addEventListener('click', function() {
+  navigator.clipboard.writeText(addedUrl);
+  this.textContent = '✅ تم!';
+  var b = this;
+  setTimeout(function() { b.textContent = 'نسخ الرابط'; }, 2000);
+});
+
+document.getElementById('add-wa').addEventListener('click', function() {
+  var msg = 'مرحباً 👋\nيمكنك تتبع شحنتك من حلا زون:\n\n' + addedUrl;
+  window.open('https://wa.me/' + (addedPhone ? addedPhone.replace('+','') : '') + '?text=' + encodeURIComponent(msg), '_blank');
+});
+
+// Array.findIndex polyfill
+if (!Array.prototype.findIndex) {
+  Array.prototype.findIndex = function(fn) {
+    for (var i = 0; i < this.length; i++) { if (fn(this[i], i)) return i; }
+    return -1;
+  };
+}
+</script>
+</body>
+</html>
