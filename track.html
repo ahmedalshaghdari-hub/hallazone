@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>تتبع طلبك | حلا زون</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Cairo,Arial,sans-serif;direction:rtl;background:#F0FDFA;min-height:100vh;color:#0F172A}
+.header{background:#fff;padding:14px 20px;box-shadow:0 1px 8px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.logo-t{color:#2A9D8F;font-size:20px;font-weight:900}
+.hero{background:linear-gradient(135deg,#0F766E,#2A9D8F 50%,#0891B2);padding:40px 20px;text-align:center}
+.hero h1{color:#fff;font-size:26px;font-weight:900;margin-bottom:6px}
+.hero p{color:rgba(255,255,255,.85);font-size:13px;margin-bottom:28px}
+.search-wrap{display:flex;gap:8px;max-width:420px;margin:0 auto;background:rgba(255,255,255,.15);border-radius:16px;padding:6px}
+.s-inp{flex:1;padding:12px 16px;border:none;border-radius:12px;font-family:Cairo,Arial;font-size:15px;outline:none;direction:rtl;text-align:center;letter-spacing:1px;font-weight:700;background:rgba(255,255,255,.95);color:#0F172A}
+.s-inp::placeholder{color:#94A3B8;letter-spacing:0;font-weight:400}
+.s-btn{background:#fff;color:#2A9D8F;border:none;border-radius:12px;padding:12px 22px;font-family:Cairo,Arial;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0}
+.err-txt{color:#FCA5A5;font-size:12px;margin-top:8px;min-height:18px;text-align:center}
+.container{max-width:600px;margin:0 auto;padding:20px 16px}
+.card{background:#fff;border-radius:20px;padding:22px;box-shadow:0 4px 24px rgba(0,0,0,.07);margin-bottom:14px}
+.spinner{width:44px;height:44px;border:4px solid #E2E8F0;border-top-color:#2A9D8F;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.prog-bg{height:8px;background:#E2E8F0;border-radius:4px;position:relative;margin:28px 8px 50px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#0F766E,#2A9D8F,#06B6D4);border-radius:4px;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+.truck-wrap{position:absolute;top:-22px;right:0;transition:right 1.4s cubic-bezier(.4,0,.2,1);transform:translateX(50%)}
+.stages-row{display:flex;justify-content:space-between;margin-top:14px}
+.stg{display:flex;flex-direction:column;align-items:center;flex:1}
+.stg-c{width:36px;height:36px;border-radius:50%;background:#F1F5F9;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:6px;transition:all .5s;border:2px solid transparent}
+.stg-c.done{background:#CCFBF1;border-color:#2A9D8F}
+.stg-c.active{background:#2A9D8F;border-color:#2A9D8F;box-shadow:0 0 0 6px rgba(42,157,143,.15)}
+.stg-l{font-size:9.5px;color:#94A3B8;text-align:center;font-weight:600;max-width:55px}
+.stg-l.done,.stg-l.active{color:#0F766E}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700}
+.tl-wrap{position:relative;padding-right:24px}
+.tl-wrap::before{content:"";position:absolute;right:9px;top:14px;bottom:14px;width:2px;background:linear-gradient(180deg,#2A9D8F,#E2E8F0)}
+.tl-item{position:relative;padding:8px 0;padding-right:16px}
+.tl-dot{position:absolute;right:-5px;top:13px;width:14px;height:14px;border-radius:50%;background:#2A9D8F;border:2.5px solid #fff;box-shadow:0 0 0 2px #2A9D8F}
+.tl-dot.old{background:#94A3B8;box-shadow:0 0 0 2px #94A3B8}
+.tl-time{font-size:10px;color:#94A3B8;margin-bottom:2px}
+.tl-text{font-size:13px;color:#0F172A;font-weight:600}
+.btn-wa{background:#25D366;color:#fff;border:none;border-radius:14px;padding:13px 18px;font-family:Cairo,Arial;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-copy{background:#F1F5F9;color:#475569;border:none;border-radius:14px;padding:13px 18px;font-family:Cairo,Arial;font-size:13px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+.eta-bar{background:linear-gradient(135deg,#ECFDF5,#F0FDFA);border:1px solid #A7F3D0;border-radius:14px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+@keyframes bounce{0%,100%{transform:translateY(0) translateX(50%)}50%{transform:translateY(-5px) translateX(50%)}}
+@keyframes celebrate{0%{transform:scale(1)}30%{transform:scale(1.3)}60%{transform:scale(.95)}100%{transform:scale(1)}}
+@keyframes confetti{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(120px) rotate(720deg);opacity:0}}
+@keyframes fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.animated{animation:fadein .4s ease}
+.bouncing{animation:bounce .5s ease infinite}
+.celebrating{animation:celebrate .4s ease infinite}
+.confetti-p{position:fixed;width:8px;height:8px;border-radius:2px;animation:confetti 2s ease forwards;pointer-events:none;z-index:999}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div><div class="logo-t">حـلازون</div><div style="color:#2A9D8F;font-size:8px;letter-spacing:3px">HALLAZONE</div></div>
+  <div style="font-size:11px;color:#6B7280">🚚 تتبع الشحنات</div>
+</div>
+
+<div class="hero">
+  <h1>🚚 تتبع طلبك</h1>
+  <p>أدخل رقم طلبك لمعرفة آخر التحديثات</p>
+  <div class="search-wrap">
+    <input class="s-inp" id="order-input" type="text" placeholder="أدخل رقم الطلب... Q001" maxlength="15" autocomplete="off">
+    <button class="s-btn" id="track-btn">تتبع ←</button>
+  </div>
+  <div class="err-txt" id="err-msg"></div>
+</div>
+
+<div class="container">
+  <div id="loading-div" style="display:none">
+    <div class="card" style="text-align:center;padding:40px">
+      <div class="spinner"></div>
+      <p style="color:#6B7280;font-size:13px">جاري البحث...</p>
+    </div>
+  </div>
+  <div id="result-div"></div>
+</div>
+
+<div id="confetti-layer"></div>
+
+<script>
+// ── CONFIG ──
+var DB = 'https://hallazone-default-rtdb.firebaseio.com';
+
+var STAGES = [
+  {key:'received',  label:'تم الاستلام',  icon:'📋', pct:8},
+  {key:'preparing', label:'جاري التجهيز', icon:'⚙️', pct:30},
+  {key:'ready',     label:'جاهز للشحن',   icon:'✅', pct:57},
+  {key:'in_transit',label:'في الطريق',    icon:'🚚', pct:80},
+  {key:'delivered', label:'تم التسليم',   icon:'🎉', pct:97}
+];
+
+var STATUS_INFO = {
+  received:   {text:'تم استلام طلبك',        color:'#1D4ED8', bg:'#EFF6FF', dot:'🔵'},
+  preparing:  {text:'جاري تجهيز طلبك',       color:'#B45309', bg:'#FFFBEB', dot:'🟡'},
+  ready:      {text:'طلبك جاهز للشحن',       color:'#065F46', bg:'#ECFDF5', dot:'🟢'},
+  in_transit: {text:'طلبك في الطريق إليك',   color:'#0E7490', bg:'#ECFEFF', dot:'🚚'},
+  delivered:  {text:'تم تسليم طلبك بنجاح',  color:'#6D28D9', bg:'#F5F3FF', dot:'🎉'},
+  cancelled:  {text:'تم إلغاء الطلب',        color:'#B91C1C', bg:'#FEF2F2', dot:'❌'}
+};
+
+var currentTrackUrl = '';
+var currentOrderId = '';
+
+// ── INIT ──
+window.onload = function() {
+  var params = new URLSearchParams(window.location.search);
+  var order = params.get('order') || params.get('q') || params.get('id');
+  if (order) {
+    document.getElementById('order-input').value = order.toUpperCase();
+    doSearch();
+  }
+  setInterval(function() {
+    if (currentOrderId) doSearch(true);
+  }, 30000);
+};
+
+// ── EVENT LISTENERS ──
+document.getElementById('track-btn').addEventListener('click', function() {
+  doSearch(false);
+});
+
+document.getElementById('order-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doSearch(false);
+});
+
+// ── SEARCH ──
+function doSearch(silent) {
+  var id = document.getElementById('order-input').value.trim().toUpperCase();
+  if (!id) {
+    document.getElementById('err-msg').textContent = 'الرجاء إدخال رقم الطلب';
+    return;
+  }
+  document.getElementById('err-msg').textContent = '';
+  if (!silent) {
+    document.getElementById('loading-div').style.display = 'block';
+    document.getElementById('result-div').innerHTML = '';
+  }
+
+  fetch(DB + '/hz4_shipments/' + id + '.json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('loading-div').style.display = 'none';
+      if (!data || data === null || typeof data !== 'object' || !data.orderId) {
+        document.getElementById('err-msg').textContent = 'لم يتم العثور على طلب بهذا الرقم';
+        if (!silent) {
+          document.getElementById('result-div').innerHTML =
+            '<div class="card" style="text-align:center;padding:40px">' +
+            '<div style="font-size:48px;margin-bottom:12px">🔍</div>' +
+            '<h3 style="font-size:17px;font-weight:700;margin-bottom:8px">لم يتم العثور على الطلب</h3>' +
+            '<p style="font-size:12px;color:#6B7280">تأكد من رقم الطلب أو تواصل مع المندوب</p>' +
+            '</div>';
+        }
+        return;
+      }
+      currentOrderId = id;
+      showResult(data);
+    })
+    .catch(function(err) {
+      document.getElementById('loading-div').style.display = 'none';
+      document.getElementById('err-msg').textContent = 'خطأ في الاتصال، تحقق من الإنترنت';
+    });
+}
+
+// ── SHOW RESULT ──
+function showResult(order) {
+  var status = order.status || 'received';
+  var si = 0;
+  for (var i = 0; i < STAGES.length; i++) {
+    if (STAGES[i].key === status) { si = i; break; }
+  }
+  var pct = STAGES[si] ? STAGES[si].pct : 0;
+  var sl = STATUS_INFO[status] || STATUS_INFO.received;
+  currentTrackUrl = location.origin + location.pathname + '?order=' + order.orderId;
+
+  var container = document.getElementById('result-div');
+  container.innerHTML = '';
+
+  // ── Main Card ──
+  var card1 = document.createElement('div');
+  card1.className = 'card animated';
+
+  // Header row
+  var hRow = document.createElement('div');
+  hRow.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:8px';
+  hRow.innerHTML = '<div>' +
+    '<div style="font-size:24px;font-weight:900;color:#0F172A;letter-spacing:1px">' + order.orderId + '</div>' +
+    '<div style="font-size:12px;color:#6B7280;margin-top:2px">' + order.customer + '</div>' +
+    (order.repName ? '<div style="font-size:11px;color:#94A3B8">المندوب: ' + order.repName + '</div>' : '') +
+    '</div>' +
+    '<div class="badge" style="background:' + sl.bg + ';color:' + sl.color + '">' + sl.dot + ' ' + sl.text + '</div>';
+  card1.appendChild(hRow);
+
+  // Progress bar
+  var progWrap = document.createElement('div');
+  progWrap.className = 'prog-bg';
+  var progFill = document.createElement('div');
+  progFill.className = 'prog-fill';
+  progFill.id = 'prog-fill';
+  progFill.style.width = '0%';
+  progWrap.appendChild(progFill);
+  var truckWrap = document.createElement('div');
+  truckWrap.className = 'truck-wrap';
+  truckWrap.id = 'truck-wrap';
+  truckWrap.style.right = '100%';
+  var truckEmoji = document.createElement('span');
+  truckEmoji.id = 'truck-emoji';
+  truckEmoji.style.cssText = 'font-size:26px;display:block;filter:drop-shadow(0 3px 8px rgba(0,0,0,.2))';
+  truckEmoji.textContent = '🚚';
+  truckWrap.appendChild(truckEmoji);
+  progWrap.appendChild(truckWrap);
+  card1.appendChild(progWrap);
+
+  // Stage circles
+  var stagesRow = document.createElement('div');
+  stagesRow.className = 'stages-row';
+  for (var i = 0; i < STAGES.length; i++) {
+    var st = STAGES[i];
+    var isDone = i <= si;
+    var isActive = i === si;
+    var stg = document.createElement('div');
+    stg.className = 'stg';
+    var circ = document.createElement('div');
+    circ.className = 'stg-c' + (isActive ? ' active' : isDone ? ' done' : '');
+    circ.textContent = st.icon;
+    var lbl = document.createElement('div');
+    lbl.className = 'stg-l' + (isActive ? ' active' : isDone ? ' done' : '');
+    lbl.textContent = st.label;
+    stg.appendChild(circ);
+    stg.appendChild(lbl);
+    stagesRow.appendChild(stg);
+  }
+  card1.appendChild(stagesRow);
+
+  // Notes
+  if (order.notes) {
+    var notesEl = document.createElement('div');
+    notesEl.style.cssText = 'background:#FEFCE8;border:1px solid #FDE047;border-radius:12px;padding:10px 14px;margin-top:14px';
+    notesEl.innerHTML = '<p style="font-size:12px;color:#713F12;margin:0">📝 ' + order.notes + '</p>';
+    card1.appendChild(notesEl);
+  }
+  container.appendChild(card1);
+
+  // ── ETA Card ──
+  if (order.estimatedDelivery && status !== 'delivered' && status !== 'cancelled') {
+    var etaCard = document.createElement('div');
+    etaCard.className = 'eta-bar animated';
+    var etaDt = new Date(order.estimatedDelivery);
+    var etaStr = etaDt.toLocaleDateString('ar-SA', {weekday:'long', month:'long', day:'numeric'});
+    etaCard.innerHTML = '<span style="font-size:22px">📅</span>' +
+      '<div><div style="font-size:11px;color:#065F46;font-weight:600">التسليم المتوقع</div>' +
+      '<div style="font-size:14px;font-weight:700;color:#064E3B">' + etaStr + '</div></div>';
+    container.appendChild(etaCard);
+  }
+
+  // ── Timeline ──
+  if (order.timeline && order.timeline.length > 0) {
+    var tlCard = document.createElement('div');
+    tlCard.className = 'card animated';
+    tlCard.innerHTML = '<div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:16px">📍 سجل الشحنة</div>';
+    var tlWrap = document.createElement('div');
+    tlWrap.className = 'tl-wrap';
+    var reversed = order.timeline.slice().reverse();
+    for (var j = 0; j < reversed.length; j++) {
+      var t = reversed[j];
+      var stInfo = null;
+      for (var k = 0; k < STAGES.length; k++) {
+        if (STAGES[k].key === t.status) { stInfo = STAGES[k]; break; }
+      }
+      if (!stInfo) stInfo = {icon:'📌', label: t.status};
+      var dt = t.time ? new Date(t.time) : null;
+      var ts = dt ? dt.toLocaleDateString('ar-SA', {weekday:'short', month:'short', day:'numeric'}) + ' ' + dt.toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'}) : '';
+      var item = document.createElement('div');
+      item.className = 'tl-item';
+      item.innerHTML = '<div class="tl-dot' + (j > 0 ? ' old' : '') + '"></div>' +
+        '<div class="tl-time">' + ts + '</div>' +
+        '<div class="tl-text">' + stInfo.icon + ' ' + stInfo.label + '</div>' +
+        (t.note ? '<div style="font-size:11px;color:#6B7280;margin-top:1px">' + t.note + '</div>' : '');
+      tlWrap.appendChild(item);
+    }
+    tlCard.appendChild(tlWrap);
+    container.appendChild(tlCard);
+  }
+
+  // ── Share Card ──
+  var shareCard = document.createElement('div');
+  shareCard.className = 'card animated';
+  shareCard.innerHTML = '<div style="font-size:13px;font-weight:700;color:#0F172A;margin-bottom:12px">مشاركة رابط التتبع</div>';
+
+  var waBtn = document.createElement('button');
+  waBtn.className = 'btn-wa';
+  waBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>مشاركة على واتساب';
+  waBtn.addEventListener('click', function() {
+    var msg = 'مرحباً 👋\nيمكنك تتبع طلبك من حلا زون:\n\nرقم الطلب: ' + currentOrderId + '\n\nرابط التتبع:\n' + currentTrackUrl;
+    window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+  });
+  shareCard.appendChild(waBtn);
+
+  var copyBtn = document.createElement('button');
+  copyBtn.className = 'btn-copy';
+  copyBtn.textContent = '🔗 نسخ الرابط';
+  copyBtn.addEventListener('click', function() {
+    navigator.clipboard.writeText(currentTrackUrl).then(function() {
+      copyBtn.textContent = '✅ تم النسخ!';
+      copyBtn.style.background = '#ECFDF5';
+      copyBtn.style.color = '#065F46';
+      setTimeout(function() {
+        copyBtn.textContent = '🔗 نسخ الرابط';
+        copyBtn.style.background = '';
+        copyBtn.style.color = '';
+      }, 2000);
+    });
+  });
+  shareCard.appendChild(copyBtn);
+  container.appendChild(shareCard);
+
+  // Refresh note
+  var note = document.createElement('div');
+  note.style.cssText = 'text-align:center;padding:16px 0;font-size:11px;color:#94A3B8';
+  note.innerHTML = 'يتجدد تلقائياً · <span style="color:#2A9D8F;font-weight:600">حلا زون</span>';
+  container.appendChild(note);
+
+  // Animate progress after render
+  setTimeout(function() {
+    var pf = document.getElementById('prog-fill');
+    var tw = document.getElementById('truck-wrap');
+    var te = document.getElementById('truck-emoji');
+    if (pf) pf.style.width = pct + '%';
+    if (tw) tw.style.right = (100 - pct) + '%';
+    if (te) {
+      if (status === 'in_transit') { te.className = 'bouncing'; }
+      else if (status === 'delivered') { te.textContent = '🎉'; te.className = 'celebrating'; }
+      else if (status === 'preparing') { te.textContent = '⚙️'; }
+    }
+  }, 200);
+
+  if (status === 'delivered') celebrate();
+}
+
+// ── CELEBRATE ──
+function celebrate() {
+  var layer = document.getElementById('confetti-layer');
+  layer.innerHTML = '';
+  var colors = ['#2A9D8F','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899','#06B6D4'];
+  for (var i = 0; i < 40; i++) {
+    var p = document.createElement('div');
+    p.className = 'confetti-p';
+    p.style.cssText = 'left:' + Math.random()*100 + 'vw;top:-10px;background:' + colors[Math.floor(Math.random()*colors.length)] + ';animation-delay:' + Math.random()*1.5 + 's;animation-duration:' + (1.5+Math.random()) + 's;border-radius:' + (Math.random()>0.5?'50%':'2px');
+    layer.appendChild(p);
+  }
+  setTimeout(function() { layer.innerHTML = ''; }, 4000);
+}
+</script>
+</body>
+</html>
