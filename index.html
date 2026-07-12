@@ -705,7 +705,7 @@ var IP = [
 var IU=[
   {id:'u1',un:'admin',    pw:'admin123',  name:'المدير العام',   role:'admin'},
   {id:'u2',un:'ahmed',    pw:'ahmed123',  name:'أحمد',           role:'marketing'},
-  {id:'u3',un:'maher',    pw:'maher123',  name:'ماهر',           role:'warehouse'},
+  {id:'u3',un:'warehouse',pw:'store123',  name:'مسؤول المستودع', role:'warehouse'},
   {id:'u4',un:'mkhaled',  pw:'mk123',     name:'محمد خالد',      role:'sales'},
   {id:'u5',un:'sha3lan',  pw:'sha123',    name:'شعلان',          role:'sales'},
   {id:'u6',un:'adel',     pw:'adel123',   name:'عادل',           role:'sales'},
@@ -999,6 +999,26 @@ function renderNewQ(existQ=null){
   </div>
 
   <div class="card">
+    <label class="inp-label" style="color:var(--navy);font-size:13px">🚚 التوصيل</label>
+    <div style="display:flex;gap:16px;margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;font-weight:600">
+        <input type="radio" name="nq-delivery" value="no"
+          ${!(existQ?.delivery)||existQ?.delivery!=='yes'?'checked':''} onchange="toggleDelivery(this.value)">
+        غير شامل التوصيل
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;font-weight:600">
+        <input type="radio" name="nq-delivery" value="yes"
+          ${existQ?.delivery==='yes'?'checked':''} onchange="toggleDelivery(this.value)">
+        شامل التوصيل
+      </label>
+    </div>
+    <div id="del-price-box" style="display:${existQ?.delivery==='yes'?'block':'none'}">
+      <label class="inp-label">سعر التوصيل (ريال)</label>
+      <input class="inp" id="nq-del-price" type="number" min="0" step="0.5"
+        value="${existQ?.deliveryPrice||''}" placeholder="0.00" style="width:160px">
+    </div>
+  </div>
+  <div class="card">
     <label class="inp-label">ملاحظات</label>
     <textarea class="inp" id="nq-notes" rows="2" placeholder="ملاحظات للعميل...">${existQ?.notes||''}</textarea>
   </div>
@@ -1148,6 +1168,16 @@ function updateCart(idx,field,val){
   el('nq-cart-wrap').innerHTML=renderCartHTML();
 }
 
+function toggleDelivery(val){
+  var box=el('del-price-box');
+  if(box)box.style.display=val==='yes'?'block':'none';
+}
+function getDelivery(){
+  var radios=document.querySelectorAll('input[name="nq-delivery"]');
+  var val='no';
+  radios.forEach(function(r){if(r.checked)val=r.value;});
+  return{type:val,price:val==='yes'?parseFloat(el('nq-del-price')?.value)||0:0};
+}
 function clearCart(){
   if(cartItems.length&&!confirm('مسح جميع المنتجات المختارة؟'))return;
   cartItems=[];
@@ -1166,6 +1196,7 @@ async function submitNewQ(){
       price:+(i.prod.salePrice||i.prod.price||0),img:i.prod.img||null,
       qty:i.qty,discountPct:i.disc,freeQty:i.free})),
     notes:el('nq-notes')?.value.trim()||'',
+    delivery:getDelivery().type,deliveryPrice:getDelivery().price,
     validDays:vdays,status:'sent',date:today(),ts:Date.now()
   };
   var newQ=[...quotes,q];
@@ -1186,7 +1217,7 @@ async function submitEdit(qid){
       items:cartItems.map(i=>({id:i.prod.id,brand:i.prod.brand,name:i.prod.name,
         price:+(i.prod.salePrice||i.prod.price||0),img:i.prod.img||null,
         qty:i.qty,discountPct:i.disc,freeQty:i.free})),
-      notes:el('nq-notes')?.value.trim()||q.notes,validDays:vdays,editedAt:today()};
+      notes:el('nq-notes')?.value.trim()||q.notes,delivery:getDelivery().type,deliveryPrice:getDelivery().price,validDays:vdays,editedAt:today()};
   });
   await saveQuotes(newQ);
   cartItems=[];
@@ -1418,8 +1449,12 @@ function openInvoice(){
   <table><thead><tr><th>#</th><th style="text-align:right">المنتج</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
   <tbody>${rows}</tbody></table>
   <div class="totals-wrap"><div class="totals-box">
-    <div class="tot-grand"><span>الإجمالي</span><span>SAR ${grand.toFixed(2)}</span></div>
-    <div style="text-align:center;color:#6B7280;font-size:10px;padding:5px">جميع الأسعار شاملة ضريبة القيمة المضافة 15%</div>
+    ${q.delivery==='yes'&&q.deliveryPrice>0?`<div class="tot-row"><span>🚚 رسوم التوصيل</span><span>SAR ${(q.deliveryPrice||0).toFixed(2)}</span></div>`:''}
+    <div class="tot-grand"><span>الإجمالي${q.delivery==='yes'?' (شامل التوصيل)':''}</span><span>SAR ${(grand+(q.delivery==='yes'?q.deliveryPrice||0:0)).toFixed(2)}</span></div>
+    <div style="text-align:center;color:#6B7280;font-size:10px;padding:5px">
+      جميع الأسعار شاملة ضريبة القيمة المضافة 15%
+      ${q.delivery!=='yes'?'<span style="color:#DC2626;font-weight:700"> — غير شامل رسوم التوصيل</span>':''}
+    </div>
   </div></div>
   ${validDate?`<div class="validity">⚠️ هذا العرض ساري حتى تاريخ ${fmtD(validDate)} — ${q.validDays} يوم من تاريخ الإصدار</div>`:''}
   ${q.notes?`<div style="background:#FFF9F0;border:1px solid #F59E0B40;border-radius:8px;padding:10px;font-size:12px;margin-bottom:14px"><strong>ملاحظات:</strong> ${q.notes}</div>`:''}
@@ -1786,12 +1821,13 @@ function renderInv(){
 }
 
 function filterInv(q){
+  var filter=el('inv-filter')?el('inv-filter').value:'all';
   var list=prods.filter(function(p){return p.active;});
-  if(q)list=list.filter(function(p){
-    return p.name.includes(q)||p.brand.includes(q)||String(p.qty||0).includes(q);
-  });
-  var el2=el('inv-list');
-  if(el2)el2.innerHTML=renderInvListHTML(list);
+  if(q)list=list.filter(function(p){return p.name.includes(q)||p.brand.includes(q);});
+  if(filter==='instock')list=list.filter(function(p){return (p.qty||0)>0&&(p.qty||0)<9999;});
+  else if(filter==='zero')list=list.filter(function(p){return (p.qty||0)===0;});
+  else if(filter==='infinite')list=list.filter(function(p){return (p.qty||0)>=9999;});
+  el('inv-list').innerHTML=renderInvList(list,filter,q);
 }
 
 function renderInvList(list,filter,q){
