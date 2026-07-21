@@ -164,7 +164,7 @@ button{font-family:'Cairo',Arial,sans-serif;cursor:pointer;border:none}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 </style>
 </head>
-<body>
+<body onsubmit="return false">
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
@@ -186,10 +186,10 @@ button{font-family:'Cairo',Arial,sans-serif;cursor:pointer;border:none}
 <div style="margin-bottom:6px;position:relative">
 <label class="inp-label">كلمة السر</label>
 <input class="inp" id="l-pw" type="password" placeholder="كلمة السر" style="padding-left:70px" autocomplete="current-password">
-<button onclick="togglePwVis()" style="position:absolute;left:10px;top:34px;background:none;border:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:Cairo,sans-serif">إظهار</button>
+<button type="button" onclick="togglePwVis()" style="position:absolute;left:10px;top:34px;background:none;border:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:Cairo,sans-serif">إظهار</button>
 </div>
 <p id="l-err" class="hidden" style="color:var(--red);font-size:12px;text-align:center;margin-bottom:8px">اسم المستخدم أو كلمة السر غير صحيحة</p>
-<button id="l-btn" class="btn btn-primary btn-full" style="margin-top:12px;padding:14px;font-size:15px" onclick="doLogin()">دخول</button>
+<button type="button" id="l-btn" class="btn btn-primary btn-full" style="margin-top:12px;padding:14px;font-size:15px" onclick="doLogin()">دخول</button>
 </div>
 </div>
 </div>
@@ -209,7 +209,7 @@ button{font-family:'Cairo',Arial,sans-serif;cursor:pointer;border:none}
 <div class="nav-name" id="navName"></div>
 <div class="nav-role" id="navRole"></div>
 </div>
-<button class="btn btn-danger btn-sm" onclick="doLogout()">خروج</button>
+<button type="button" class="btn btn-danger btn-sm" onclick="doLogout()">خروج</button>
 </div>
 </div>
 <div class="nav-tabs" id="navTabs"></div>
@@ -220,12 +220,12 @@ button{font-family:'Cairo',Arial,sans-serif;cursor:pointer;border:none}
 <div id="pg-newq"     class="page hidden"></div>
 <div id="pg-quotes"   class="page hidden"></div>
 <div id="pg-myq"      class="page hidden"></div>
-<div id="pg-products" class="page hidden"></div>
-<div id="pg-inv"      class="page hidden"></div>
-<div id="pg-users"    class="page hidden"></div>
+<div id="pg-products" class="page hidden" onsubmit="return false"></div>
+<div id="pg-inv"      class="page hidden" onsubmit="return false"></div>
+<div id="pg-users"    class="page hidden" onsubmit="return false"></div>
 <div id="pg-settings" class="page hidden"></div>
 <div id="pg-board"    class="page hidden"></div>
-<div id="pg-bundles"  class="page hidden"></div>
+<div id="pg-bundles"  class="page hidden" onsubmit="return false"></div>
 <div id="pg-qdetail"  class="page hidden"></div>
 <div id="pg-profile"  class="page hidden"></div>
 
@@ -825,7 +825,7 @@ async function loadAll(bg){
   stats=dbSt||{};
   bundles=Array.isArray(dbB)?dbB:Object.values(dbB||{});
   // Re-render current page
-  if(curPage&&!(bg&&['newq','bundles'].includes(curPage)))renderPage(curPage);
+  if(curPage&&!(bg&&['newq','bundles','products','inv','users','settings'].includes(curPage)))renderPage(curPage);
 }
 
 async function saveProds(p){
@@ -865,7 +865,7 @@ async function updateStats(uid){
 function buildNavTabs(){
   var tabs=(ROLES[CU.role]||{tabs:['dash']}).tabs;
   el('navTabs').innerHTML=tabs.map(t=>
-    `<button class="nav-tab" data-tab="${t}" onclick="navigate('${t}')">${TAB_LABELS[t]||t}</button>`
+    `<button type="button" class="nav-tab" data-tab="${t}" onclick="navigate('${t}')">${TAB_LABELS[t]||t}</button>`
   ).join('');
 }
 
@@ -932,8 +932,8 @@ function renderDash(){
     </div>`).join('')}
   </div>`:''}
   <div class="grid2">
-    ${hasTab('newq')?`<button class="btn btn-primary" onclick="navigate('newq')">+ عرض جديد</button>`:''}
-    ${hasTab('quotes')?`<button class="btn btn-ghost" onclick="navigate('quotes')">كل العروض</button>`:''}
+    ${hasTab('newq')?`<button type="button" class="btn btn-primary" onclick="navigate('newq')">+ عرض جديد</button>`:''}
+    ${hasTab('quotes')?`<button type="button" class="btn btn-ghost" onclick="navigate('quotes')">كل العروض</button>`:''}
   </div>`;
 }
 
@@ -963,11 +963,11 @@ function renderNewQ(existQ=null){
   el('pg-newq').innerHTML=`
   <div class="page-title">${isEdit?'تعديل العرض':'عرض سعر جديد'}</div>
   <div style="display:flex;gap:8px;margin-bottom:10px;position:sticky;top:112px;z-index:40;background:var(--bg);padding:8px 0;border-bottom:2px solid var(--gold-l)">
-    <button class="btn btn-primary" style="flex:1;padding:13px;font-size:14px;font-weight:800"
+    <button type="button" class="btn btn-primary" style="flex:1;padding:13px;font-size:14px;font-weight:800"
       onclick="${isEdit?`submitEdit('${existQ?.qid}')`:'submitNewQ()'}">
       ${isEdit?'حفظ التعديلات ✓':'إنشاء العرض ✓'}
     </button>
-    <button class="btn btn-ghost" style="padding:13px 14px" onclick="clearCart()">مسح</button>
+    <button type="button" class="btn btn-ghost" style="padding:13px 14px" onclick="clearCart()">مسح</button>
   </div>
   <div class="card">
     <div class="grid2">
@@ -1024,11 +1024,11 @@ function renderNewQ(existQ=null){
 
   <div id="nq-topbar" style="position:sticky;top:0;z-index:50;background:var(--bg);padding:10px 0 6px;margin-bottom:4px;border-bottom:2px solid var(--border)">
     <div style="display:flex;gap:8px;align-items:center">
-      <button class="btn btn-primary" style="flex:1;padding:13px;font-size:14px"
+      <button type="button" class="btn btn-primary" style="flex:1;padding:13px;font-size:14px"
         onclick="${isEdit?`submitEdit('${existQ?.qid}')`:'submitNewQ()'}">
         ${isEdit?'حفظ التعديلات ✓':'إنشاء العرض ✓'}
       </button>
-      <button class="btn btn-ghost" style="padding:13px 14px" onclick="clearCart()">مسح الكل</button>
+      <button type="button" class="btn btn-ghost" style="padding:13px 14px" onclick="clearCart()">مسح الكل</button>
     </div>
     <div id="nq-live-total" style="text-align:center;font-size:12px;color:var(--text2);margin-top:5px"></div>
   </div>`;
@@ -1055,7 +1055,7 @@ function renderCartHTML(){
           <div class="sel-name">${it.prod.name}</div>
           <div class="sel-brand">${it.prod.brand}</div>
         </div>
-        <button class="sel-remove" onclick="removeFromCart(${i})">×</button>
+        <button type="button" class="sel-remove" onclick="removeFromCart(${i})">×</button>
       </div>
       <div class="sel-controls">
         <div><div class="sel-ctrl-label">الكمية</div>
@@ -1234,7 +1234,7 @@ function renderQuotesList(myOnly){
   <div class="page-title">${myOnly?'عروضي':'جميع العروض'} <span style="font-size:13px;color:var(--text2);font-weight:400">(${base.length})</span></div>
   <input class="inp" id="q-srch" placeholder="بحث بالعميل أو رقم العرض..." style="margin-bottom:12px" oninput="filterQuotes(this.value,'${myOnly}')">
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="q-filters">
-    ${['all','sent','confirmed','uploaded','cancelled'].map(s=>`<button class="btn btn-ghost btn-sm" style="border-radius:20px;font-size:11px" data-sf="${s}" onclick="filterQuotesByStatus('${s}','${myOnly}')">${s==='all'?'الكل':STATUS[s]?.l||s} (${s==='all'?base.length:base.filter(q=>q.status===s).length})</button>`).join('')}
+    ${['all','sent','confirmed','uploaded','cancelled'].map(s=>`<button type="button" class="btn btn-ghost btn-sm" style="border-radius:20px;font-size:11px" data-sf="${s}" onclick="filterQuotesByStatus('${s}','${myOnly}')">${s==='all'?'الكل':STATUS[s]?.l||s} (${s==='all'?base.length:base.filter(q=>q.status===s).length})</button>`).join('')}
   </div>
   <div id="q-list">${renderQList(sorted)}</div>`;
 }
@@ -1288,7 +1288,7 @@ function renderQDetail(){
   var validExp=q.validDays?fmtD(addExpiryDate(q.date,q.validDays)):'';
 
   el('pg-qdetail').innerHTML=`
-  <button class="btn btn-ghost btn-sm" onclick="navigate('quotes')" style="margin-bottom:12px">← رجوع</button>
+  <button type="button" class="btn btn-ghost btn-sm" onclick="navigate('quotes')" style="margin-bottom:12px">← رجوع</button>
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
       <div>
@@ -1327,18 +1327,18 @@ function renderQDetail(){
   </div>
 
   <div class="grid2" style="margin-bottom:10px">
-    <button class="btn btn-ghost" onclick="copyWA()">📱 نسخ واتساب</button>
-    <button class="btn btn-primary" onclick="openInvoice()">🖨️ فاتورة PDF</button>
+    <button type="button" class="btn btn-ghost" onclick="copyWA()">📱 نسخ واتساب</button>
+    <button type="button" class="btn btn-primary" onclick="openInvoice()">🖨️ فاتورة PDF</button>
   </div>
 
   ${!done?`<div class="card">
     <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">تحديث الحالة</div>
     <div class="grid2">
-      ${q.status!=='confirmed'?`<button class="btn btn-success" onclick="updateStatus('${q.qid}','confirmed')">العميل اعتمد ✓</button>`:''}
-      ${q.status==='confirmed'?`<button class="btn" style="background:#F3E8FF;color:#6B21A8;border:1px solid #DDD6FE" onclick="updateStatus('${q.qid}','uploaded')">رفع على زد</button>`:''}
-      <button class="btn btn-danger" onclick="updateStatus('${q.qid}','cancelled')">إلغاء</button>
+      ${q.status!=='confirmed'?`<button type="button" class="btn btn-success" onclick="updateStatus('${q.qid}','confirmed')">العميل اعتمد ✓</button>`:''}
+      ${q.status==='confirmed'?`<button type="button" class="btn" style="background:#F3E8FF;color:#6B21A8;border:1px solid #DDD6FE" onclick="updateStatus('${q.qid}','uploaded')">رفع على زد</button>`:''}
+      <button type="button" class="btn btn-danger" onclick="updateStatus('${q.qid}','cancelled')">إلغاء</button>
     </div>
-    <button class="btn btn-ghost btn-full" style="margin-top:8px" onclick="startEdit('${q.qid}')">✏️ تعديل العرض</button>
+    <button type="button" class="btn btn-ghost btn-full" style="margin-top:8px" onclick="startEdit('${q.qid}')">✏️ تعديل العرض</button>
   </div>`:''}
   `;
 }
@@ -1419,7 +1419,7 @@ function openInvoice(){
   .print-btn{background:${color};color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Cairo;font-size:14px;cursor:pointer;margin-bottom:18px;font-weight:700}
   .custom-footer{text-align:center;font-size:11px;color:#6B7280;margin-top:12px;font-style:italic}
   @media print{.print-btn{display:none}.inv-overlay-header{display:none}@page{size:A4;margin:10mm}body{font-size:12px}}</style></head><body>
-  <button class="print-btn" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+  <button type="button" class="print-btn" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
   <!-- HEADER: Logo + Title -->
   <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:3px solid ${color};margin-bottom:10px">
     <div><img src="${logo}" style="height:80px;object-fit:contain;max-width:200px" onerror="this.style.display=\x27none\x27"></div>
@@ -1511,8 +1511,8 @@ function openInvoiceOverlay(){
   overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;overflow-y:auto;padding:20px';
   overlay.innerHTML='<div style="background:#fff;border-radius:12px;max-width:700px;margin:0 auto;overflow:hidden">'
     +'<div style="background:'+color+';padding:14px 16px;display:flex;justify-content:space-between;align-items:center">'
-    +'<button onclick="window.print()" style="background:#C8872A;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-family:Cairo,sans-serif;font-size:14px;font-weight:700;cursor:pointer">طباعة / PDF</button>'
-    +'<button onclick="document.getElementById(\'inv-overlay\').remove()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-family:Cairo,sans-serif;font-size:13px;cursor:pointer">إغلاق</button>'
+    +'<button type="button" onclick="window.print()" style="background:#C8872A;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-family:Cairo,sans-serif;font-size:14px;font-weight:700;cursor:pointer">طباعة / PDF</button>'
+    +'<button type="button" onclick="document.getElementById(\'inv-overlay\').remove()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-family:Cairo,sans-serif;font-size:13px;cursor:pointer">إغلاق</button>'
     +'</div>'+inv+'</div>';
   document.body.appendChild(overlay);
 }
@@ -1524,7 +1524,7 @@ function renderProducts(){
   el('pg-products').innerHTML=`
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <div class="page-title" style="margin:0">المنتجات (${active.length})</div>
-    <button class="btn btn-primary btn-sm" onclick="toggleAddProd()">+ منتج جديد</button>
+    <button type="button" class="btn btn-primary btn-sm" onclick="toggleAddProd()">+ منتج جديد</button>
   </div>
   <div id="add-prod-form" class="card hidden" style="margin-bottom:14px">
     <div style="font-size:13px;font-weight:700;color:var(--gold-d);margin-bottom:12px">إضافة منتج جديد</div>
@@ -1550,14 +1550,14 @@ function renderProducts(){
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-primary" onclick="addProd()">حفظ</button>
-      <button class="btn btn-ghost" onclick="toggleAddProd()">إلغاء</button>
+      <button type="button" class="btn btn-primary" type="button" onclick="addProd()">حفظ</button>
+      <button type="button" class="btn btn-ghost" type="button" onclick="toggleAddProd()">إلغاء</button>
     </div>
   </div>
   <input class="inp" id="p-srch" placeholder="بحث في المنتجات..." style="margin-bottom:12px" oninput="filterProdPage(this.value)">
   <div class="toggle" style="margin-bottom:12px">
-    <button class="toggle-btn active" onclick="switchProdView('active',this)">نشط (${active.length})</button>
-    <button class="toggle-btn" onclick="switchProdView('archived',this)">مؤرشف (${archived.length})</button>
+    <button type="button" class="toggle-btn active" onclick="switchProdView('active',this)">نشط (${active.length})</button>
+    <button type="button" class="toggle-btn" onclick="switchProdView('archived',this)">مؤرشف (${archived.length})</button>
   </div>
   <div id="prod-list">${renderProdMgmtList(active)}</div>`;
 }
@@ -1590,9 +1590,9 @@ function renderProdMgmtList(list){
         ${p.promoRule?`<div style="font-size:10px;color:var(--green);font-weight:700;margin-top:2px">🎁 ${p.promoRule.buyQty}+${p.promoRule.freeQty} مجاناً</div>`:''}
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0">
-        <button class="btn btn-ghost btn-sm" onclick="editProdInline('${p.id}')">تعديل</button>
-        <button class="btn ${p.active?'btn-danger':'btn-success'} btn-sm" onclick="archiveProd('${p.id}')">${p.active?'أرشفة':'استعادة'}</button>
-        ${!p.active?`<button class="btn btn-danger btn-sm" onclick="deleteProd('${p.id}')">حذف</button>`:''}
+        <button type="button" class="btn btn-ghost btn-sm" onclick="editProdInline('${p.id}')">تعديل</button>
+        <button type="button" class="btn ${p.active?'btn-danger':'btn-success'} btn-sm" onclick="archiveProd('${p.id}')">${p.active?'أرشفة':'استعادة'}</button>
+        ${!p.active?`<button type="button" class="btn btn-danger btn-sm" onclick="deleteProd('${p.id}')">حذف</button>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1635,15 +1635,18 @@ function updateNpImgPreview(url){
 function toggleAddProd(){el('add-prod-form').classList.toggle('hidden');}
 
 async function addProd(){
-  var brand=el('np-brand').value.trim();var name=el('np-name').value.trim();
+  var brand=el('np-brand')?.value.trim();
+  var name=el('np-name')?.value.trim();
   if(!brand||!name){toast('أدخل البراند والاسم',false);return;}
-  var price=parseFloat(el('np-price').value)||null;
-  var sale=parseFloat(el('np-sale').value)||null;
+  var price=parseFloat(el('np-price')?.value)||null;
+  var sale=parseFloat(el('np-sale')?.value)||null;
   var imgEl=el('np-img');
-  var img=(imgEl&&imgEl._b64)||imgEl.value.trim()||null;
-  var newP={id:'p'+Date.now(),brand,name,price,salePrice:sale,img,inStock:true,active:true,qty:0};
+  var img=(imgEl&&imgEl._b64)||(imgEl?imgEl.value.trim():null)||null;
+  var newP={id:'p'+Date.now(),brand:brand,name:name,price:price,salePrice:sale,img:img,inStock:true,active:true,qty:0};
   await saveProds([...prods,newP]);
-  toast('تم إضافة المنتج');toggleAddProd();renderProducts();
+  toast('تم إضافة المنتج');
+  toggleAddProd();
+  renderProducts();
 }
 
 function editProdInline(pid){
@@ -1681,13 +1684,13 @@ function editProdInline(pid){
         <div style="padding-bottom:11px;color:var(--gold-d);font-weight:700;font-size:16px">+</div>
         <div style="flex:1"><label class="inp-label">مجاناً</label>
           <input class="inp" id="ep-free-${pid}" type="number" min="1" value="${p.promoRule?p.promoRule.freeQty:''}" placeholder="مثال: 1"></div>
-        <button class="btn btn-danger btn-sm" style="padding:10px;margin-bottom:1px" onclick="clearPromo('${pid}')">حذف</button>
+        <button type="button" class="btn btn-danger btn-sm" style="padding:10px;margin-bottom:1px" onclick="clearPromo('${pid}')">حذف</button>
       </div>
       ${p.promoRule?`<div style="font-size:11px;color:var(--green);margin-top:6px;font-weight:700">نشط: اشترِ ${p.promoRule.buyQty} احصل على ${p.promoRule.freeQty} مجاناً</div>`:`<div style="font-size:10px;color:var(--text2);margin-top:4px">اتركه فارغاً إذا لا يوجد عرض</div>`}
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-primary btn-sm" onclick="saveProdEdit('${pid}')">حفظ</button>
-      <button class="btn btn-ghost btn-sm" onclick="renderProducts()">إلغاء</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="saveProdEdit('${pid}')">حفظ</button>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="renderProducts()">إلغاء</button>
     </div>
   </div>`;
 }
@@ -1903,7 +1906,7 @@ function renderUsers(){
   el('pg-users').innerHTML=`
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <div class="page-title" style="margin:0">المستخدمون (${users.length})</div>
-    <button class="btn btn-primary btn-sm" onclick="showAddUser()">+ مستخدم</button>
+    <button type="button" class="btn btn-primary btn-sm" onclick="showAddUser()">+ مستخدم</button>
   </div>
   <div id="add-user-form" class="card hidden" style="margin-bottom:14px;border-color:var(--gold)">
     <div style="font-size:13px;font-weight:700;color:var(--gold-d);margin-bottom:12px">إضافة مستخدم جديد</div>
@@ -1940,7 +1943,7 @@ function renderUsersRows(){
       +'<div style="font-size:11px;color:var(--text2)">@'+u.un+' · '+u.pw+'</div>'
       +'</div>'
       +'<span style="background:'+(roleColors[u.role]||'var(--text2)')+'20;color:'+(roleColors[u.role]||'var(--text2)')+';padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">'+(roleLabels[u.role]||u.role)+'</span>'
-      +'<button class="btn btn-ghost btn-sm" onclick="startEditUser(\''+u.id+'\')">تعديل</button>'
+      +'<button type="button" class="btn btn-ghost btn-sm" onclick="startEditUser(\''+u.id+'\')">تعديل</button>'
       +'</div>'
       +'<div id="uedit-'+u.id+'" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
       +'<div class="grid2" style="margin-bottom:8px">'
@@ -2039,8 +2042,8 @@ function renderSettings(){
       </div>
       <div>
         <input type="file" accept="image/*" id="logo-file" style="display:none" onchange="handleLogo(event)">
-        <button class="btn btn-primary btn-sm" onclick="document.getElementById('logo-file').click()">رفع شعار</button>
-        ${sett.logo?`<button class="btn btn-danger btn-sm" style="margin-top:6px" onclick="clearLogo()">حذف الشعار</button>`:''}
+        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('logo-file').click()">رفع شعار</button>
+        ${sett.logo?`<button type="button" class="btn btn-danger btn-sm" style="margin-top:6px" onclick="clearLogo()">حذف الشعار</button>`:''}
         <div style="font-size:10px;color:var(--text2);margin-top:6px">الشعار يظهر في الفاتورة فقط (بدون نص)</div>
       </div>
     </div>
@@ -2093,29 +2096,29 @@ function renderSettings(){
       <div><label class="inp-label">الاسم الظاهر</label><input class="inp" id="edit-name" value="${CU.name}"></div>
       <div><label class="inp-label">اسم المستخدم</label><input class="inp" id="edit-un" value="${CU.un}" ${CU.role!=='admin'?'readonly style="background:var(--lgray)"':''}></div>
     </div>
-    <button class="btn btn-ghost" style="margin-bottom:14px" onclick="saveMyInfo()">حفظ المعلومات</button>
+    <button type="button" class="btn btn-ghost" style="margin-bottom:14px" onclick="saveMyInfo()">حفظ المعلومات</button>
     <div style="border-top:1px solid var(--border);padding-top:14px">
     <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">تغيير كلمة السر</div>
     <div class="grid2" style="margin-bottom:10px">
       <div><label class="inp-label">كلمة السر الحالية</label><input class="inp" id="pw-old" type="password" placeholder="كلمة السر الحالية"></div>
       <div><label class="inp-label">كلمة السر الجديدة</label><input class="inp" id="pw-new" type="password" placeholder="كلمة السر الجديدة"></div>
     </div>
-    <button class="btn btn-ghost" onclick="changePw()">تغيير كلمة السر</button>
+    <button type="button" class="btn btn-ghost" onclick="changePw()">تغيير كلمة السر</button>
     </div>
   </div>
 
-  <button class="btn btn-primary btn-full" style="padding:14px;font-size:14px" onclick="saveAllSettings()">حفظ الإعدادات</button>
+  <button type="button" class="btn btn-primary btn-full" style="padding:14px;font-size:14px" onclick="saveAllSettings()">حفظ الإعدادات</button>
   <div style="margin-top:10px">
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="btn btn-ghost btn-full" onclick="syncProductsFromIP()">مزامنة كاملة من الإكسل</button>
+    <button type="button" class="btn btn-ghost btn-full" onclick="syncProductsFromIP()">مزامنة كاملة من الإكسل</button>
   </div>
   <div class="card" style="margin-top:12px;border-color:#DC2626">
     <div style="font-size:13px;font-weight:800;color:#DC2626;margin-bottom:10px">🆘 استعادة البيانات</div>
     <div style="font-size:11px;color:var(--text2);margin-bottom:10px">في حال فقدان البيانات — يحفظ النظام نسخة احتياطية تلقائية قبل كل تعديل</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap">
-      <button class="btn btn-danger btn-sm" onclick="restoreData('hz4_u')">استعادة المستخدمين</button>
-      <button class="btn btn-danger btn-sm" onclick="restoreData('hz4_q3')">استعادة العروض</button>
-      <button class="btn btn-ghost btn-sm" onclick="forceRestoreUsers()">إعادة ضبط المستخدمين</button>
+      <button type="button" class="btn btn-danger btn-sm" onclick="restoreData('hz4_u')">استعادة المستخدمين</button>
+      <button type="button" class="btn btn-danger btn-sm" onclick="restoreData('hz4_q3')">استعادة العروض</button>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="forceRestoreUsers()">إعادة ضبط المستخدمين</button>
     </div>
   </div>
   </div>`;
@@ -2184,7 +2187,7 @@ async function renderBundles(){
   pg.innerHTML=`
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <div class="page-title" style="margin:0">الحزم التسويقية (${bundles.length})</div>
-    <button class="btn btn-primary btn-sm" onclick="showAddBundle()">+ حزمة جديدة</button>
+    <button type="button" class="btn btn-primary btn-sm" onclick="showAddBundle()">+ حزمة جديدة</button>
   </div>
   <div id="bundle-form" class="card hidden" style="margin-bottom:14px;border-color:var(--gold)">
     <div style="font-size:14px;font-weight:800;color:var(--gold-d);margin-bottom:14px">إضافة حزمة تسويقية جديدة</div>
@@ -2214,8 +2217,8 @@ async function renderBundles(){
       <input class="inp" id="b-desc" placeholder="مثال: عند شراء 9 جيوفن دائري تحصل على 1 مجاناً">
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-primary" id="b-save-btn" type="button" onclick="event.preventDefault();saveNewBundle()">حفظ الحزمة</button>
-      <button class="btn btn-ghost" type="button" onclick="event.preventDefault();el('bundle-form').classList.add('hidden')">إلغاء</button>
+      <button type="button" class="btn btn-primary" id="b-save-btn" type="button" onclick="event.preventDefault();saveNewBundle()">حفظ الحزمة</button>
+      <button type="button" class="btn btn-ghost" type="button" onclick="event.preventDefault();el('bundle-form').classList.add('hidden')">إلغاء</button>
     </div>
   </div>
 
@@ -2244,9 +2247,9 @@ async function renderBundles(){
           '</div>'+
         '</div>'+
         '<div style="display:flex;gap:6px">'+
-          '<button class="btn '+(b.active?'btn-danger':'btn-success')+' btn-sm" onclick="toggleBundle(\'' +b.id+ '\')">'+
+          '<button type="button" class="btn '+(b.active?'btn-danger':'btn-success')+' btn-sm" onclick="toggleBundle(\'' +b.id+ '\')">'+
             (b.active?'إيقاف':'تفعيل')+'</button>'+
-          '<button class="btn btn-ghost btn-sm" onclick="deleteBundle(\'' +b.id+ '\')">حذف</button>'+
+          '<button type="button" class="btn btn-ghost btn-sm" onclick="deleteBundle(\'' +b.id+ '\')">حذف</button>'+
         '</div>'+
       '</div>';
     }).join('')
@@ -2486,9 +2489,9 @@ function renderInvManagement(){
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
     +'<div class="page-title" style="margin:0">إدارة المخزون</div>'
     +'<div style="display:flex;gap:6px">'
-    +'<button class="btn btn-primary btn-sm" onclick="showAddStock()">+ إضافة مخزون</button>'
-    +'<button class="btn btn-ghost btn-sm" onclick="exportInvExcel()">تصدير CSV</button>'
-    +'<button class="btn btn-ghost btn-sm" onclick="toggleExcelImport()">رفع CSV</button>'
+    +'<button type="button" class="btn btn-primary btn-sm" onclick="showAddStock()">+ إضافة مخزون</button>'
+    +'<button type="button" class="btn btn-ghost btn-sm" onclick="exportInvExcel()">تصدير CSV</button>'
+    +'<button type="button" class="btn btn-ghost btn-sm" onclick="toggleExcelImport()">رفع CSV</button>'
     +'</div></div>'
 
     +'<div id="add-stock-form" class="card hidden" style="margin-bottom:12px;border-color:var(--gold)">'
@@ -2516,8 +2519,8 @@ function renderInvManagement(){
     +'<div id="excel-import-box" class="card hidden" style="margin-bottom:12px">'
     +'<div style="font-size:13px;font-weight:700;margin-bottom:8px">رفع مخزون من CSV</div>'
     +'<input type="file" id="excel-file" accept=".csv" style="display:none" onchange="importInvExcel(event)">'
-    +'<button class="btn btn-primary btn-sm" onclick="document.getElementById(\x27excel-file\x27).click()">اختر ملف CSV</button>'
-    +'<button class="btn btn-ghost btn-sm" style="margin-right:6px" onclick="toggleExcelImport()">إلغاء</button>'
+    +'<button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById(\x27excel-file\x27).click()">اختر ملف CSV</button>'
+    +'<button type="button" class="btn btn-ghost btn-sm" style="margin-right:6px" onclick="toggleExcelImport()">إلغاء</button>'
     +'</div>'
 
     +'<input class="inp" id="inv-srch" placeholder="بحث في المنتجات..." style="margin-bottom:10px" oninput="filterInv(this.value)">'
