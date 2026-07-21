@@ -803,23 +803,34 @@ async function loadAll(bg){
     fb('hz4_p3',null),fb('hz4_q3',[]),
     fb('hz4_u',IU),fb('hz4_s1',DEF_SETT),fb('hz4_stats',{}),fb('hz4_bundles',[])
   ]);
-  // ── Products: IP = master, Firebase stores only changes ──
-  // Load qty overrides, custom products, and edits
-  var fbQty=dbP&&typeof dbP==='object'&&!Array.isArray(dbP)&&
-    !(Object.values(dbP)[0]&&Object.values(dbP)[0].name)?dbP:{};
-  
-  // Start from IP (always correct images/prices/names)
+  // ── Products: IP = master, Firebase = overrides ──
+  var fbQty={};
+  if(dbP&&typeof dbP==='object'){
+    var fbVals=Array.isArray(dbP)?dbP:Object.values(dbP);
+    if(fbVals.length>0&&fbVals[0]&&fbVals[0].name){
+      // OLD format: full array in Firebase — extract qty/active as overrides
+      fbVals.forEach(function(p){
+        if(p&&p.id)fbQty[p.id]={qty:p.qty||0,active:p.active!==false,
+          promoRule:p.promoRule||null,img:p.img||null};
+      });
+    } else if(!Array.isArray(dbP)){
+      // NEW format: override object
+      fbQty=dbP;
+    }
+  }
+
+  // Build prods from IP + Firebase overrides
   prods=IP.map(function(ip){
-    var q=fbQty[ip.id];
+    var q=fbQty[ip.id]||{};
     return Object.assign({},ip,{
-      qty:q&&q.qty!==undefined?q.qty:ip.qty,
-      active:q&&q.active===false?false:true,
-      promoRule:q&&q.promoRule?q.promoRule:(ip.promoRule||null),
-      img:q&&q.img?q.img:ip.img
+      qty:q.qty!==undefined?q.qty:ip.qty,
+      active:q.active!==undefined?q.active:true,
+      promoRule:q.promoRule||ip.promoRule||null,
+      img:q.img||ip.img
     });
   });
-  
-  // Add custom products from Firebase
+
+  // Add custom products
   if(fbQty.__custom){
     var customs=Array.isArray(fbQty.__custom)?fbQty.__custom:Object.values(fbQty.__custom);
     customs.forEach(function(cp){if(cp&&cp.id&&cp.name)prods.push(cp);});
