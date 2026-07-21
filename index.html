@@ -803,17 +803,20 @@ async function loadAll(bg){
     fb('hz4_p3',null),fb('hz4_q3',[]),
     fb('hz4_u',IU),fb('hz4_s1',DEF_SETT),fb('hz4_stats',{}),fb('hz4_bundles',[])
   ]);
-  // ── Products: simple full array ──
-  if(dbP&&typeof dbP==='object'&&Object.keys(dbP).length>10){
+  // Products: Firebase has full array (numeric keys), extract all valid products
+  var fbProds=null;
+  if(dbP&&typeof dbP==='object'){
     var arr=Array.isArray(dbP)?dbP:Object.values(dbP);
-    prods=arr.filter(function(p){return p&&p.id&&p.name;});
-    if(prods.length<10){
-      prods=IP.map(function(ip){return Object.assign({},ip);});
-      fbSet('hz4_p3',prods);
-    }
+    var valid=arr.filter(function(p){return p&&p.id&&p.name;});
+    if(valid.length>=10)fbProds=valid;
+  }
+  if(fbProds){
+    prods=fbProds;
   } else {
+    // First load or reset: init from IP and save
     prods=IP.map(function(ip){return Object.assign({},ip);});
-    fbSet('hz4_p3',prods);
+    var fbObj={};prods.forEach(function(p,i){fbObj['prod_'+i]=p;});
+    fbSet('hz4_p3',fbObj);
   }
   quotes=Array.isArray(dbQ)?dbQ:Object.values(dbQ||{});
   users=Array.isArray(dbU)?dbU:Object.values(dbU||IU);
@@ -826,7 +829,9 @@ async function loadAll(bg){
 
 async function saveProds(p){
   prods=p;
-  await fbSet('hz4_p3',p);
+  var fbObj={};
+  p.forEach(function(prod,i){fbObj['prod_'+i]=prod;});
+  await fbSet('hz4_p3',fbObj);
 }
 async function saveQuotes(q){
   await fbBackup('hz4_q3');
@@ -1898,9 +1903,9 @@ async function confirmResetAllQty(){
 async function updateQty(pid,val){
   var qty=parseInt(val)||0;
   prods=prods.map(function(p){return p.id===pid?Object.assign({},p,{qty:qty}):p;});
-  var inp=el('qty-'+pid);if(inp)inp.value=qty;
+  var inp=el('qty-'+pid);if(inp){inp.value=qty;inp.style.color=qty>0?'var(--green)':'var(--text)';}
   var btn=el('save-inv-btn');
-  if(btn){btn.textContent='💾 حفظ *';btn.style.background='var(--gold)';}
+  if(btn){btn.textContent='💾 حفظ *';btn.style.background='var(--gold-d)';}
 }
 
 // ── USERS ──────────────────────────────────────────────────
@@ -2531,25 +2536,33 @@ function renderInvManagement(){
 
 async function saveAllInventory(){
   var btn=el('save-inv-btn');
-  if(btn){btn.textContent='جار الحفظ...';btn.disabled=true;btn.style.background='';}
+  if(btn){btn.textContent='⏳ جار الحفظ...';btn.disabled=true;}
   
-  // Read all visible qty inputs
+  // Update prods from all visible qty inputs
   document.querySelectorAll('[id^="qty-"]').forEach(function(inp){
-    var pid=inp.dataset.pid||inp.id.replace('qty-','');
-    var qty=parseInt(inp.value)||0;
-    var p=prods.find(function(x){return x.id===pid;});
-    if(p)p.qty=qty;
+    var pid=inp.getAttribute('data-pid')||inp.id.replace('qty-','');
+    var qty=parseInt(inp.value);
+    if(isNaN(qty))qty=0;
+    var idx2=prods.findIndex(function(x){return x.id===pid;});
+    if(idx2>=0)prods[idx2].qty=qty;
+  });
+  
+  // Convert to plain object with id keys (Firebase-safe, no numeric keys issue)
+  var fbObj={};
+  prods.forEach(function(p,i){
+    fbObj['prod_'+i]=p;
   });
   
   try{
-    await fbSet('hz4_p3',prods);
-    if(btn){btn.textContent='✅ تم الحفظ';btn.style.background='#166534';btn.disabled=false;}
-    toast('✅ تم حفظ المخزون — '+prods.length+' منتج');
+    // Save as keyed object (not array) to avoid Firebase numeric key issue
+    await fbSet('hz4_p3',fbObj);
+    if(btn){btn.textContent='✅ محفوظ';btn.style.background='#166534';btn.disabled=false;}
     setTimeout(function(){
       if(btn){btn.textContent='💾 حفظ المخزون';btn.style.background='';}
     },3000);
+    toast('✅ تم حفظ المخزون');
   }catch(e){
-    toast('❌ خطأ في الحفظ',false);
+    toast('❌ فشل الحفظ: '+e.message,false);
     if(btn){btn.textContent='💾 حفظ المخزون';btn.disabled=false;}
   }
 }
