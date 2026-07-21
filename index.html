@@ -1811,7 +1811,12 @@ function renderInv(){
   var inStockCount=active.filter(function(p){return (p.qty||0)>0;}).length;
   var zeroCount=active.filter(function(p){return (p.qty||0)===0;}).length;
   el('pg-inv').innerHTML=`
-  <div class="page-title">إدارة المخزون</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div class="page-title" style="margin:0">إدارة المخزون</div>
+    <button type="button" id="save-inv-btn" class="btn btn-primary" onclick="saveAllInventory()" style="padding:12px 20px;font-size:14px">
+      💾 حفظ المخزون
+    </button>
+  </div>
 
   <!-- Stats -->
   <div class="grid4" style="margin-bottom:14px">
@@ -1941,12 +1946,15 @@ async function confirmResetAllQty(){
 
 async function updateQty(pid,val){
   var qty=parseInt(val)||0;
+  // Update local prods
   prods=prods.map(function(p){return p.id===pid?Object.assign({},p,{qty:qty}):p;});
-  // Save only this product's qty override
-  await fbPatch('hz4_p3',{[pid]:{qty:qty}});
-  // Update input display
   var inp=el('qty-'+pid);if(inp)inp.value=qty;
-  toast(qty===0?'تم التصفير':'تم: '+qty+' قطعة');
+  // Mark save button as pending
+  var btn=el('save-inv-btn');
+  if(btn&&btn.textContent!=='جار الحفظ...'){
+    btn.textContent='💾 حفظ المخزون *';
+    btn.style.background='#C8872A';
+  }
 }
 
 // ── USERS ──────────────────────────────────────────────────
@@ -2575,6 +2583,50 @@ function renderInvManagement(){
     +'<div id="inv-list">'+renderInvListHTML(active)+'</div>';
 }
 
+async function saveAllInventory(){
+  var btn=el('save-inv-btn');
+  if(btn){btn.textContent='جار الحفظ...';btn.disabled=true;}
+  
+  // Read all qty inputs and update prods
+  var inputs=document.querySelectorAll('[id^="qty-"]');
+  var changed=0;
+  inputs.forEach(function(inp){
+    var pid=inp.dataset.pid||inp.id.replace('qty-','');
+    var qty=parseInt(inp.value)||0;
+    var p=prods.find(function(x){return x.id===pid;});
+    if(p&&p.qty!==qty){p.qty=qty;changed++;}
+  });
+  
+  // Build overrides object and save
+  var ov={};
+  prods.forEach(function(p){
+    var ip=IP.find(function(x){return x.id===p.id;});
+    if(!ip){
+      if(!ov.__custom)ov.__custom=[];
+      ov.__custom.push(p);
+      return;
+    }
+    var diff={};
+    if(p.qty!==ip.qty)diff.qty=p.qty||0;
+    if(p.active===false)diff.active=false;
+    if(p.promoRule)diff.promoRule=p.promoRule;
+    if(p.img&&p.img!==ip.img)diff.img=p.img;
+    if(Object.keys(diff).length>0)ov[p.id]=diff;
+  });
+  
+  try{
+    await fbSet('hz4_p3',ov);
+    if(btn){btn.textContent='✅ تم الحفظ';btn.style.background='#166534';}
+    toast('تم حفظ المخزون بنجاح — '+Object.keys(ov).length+' تغيير');
+    setTimeout(function(){
+      if(btn){btn.textContent='💾 حفظ المخزون';btn.disabled=false;btn.style.background='';}
+    },2000);
+  }catch(e){
+    toast('خطأ في الحفظ: '+e.message,false);
+    if(btn){btn.textContent='💾 حفظ المخزون';btn.disabled=false;}
+  }
+}
+
 function showAddStock(){el('add-stock-form').classList.remove('hidden');}
 function toggleExcelImport(){el('excel-import-box').classList.toggle('hidden');}
 
@@ -2625,13 +2677,11 @@ function renderInvListHTML(list){
   }).join('');
 }
 
-async function quickAdjust(pid,delta){
+function quickAdjust(pid,delta){
   var p=prods.find(function(x){return x.id===pid;});
   if(!p)return;
   var newQty=Math.max(0,(p.qty||0)+delta);
-  var inp=el('qty-'+pid);
-  if(inp)inp.value=newQty;
-  await updateQty(pid,newQty);
+  updateQty(pid,newQty);
 }
 
 async function syncProductsFromIP(){
