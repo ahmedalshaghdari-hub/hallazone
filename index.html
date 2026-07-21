@@ -803,21 +803,26 @@ async function loadAll(bg){
     fb('hz4_p3',null),fb('hz4_q3',[]),
     fb('hz4_u',IU),fb('hz4_s1',DEF_SETT),fb('hz4_stats',{}),fb('hz4_bundles',[])
   ]);
-  // Products: use Firebase if it has data, else init from IP
-  if(dbP&&typeof dbP==='object'&&Object.keys(dbP).length>0){
-    var arr=Array.isArray(dbP)?dbP:Object.values(dbP);
-    // If Firebase has real products (has name field), use them
-    if(arr[0]&&arr[0].name){
-      prods=arr;
-    } else {
-      // It's the old overrides format — migrate to full array
-      prods=IP.map(function(ip){return Object.assign({},ip);});
-      fbSet('hz4_p3',prods); // Save full array
-    }
-  } else {
-    // First time — init from IP and save to Firebase
-    prods=IP.map(function(ip){return Object.assign({},ip);});
-    fbSet('hz4_p3',prods);
+  // ── Products: IP = master, Firebase stores only changes ──
+  // Load qty overrides, custom products, and edits
+  var fbQty=dbP&&typeof dbP==='object'&&!Array.isArray(dbP)&&
+    !(Object.values(dbP)[0]&&Object.values(dbP)[0].name)?dbP:{};
+  
+  // Start from IP (always correct images/prices/names)
+  prods=IP.map(function(ip){
+    var q=fbQty[ip.id];
+    return Object.assign({},ip,{
+      qty:q&&q.qty!==undefined?q.qty:ip.qty,
+      active:q&&q.active===false?false:true,
+      promoRule:q&&q.promoRule?q.promoRule:(ip.promoRule||null),
+      img:q&&q.img?q.img:ip.img
+    });
+  });
+  
+  // Add custom products from Firebase
+  if(fbQty.__custom){
+    var customs=Array.isArray(fbQty.__custom)?fbQty.__custom:Object.values(fbQty.__custom);
+    customs.forEach(function(cp){if(cp&&cp.id&&cp.name)prods.push(cp);});
   }
   quotes=Array.isArray(dbQ)?dbQ:Object.values(dbQ||{});
   users=Array.isArray(dbU)?dbU:Object.values(dbU||IU);
@@ -830,7 +835,24 @@ async function loadAll(bg){
 
 async function saveProds(p){
   prods=p;
-  await fbSet('hz4_p3',p);
+  // Build overrides object: only save what differs from IP
+  var ov={};
+  p.forEach(function(prod){
+    var ip=IP.find(function(x){return x.id===prod.id;});
+    if(!ip){
+      // Custom product — store in __custom
+      if(!ov.__custom)ov.__custom=[];
+      ov.__custom.push(prod);
+      return;
+    }
+    var diff={};
+    if(prod.qty!==ip.qty)diff.qty=prod.qty||0;
+    if(prod.active===false)diff.active=false;
+    if(prod.promoRule)diff.promoRule=prod.promoRule;
+    if(prod.img&&prod.img!==ip.img)diff.img=prod.img;
+    if(Object.keys(diff).length>0)ov[prod.id]=diff;
+  });
+  await fbSet('hz4_p3',ov);
 }
 async function saveQuotes(q){
   await fbBackup('hz4_q3');
@@ -1646,8 +1668,11 @@ async function addProd(){
   var newP={id:'p'+Date.now(),brand:brand,name:name,price:price,salePrice:sale,
     img:img,inStock:true,active:true,qty:0};
   prods=[...prods,newP];
-  await fbSet('hz4_p3_custom','ok');
-  await saveProds(prods);
+  // Save custom product directly to Firebase
+  var existing=await fb('hz4_p3/__custom',null);
+  var customs=Array.isArray(existing)?existing:(existing?Object.values(existing):[]);
+  customs.push(newP);
+  await fbSet('hz4_p3/__custom',customs);
   if(brandEl)brandEl.value='';
   if(nameEl)nameEl.value='';
   if(priceEl)priceEl.value='';
@@ -1748,7 +1773,17 @@ async function saveProdEdit(pid){
 
 async function archiveProd(pid){
   prods=prods.map(function(p){return p.id===pid?Object.assign({},p,{active:!p.active}):p;});
-  await fbSet('hz4_p3',prods);
+  var p=prods.find(function(x){return x.id===pid;});
+  var ip=IP.find(function(x){return x.id===pid;});
+  if(p&&p.active===false){
+    await fbPatch('hz4_p3',{[pid]:{active:false}});
+  } else if(!ip) {
+    // Custom product — save full
+    await saveProds(prods);
+  } else {
+    // Removing archive override
+    await fbPatch('hz4_p3',{[pid]:{active:true}});
+  }
   renderProducts();
 }
 
@@ -1896,8 +1931,11 @@ async function confirmResetAllQty(){
 async function updateQty(pid,val){
   var qty=parseInt(val)||0;
   prods=prods.map(function(p){return p.id===pid?Object.assign({},p,{qty:qty}):p;});
-  await fbSet('hz4_p3',prods);
-  toast('تم تحديث الكمية: '+qty);
+  // Save only this product's qty override
+  await fbPatch('hz4_p3',{[pid]:{qty:qty}});
+  // Update input display
+  var inp=el('qty-'+pid);if(inp)inp.value=qty;
+  toast(qty===0?'تم التصفير':'تم: '+qty+' قطعة');
 }
 
 // ── USERS ──────────────────────────────────────────────────
@@ -2586,28 +2624,35 @@ async function quickAdjust(pid,delta){
 }
 
 async function syncProductsFromIP(){
-  if(!confirm('سيتم تحديث الصور والأسعار من الإكسل مع الحفاظ على الكميات المُدخلة. متابعة؟'))return;
+  if(!confirm('سيتم تحديث الصور والأسعار من الإكسل مع الحفاظ على الكميات. متابعة؟'))return;
   toast('جار المزامنة...');
-  // Match by name+brand to preserve qty even if IDs changed
-  var merged=IP.map(function(ip){
-    var cur=prods.find(function(p){
-      return p.name===ip.name&&p.brand===ip.brand;
-    });
-    return Object.assign({},ip,{
-      qty:cur&&cur.qty>0?cur.qty:ip.qty,
-      active:cur?cur.active!==false:true,
-      promoRule:cur&&cur.promoRule?cur.promoRule:null
-    });
-  });
-  // Keep custom products (not in IP)
+  // Build new overrides: keep qty from current prods, rest from IP
+  var ov={};
+  var existingCustom=prods.filter(function(p){return !IP.find(function(ip){return ip.id===p.id;});});
+  
+  // For each current prod that has a qty, save the qty override
   prods.forEach(function(p){
-    if(!IP.find(function(ip){return ip.name===p.name&&ip.brand===p.brand;})){
-      merged.push(p);
-    }
+    var ip=IP.find(function(x){return x.id===p.id;});
+    if(ip&&p.qty!==ip.qty)ov[p.id]={qty:p.qty};
+    if(ip&&p.promoRule)ov[p.id]=Object.assign({},ov[p.id]||{},{promoRule:p.promoRule});
   });
-  prods=merged;
-  await fbSet('hz4_p3',merged);
-  toast('تم تحديث '+merged.length+' منتج ✅');
+  if(existingCustom.length>0)ov.__custom=existingCustom;
+  
+  await fbSet('hz4_p3',ov);
+  prods=IP.map(function(ip){
+    var q=ov[ip.id]||{};
+    return Object.assign({},ip,{qty:q.qty!==undefined?q.qty:ip.qty,promoRule:q.promoRule||null});
+  }).concat(existingCustom);
+  
+  toast('✅ تم تحديث '+IP.length+' منتج من الإكسل');
+}
+
+async function resetProducts(){
+  if(!confirm('سيتم مسح جميع التعديلات وإعادة تحميل المنتجات من الإكسل بدون كميات. متابعة؟'))return;
+  await fbSet('hz4_p3',{});
+  prods=IP.map(function(ip){return Object.assign({},ip);});
+  toast('تم إعادة التعيين — '+IP.length+' منتج');
+  renderProducts();
 }
 
 async function syncQtyOnly(){
