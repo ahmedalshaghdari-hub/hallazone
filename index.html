@@ -803,37 +803,17 @@ async function loadAll(bg){
     fb('hz4_p3',null),fb('hz4_q3',[]),
     fb('hz4_u',IU),fb('hz4_s1',DEF_SETT),fb('hz4_stats',{}),fb('hz4_bundles',[])
   ]);
-  // ── Products: IP = master, Firebase = overrides ──
-  var fbQty={};
-  if(dbP&&typeof dbP==='object'){
-    var fbVals=Array.isArray(dbP)?dbP:Object.values(dbP);
-    if(fbVals.length>0&&fbVals[0]&&fbVals[0].name){
-      // OLD format: full array in Firebase — extract qty/active as overrides
-      fbVals.forEach(function(p){
-        if(p&&p.id)fbQty[p.id]={qty:p.qty||0,active:p.active!==false,
-          promoRule:p.promoRule||null,img:p.img||null};
-      });
-    } else if(!Array.isArray(dbP)){
-      // NEW format: override object
-      fbQty=dbP;
+  // ── Products: simple full array ──
+  if(dbP&&typeof dbP==='object'&&Object.keys(dbP).length>10){
+    var arr=Array.isArray(dbP)?dbP:Object.values(dbP);
+    prods=arr.filter(function(p){return p&&p.id&&p.name;});
+    if(prods.length<10){
+      prods=IP.map(function(ip){return Object.assign({},ip);});
+      fbSet('hz4_p3',prods);
     }
-  }
-
-  // Build prods from IP + Firebase overrides
-  prods=IP.map(function(ip){
-    var q=fbQty[ip.id]||{};
-    return Object.assign({},ip,{
-      qty:q.qty!==undefined?q.qty:ip.qty,
-      active:q.active!==undefined?q.active:true,
-      promoRule:q.promoRule||ip.promoRule||null,
-      img:q.img||ip.img
-    });
-  });
-
-  // Add custom products
-  if(fbQty.__custom){
-    var customs=Array.isArray(fbQty.__custom)?fbQty.__custom:Object.values(fbQty.__custom);
-    customs.forEach(function(cp){if(cp&&cp.id&&cp.name)prods.push(cp);});
+  } else {
+    prods=IP.map(function(ip){return Object.assign({},ip);});
+    fbSet('hz4_p3',prods);
   }
   quotes=Array.isArray(dbQ)?dbQ:Object.values(dbQ||{});
   users=Array.isArray(dbU)?dbU:Object.values(dbU||IU);
@@ -846,24 +826,7 @@ async function loadAll(bg){
 
 async function saveProds(p){
   prods=p;
-  // Build overrides object: only save what differs from IP
-  var ov={};
-  p.forEach(function(prod){
-    var ip=IP.find(function(x){return x.id===prod.id;});
-    if(!ip){
-      // Custom product — store in __custom
-      if(!ov.__custom)ov.__custom=[];
-      ov.__custom.push(prod);
-      return;
-    }
-    var diff={};
-    if(prod.qty!==ip.qty)diff.qty=prod.qty||0;
-    if(prod.active===false)diff.active=false;
-    if(prod.promoRule)diff.promoRule=prod.promoRule;
-    if(prod.img&&prod.img!==ip.img)diff.img=prod.img;
-    if(Object.keys(diff).length>0)ov[prod.id]=diff;
-  });
-  await fbSet('hz4_p3',ov);
+  await fbSet('hz4_p3',p);
 }
 async function saveQuotes(q){
   await fbBackup('hz4_q3');
@@ -1679,11 +1642,7 @@ async function addProd(){
   var newP={id:'p'+Date.now(),brand:brand,name:name,price:price,salePrice:sale,
     img:img,inStock:true,active:true,qty:0};
   prods=[...prods,newP];
-  // Save custom product directly to Firebase
-  var existing=await fb('hz4_p3/__custom',null);
-  var customs=Array.isArray(existing)?existing:(existing?Object.values(existing):[]);
-  customs.push(newP);
-  await fbSet('hz4_p3/__custom',customs);
+  await fbSet('hz4_p3',prods);
   if(brandEl)brandEl.value='';
   if(nameEl)nameEl.value='';
   if(priceEl)priceEl.value='';
@@ -1779,22 +1738,14 @@ async function saveProdEdit(pid){
       inStock:el('ep-stock-'+pid).checked
     };
   });
-  await saveProds(np);toast('تم الحفظ');renderProducts();
+  prods=np;await fbSet('hz4_p3',prods);toast('تم الحفظ');renderProducts();
 }
 
 async function archiveProd(pid){
   prods=prods.map(function(p){return p.id===pid?Object.assign({},p,{active:!p.active}):p;});
   var p=prods.find(function(x){return x.id===pid;});
   var ip=IP.find(function(x){return x.id===pid;});
-  if(p&&p.active===false){
-    await fbPatch('hz4_p3',{[pid]:{active:false}});
-  } else if(!ip) {
-    // Custom product — save full
-    await saveProds(prods);
-  } else {
-    // Removing archive override
-    await fbPatch('hz4_p3',{[pid]:{active:true}});
-  }
+  await fbSet('hz4_p3',prods);
   renderProducts();
 }
 
@@ -1946,15 +1897,10 @@ async function confirmResetAllQty(){
 
 async function updateQty(pid,val){
   var qty=parseInt(val)||0;
-  // Update local prods
   prods=prods.map(function(p){return p.id===pid?Object.assign({},p,{qty:qty}):p;});
   var inp=el('qty-'+pid);if(inp)inp.value=qty;
-  // Mark save button as pending
   var btn=el('save-inv-btn');
-  if(btn&&btn.textContent!=='جار الحفظ...'){
-    btn.textContent='💾 حفظ المخزون *';
-    btn.style.background='#C8872A';
-  }
+  if(btn){btn.textContent='💾 حفظ *';btn.style.background='var(--gold)';}
 }
 
 // ── USERS ──────────────────────────────────────────────────
@@ -2585,44 +2531,25 @@ function renderInvManagement(){
 
 async function saveAllInventory(){
   var btn=el('save-inv-btn');
-  if(btn){btn.textContent='جار الحفظ...';btn.disabled=true;}
+  if(btn){btn.textContent='جار الحفظ...';btn.disabled=true;btn.style.background='';}
   
-  // Read all qty inputs and update prods
-  var inputs=document.querySelectorAll('[id^="qty-"]');
-  var changed=0;
-  inputs.forEach(function(inp){
+  // Read all visible qty inputs
+  document.querySelectorAll('[id^="qty-"]').forEach(function(inp){
     var pid=inp.dataset.pid||inp.id.replace('qty-','');
     var qty=parseInt(inp.value)||0;
     var p=prods.find(function(x){return x.id===pid;});
-    if(p&&p.qty!==qty){p.qty=qty;changed++;}
-  });
-  
-  // Build overrides object and save
-  var ov={};
-  prods.forEach(function(p){
-    var ip=IP.find(function(x){return x.id===p.id;});
-    if(!ip){
-      if(!ov.__custom)ov.__custom=[];
-      ov.__custom.push(p);
-      return;
-    }
-    var diff={};
-    if(p.qty!==ip.qty)diff.qty=p.qty||0;
-    if(p.active===false)diff.active=false;
-    if(p.promoRule)diff.promoRule=p.promoRule;
-    if(p.img&&p.img!==ip.img)diff.img=p.img;
-    if(Object.keys(diff).length>0)ov[p.id]=diff;
+    if(p)p.qty=qty;
   });
   
   try{
-    await fbSet('hz4_p3',ov);
-    if(btn){btn.textContent='✅ تم الحفظ';btn.style.background='#166534';}
-    toast('تم حفظ المخزون بنجاح — '+Object.keys(ov).length+' تغيير');
+    await fbSet('hz4_p3',prods);
+    if(btn){btn.textContent='✅ تم الحفظ';btn.style.background='#166534';btn.disabled=false;}
+    toast('✅ تم حفظ المخزون — '+prods.length+' منتج');
     setTimeout(function(){
-      if(btn){btn.textContent='💾 حفظ المخزون';btn.disabled=false;btn.style.background='';}
-    },2000);
+      if(btn){btn.textContent='💾 حفظ المخزون';btn.style.background='';}
+    },3000);
   }catch(e){
-    toast('خطأ في الحفظ: '+e.message,false);
+    toast('❌ خطأ في الحفظ',false);
     if(btn){btn.textContent='💾 حفظ المخزون';btn.disabled=false;}
   }
 }
@@ -2699,13 +2626,15 @@ async function syncProductsFromIP(){
   });
   if(existingCustom.length>0)ov.__custom=existingCustom;
   
-  await fbSet('hz4_p3',ov);
-  prods=IP.map(function(ip){
-    var q=ov[ip.id]||{};
-    return Object.assign({},ip,{qty:q.qty!==undefined?q.qty:ip.qty,promoRule:q.promoRule||null});
+  // Rebuild full array from IP with preserved qtys
+  var rebuilt=IP.map(function(ip){
+    var cur=prods.find(function(p){return p.name===ip.name&&p.brand===ip.brand;});
+    return Object.assign({},ip,{qty:cur&&cur.qty>0?cur.qty:ip.qty,
+      promoRule:cur&&cur.promoRule?cur.promoRule:null});
   }).concat(existingCustom);
-  
-  toast('✅ تم تحديث '+IP.length+' منتج من الإكسل');
+  prods=rebuilt;
+  await fbSet('hz4_p3',prods);
+  toast('✅ تم تحديث '+prods.length+' منتج من الإكسل');
 }
 
 async function resetProducts(){
