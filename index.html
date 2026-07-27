@@ -164,7 +164,7 @@ button{font-family:'Cairo',Arial,sans-serif;cursor:pointer;border:none}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 </style>
 </head>
-<body onsubmit="return false">
+<body>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
@@ -186,10 +186,10 @@ button{font-family:'Cairo',Arial,sans-serif;cursor:pointer;border:none}
 <div style="margin-bottom:6px;position:relative">
 <label class="inp-label">كلمة السر</label>
 <input class="inp" id="l-pw" type="password" placeholder="كلمة السر" style="padding-left:70px" autocomplete="current-password">
-<button type="button" onclick="togglePwVis()" style="position:absolute;left:10px;top:34px;background:none;border:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:Cairo,sans-serif">إظهار</button>
+<button onclick="togglePwVis()" style="position:absolute;left:10px;top:34px;background:none;border:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:Cairo,sans-serif">إظهار</button>
 </div>
 <p id="l-err" class="hidden" style="color:var(--red);font-size:12px;text-align:center;margin-bottom:8px">اسم المستخدم أو كلمة السر غير صحيحة</p>
-<button type="button" id="l-btn" class="btn btn-primary btn-full" style="margin-top:12px;padding:14px;font-size:15px" onclick="doLogin()">دخول</button>
+<button id="l-btn" class="btn btn-primary btn-full" style="margin-top:12px;padding:14px;font-size:15px" onclick="doLogin()">دخول</button>
 </div>
 </div>
 </div>
@@ -209,7 +209,7 @@ button{font-family:'Cairo',Arial,sans-serif;cursor:pointer;border:none}
 <div class="nav-name" id="navName"></div>
 <div class="nav-role" id="navRole"></div>
 </div>
-<button type="button" class="btn btn-danger btn-sm" onclick="doLogout()">خروج</button>
+<button class="btn btn-danger btn-sm" onclick="doLogout()">خروج</button>
 </div>
 </div>
 <div class="nav-tabs" id="navTabs"></div>
@@ -220,12 +220,12 @@ button{font-family:'Cairo',Arial,sans-serif;cursor:pointer;border:none}
 <div id="pg-newq"     class="page hidden"></div>
 <div id="pg-quotes"   class="page hidden"></div>
 <div id="pg-myq"      class="page hidden"></div>
-<div id="pg-products" class="page hidden" onsubmit="return false"></div>
-<div id="pg-inv"      class="page hidden" onsubmit="return false"></div>
-<div id="pg-users"    class="page hidden" onsubmit="return false"></div>
+<div id="pg-products" class="page hidden"></div>
+<div id="pg-inv"      class="page hidden"></div>
+<div id="pg-users"    class="page hidden"></div>
 <div id="pg-settings" class="page hidden"></div>
 <div id="pg-board"    class="page hidden"></div>
-<div id="pg-bundles"  class="page hidden" onsubmit="return false"></div>
+<div id="pg-bundles"  class="page hidden"></div>
 <div id="pg-qdetail"  class="page hidden"></div>
 <div id="pg-profile"  class="page hidden"></div>
 
@@ -799,39 +799,48 @@ function doLogout(){
 
 // ── DATA LOAD ─────────────────────────────────────────────
 async function loadAll(bg){
-  var[dbP,dbQ,dbU,dbS,dbSt,dbB]=await Promise.all([
-    fb('hz4_p3',null),fb('hz4_q3',[]),
-    fb('hz4_u',IU),fb('hz4_s1',DEF_SETT),fb('hz4_stats',{}),fb('hz4_bundles',[])
+  var[dbQty,dbQ,dbU,dbS,dbSt,dbB,dbCustom]=await Promise.all([
+    fb('hz4_qty',{}),fb('hz4_q3',[]),
+    fb('hz4_u',IU),fb('hz4_s1',DEF_SETT),fb('hz4_stats',{}),fb('hz4_bundles',[]),
+    fb('hz4_custom',{})
   ]);
-  // Products: Firebase has full array (numeric keys), extract all valid products
-  var fbProds=null;
-  if(dbP&&typeof dbP==='object'){
-    var arr=Array.isArray(dbP)?dbP:Object.values(dbP);
-    var valid=arr.filter(function(p){return p&&p.id&&p.name;});
-    if(valid.length>=10)fbProds=valid;
+
+  // Products: IP base + qty overrides + custom
+  var qtyMap=dbQty&&typeof dbQty==='object'?dbQty:{};
+  prods=IP.map(function(ip){
+    var q=qtyMap[ip.id];
+    return Object.assign({},ip,{qty:q!==undefined?q:ip.qty});
+  });
+  if(dbCustom&&typeof dbCustom==='object'){
+    Object.values(dbCustom).forEach(function(cp){
+      if(cp&&cp.id&&cp.name&&!prods.find(function(p){return p.id===cp.id;}))
+        prods.push(Object.assign({},cp));
+    });
   }
-  if(fbProds){
-    prods=fbProds;
-  } else {
-    // First load or reset: init from IP and save
-    prods=IP.map(function(ip){return Object.assign({},ip);});
-    var fbObj={};prods.forEach(function(p,i){fbObj['prod_'+i]=p;});
-    fbSet('hz4_p3',fbObj);
-  }
+
   quotes=Array.isArray(dbQ)?dbQ:Object.values(dbQ||{});
   users=Array.isArray(dbU)?dbU:Object.values(dbU||IU);
-  sett={...DEF_SETT,...dbS};
+  sett=Object.assign({},DEF_SETT,dbS||{});
   stats=dbSt||{};
   bundles=Array.isArray(dbB)?dbB:Object.values(dbB||{});
-  // Re-render current page
   if(curPage&&!(bg&&['newq','bundles','products','inv','users','settings'].includes(curPage)))renderPage(curPage);
 }
 
 async function saveProds(p){
   prods=p;
-  var fbObj={};
-  p.forEach(function(prod,i){fbObj['prod_'+i]=prod;});
-  await fbSet('hz4_p3',fbObj);
+  // Save only overrides (qty, active, promoRule, customImg) — not full product data
+  var ov={};
+  p.forEach(function(prod){
+    var ip=IP.find(function(x){return x.id===prod.id;});
+    var entry={};
+    var changed=false;
+    if(prod.qty!==(ip?ip.qty:0)){entry.qty=prod.qty||0;changed=true;}
+    if(prod.active===false){entry.active=false;changed=true;}
+    if(prod.promoRule&&(!ip||!ip.promoRule)){entry.promoRule=prod.promoRule;changed=true;}
+    if(prod.img&&ip&&prod.img!==ip.img){entry.customImg=prod.img;changed=true;}
+    if(changed)ov[prod.id]=entry;
+  });
+  await fbSet('hz4_p3',ov);
 }
 async function saveQuotes(q){
   await fbBackup('hz4_q3');
@@ -854,7 +863,7 @@ async function updateStats(uid){
 function buildNavTabs(){
   var tabs=(ROLES[CU.role]||{tabs:['dash']}).tabs;
   el('navTabs').innerHTML=tabs.map(t=>
-    `<button type="button" class="nav-tab" data-tab="${t}" onclick="navigate('${t}')">${TAB_LABELS[t]||t}</button>`
+    `<button class="nav-tab" data-tab="${t}" onclick="navigate('${t}')">${TAB_LABELS[t]||t}</button>`
   ).join('');
 }
 
@@ -881,7 +890,7 @@ function renderPage(page){
     case 'quotes':   renderQuotesList(false);break;
     case 'myq':      renderQuotesList(true);break;
     case 'products': renderProducts();break;
-    case 'inv':      renderInvManagement();break;
+    case 'inv':      renderInv();break;
     case 'users':    renderUsers();break;
     case 'settings': renderSettings();break;
     case 'board':    renderBoard();break;
@@ -921,8 +930,8 @@ function renderDash(){
     </div>`).join('')}
   </div>`:''}
   <div class="grid2">
-    ${hasTab('newq')?`<button type="button" class="btn btn-primary" onclick="navigate('newq')">+ عرض جديد</button>`:''}
-    ${hasTab('quotes')?`<button type="button" class="btn btn-ghost" onclick="navigate('quotes')">كل العروض</button>`:''}
+    ${hasTab('newq')?`<button class="btn btn-primary" onclick="navigate('newq')">+ عرض جديد</button>`:''}
+    ${hasTab('quotes')?`<button class="btn btn-ghost" onclick="navigate('quotes')">كل العروض</button>`:''}
   </div>`;
 }
 
@@ -952,11 +961,11 @@ function renderNewQ(existQ=null){
   el('pg-newq').innerHTML=`
   <div class="page-title">${isEdit?'تعديل العرض':'عرض سعر جديد'}</div>
   <div style="display:flex;gap:8px;margin-bottom:10px;position:sticky;top:112px;z-index:40;background:var(--bg);padding:8px 0;border-bottom:2px solid var(--gold-l)">
-    <button type="button" class="btn btn-primary" style="flex:1;padding:13px;font-size:14px;font-weight:800"
+    <button class="btn btn-primary" style="flex:1;padding:13px;font-size:14px;font-weight:800"
       onclick="${isEdit?`submitEdit('${existQ?.qid}')`:'submitNewQ()'}">
       ${isEdit?'حفظ التعديلات ✓':'إنشاء العرض ✓'}
     </button>
-    <button type="button" class="btn btn-ghost" style="padding:13px 14px" onclick="clearCart()">مسح</button>
+    <button class="btn btn-ghost" style="padding:13px 14px" onclick="clearCart()">مسح</button>
   </div>
   <div class="card">
     <div class="grid2">
@@ -973,25 +982,6 @@ function renderNewQ(existQ=null){
   </div>
 
   <!-- Bundles shown on product cards only -->
-    <!-- DELIVERY -->
-  <div class="card" style="border-color:var(--gold);background:linear-gradient(135deg,#FFFAF5,#FFF7EE)">
-    <div style="font-size:14px;font-weight:800;color:var(--navy);margin-bottom:12px">🚚 التوصيل</div>
-    <div style="display:flex;gap:24px;margin-bottom:10px">
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:700">
-        <input type="radio" name="nq-del" value="no" ${!(existQ&&existQ.delivery==='yes')?'checked':''} onchange="toggleDel(this.value)">
-        <span>غير شامل التوصيل</span>
-      </label>
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:700">
-        <input type="radio" name="nq-del" value="yes" ${existQ&&existQ.delivery==='yes'?'checked':''} onchange="toggleDel(this.value)">
-        <span style="color:var(--gold-d)">شامل التوصيل</span>
-      </label>
-    </div>
-    <div id="del-box" style="display:${existQ&&existQ.delivery==='yes'?'flex':'none'};align-items:center;gap:10px">
-      <label class="inp-label" style="margin:0;white-space:nowrap">سعر التوصيل (ريال):</label>
-      <input class="inp" id="nq-del-price" type="number" min="0" step="0.5" value="${existQ&&existQ.deliveryPrice?existQ.deliveryPrice:''}" placeholder="0.00" style="width:130px;font-size:15px;font-weight:700">
-    </div>
-  </div>
-
   <!-- SELECTED ITEMS -->
   <div id="nq-cart-wrap">
     ${renderCartHTML()}
@@ -1006,6 +996,23 @@ function renderNewQ(existQ=null){
     </div>
   </div>
 
+  <div class="card" style="border-color:var(--gold-l)">
+    <label class="inp-label" style="font-size:13px;font-weight:800">🚚 التوصيل</label>
+    <div style="display:flex;gap:20px;margin:8px 0">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;font-weight:600">
+        <input type="radio" name="nq-del" value="no" ${!(existQ&&existQ.delivery==='yes')?'checked':''} onchange="el('del-box').style.display=this.value==='yes'?'block':'none'">
+        غير شامل التوصيل
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;font-weight:600">
+        <input type="radio" name="nq-del" value="yes" ${existQ&&existQ.delivery==='yes'?'checked':''} onchange="el('del-box').style.display=this.value==='yes'?'block':'none'">
+        شامل التوصيل
+      </label>
+    </div>
+    <div id="del-box" style="display:${existQ&&existQ.delivery==='yes'?'block':'none'}">
+      <label class="inp-label">سعر التوصيل (ريال)</label>
+      <input class="inp" id="nq-del-price" type="number" min="0" step="0.5" value="${existQ&&existQ.deliveryPrice?existQ.deliveryPrice:''}" placeholder="0.00" style="width:140px">
+    </div>
+  </div>
   <div class="card">
     <label class="inp-label">ملاحظات</label>
     <textarea class="inp" id="nq-notes" rows="2" placeholder="ملاحظات للعميل...">${existQ?.notes||''}</textarea>
@@ -1013,11 +1020,11 @@ function renderNewQ(existQ=null){
 
   <div id="nq-topbar" style="position:sticky;top:0;z-index:50;background:var(--bg);padding:10px 0 6px;margin-bottom:4px;border-bottom:2px solid var(--border)">
     <div style="display:flex;gap:8px;align-items:center">
-      <button type="button" class="btn btn-primary" style="flex:1;padding:13px;font-size:14px"
+      <button class="btn btn-primary" style="flex:1;padding:13px;font-size:14px"
         onclick="${isEdit?`submitEdit('${existQ?.qid}')`:'submitNewQ()'}">
         ${isEdit?'حفظ التعديلات ✓':'إنشاء العرض ✓'}
       </button>
-      <button type="button" class="btn btn-ghost" style="padding:13px 14px" onclick="clearCart()">مسح الكل</button>
+      <button class="btn btn-ghost" style="padding:13px 14px" onclick="clearCart()">مسح الكل</button>
     </div>
     <div id="nq-live-total" style="text-align:center;font-size:12px;color:var(--text2);margin-top:5px"></div>
   </div>`;
@@ -1044,7 +1051,7 @@ function renderCartHTML(){
           <div class="sel-name">${it.prod.name}</div>
           <div class="sel-brand">${it.prod.brand}</div>
         </div>
-        <button type="button" class="sel-remove" onclick="removeFromCart(${i})">×</button>
+        <button class="sel-remove" onclick="removeFromCart(${i})">×</button>
       </div>
       <div class="sel-controls">
         <div><div class="sel-ctrl-label">الكمية</div>
@@ -1084,9 +1091,8 @@ function renderProdGrid(prds,srch){
             :price?`<span class="prod-price">${price.toFixed(2)}</span>`:`<span style="font-size:11px;color:var(--text3)">يُحدَّد السعر</span>`}${p.salePrice?`<span class="badge badge-sale" style="font-size:9px;padding:1px 5px;margin-right:4px">عرض</span>`:""}
         </div>
         ${noStock?`<div style="margin-top:4px"><span class="badge badge-outofstock">طلب خاص</span></div>`:
-          p.qty>=9999?`<div style="margin-top:3px;font-size:10px;color:var(--green)">متوفر ✓</div>`:
-          p.qty>0?`<div style="margin-top:3px;font-size:10px;color:var(--green)">متوفر (${p.qty})</div>`:
-          `<div style="margin-top:3px;font-size:10px;color:var(--text3)">يُحدَّد المخزون</div>`}
+          (p.qty>0?`<div style="margin-top:3px;font-size:10px;color:var(--green)">متوفر (${p.qty})</div>`:
+          `<div style="margin-top:3px;font-size:10px;color:var(--red);font-weight:700">نفد المخزون</div>`)}
         ${(()=>{var mb=bundles.find(function(b){return b.active&&b.productId===p.id;});
           return mb?`<div style="margin-top:4px;background:#D1FAE5;color:#065F46;font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;display:inline-block">🎁 اشترِ ${mb.buyQty} + ${mb.freeQty} مجاناً</div>`:
           (p.promoRule?`<div style="margin-top:4px;background:#D1FAE5;color:#065F46;font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;display:inline-block">🎁 اشترِ ${p.promoRule.buyQty} + ${p.promoRule.freeQty} مجاناً</div>`:'');})()}
@@ -1097,9 +1103,8 @@ function renderProdGrid(prds,srch){
 }
 
 function filterProds(q){
-  var all=prods.filter(function(p){return p.active;});
-  var g=el('nq-prod-grid');
-  if(g)g.innerHTML=renderProdGrid(all,q||'');
+  var all=prods.filter(p=>p.active);
+  el('nq-prod-grid').innerHTML=renderProdGrid(all,q);
 }
 
 function calcFree(p,qty){
@@ -1108,8 +1113,10 @@ function calcFree(p,qty){
 }
 function toggleCart(pid){
   var p=prods.find(x=>x.id===pid);if(!p)return;
-  // Block only if inStock is explicitly false (on-demand products are always allowed)
-  // Note: qty=0 products CAN be quoted - warehouse manages actual stock separately
+  // Block if zero stock (except special-order products)
+  if(p.inStock!==false&&(p.qty||0)<=0){
+    toast('لا يمكن إضافة هذا المنتج — المخزون صفر. تواصل مع المستودع لتحديث الكمية.',false);return;
+  }
   var idx=cartItems.findIndex(i=>i.prod.id===pid);
   if(idx>=0){
     cartItems.splice(idx,1);
@@ -1119,21 +1126,15 @@ function toggleCart(pid){
     cartItems.push({prod:p,qty:1,disc:0,free:0});
   }
   el('nq-cart-wrap').innerHTML=renderCartHTML();
-  var srch=el('nq-srch');
-  var q=srch?srch.value:'';
-  var allActive=prods.filter(function(p){return p.active;});
-  var grid=el('nq-prod-grid');
-  if(grid)grid.innerHTML=renderProdGrid(allActive,q);
+  var srch=el('nq-srch')?.value||'';
+  filterProds(srch);
 }
 
 function removeFromCart(idx){
   cartItems.splice(idx,1);
   el('nq-cart-wrap').innerHTML=renderCartHTML();
-  var srch=el('nq-srch');
-  var q=srch?srch.value:'';
-  var allActive=prods.filter(function(p){return p.active;});
-  var grid=el('nq-prod-grid');
-  if(grid)grid.innerHTML=renderProdGrid(allActive,q);
+  var srch=el('nq-srch')?.value||'';
+  filterProds(srch);
 }
 
 function updateCart(idx,field,val){
@@ -1160,28 +1161,13 @@ function updateCart(idx,field,val){
   if(field==='disc')cartItems[idx].disc=Math.min(100,Math.max(0,parseInt(val)||0));
   if(field==='free')cartItems[idx].free=Math.max(0,parseInt(val)||0);
   el('nq-cart-wrap').innerHTML=renderCartHTML();
-  var srch=el('nq-srch');var q=srch?srch.value:'';
-  var g=el('nq-prod-grid');
-  if(g)g.innerHTML=renderProdGrid(prods.filter(function(p){return p.active;}),q);
 }
 
-function toggleDel(v){
-  var b=el('del-box');
-  if(b)b.style.display=v==='yes'?'block':'none';
-}
-function getDel(){
-  var r=document.querySelector('input[name="nq-del"]:checked');
-  var v=r?r.value:'no';
-  var p=v==='yes'?parseFloat(el('nq-del-price')?.value)||0:0;
-  return{type:v,price:p};
-}
 function clearCart(){
   if(cartItems.length&&!confirm('مسح جميع المنتجات المختارة؟'))return;
   cartItems=[];
   el('nq-cart-wrap').innerHTML=renderCartHTML();
-  var srch=el('nq-srch');var q=srch?srch.value:'';
-  var g=el('nq-prod-grid');
-  if(g)g.innerHTML=renderProdGrid(prods.filter(function(p){return p.active;}),q);
+  filterProds(el('nq-srch')?.value||'');
 }
 async function submitNewQ(){
   var cust=el('nq-cust')?.value.trim();
@@ -1195,7 +1181,8 @@ async function submitNewQ(){
       price:+(i.prod.salePrice||i.prod.price||0),img:i.prod.img||null,
       qty:i.qty,discountPct:i.disc,freeQty:i.free})),
     notes:el('nq-notes')?.value.trim()||'',
-    delivery:getDel().type,deliveryPrice:getDel().price,
+    delivery:(function(){var r=document.querySelector('input[name="nq-del"]:checked');return r?r.value:'no';})(),
+    deliveryPrice:parseFloat(el('nq-del-price')?.value)||0,
     validDays:vdays,status:'sent',date:today(),ts:Date.now()
   };
   var newQ=[...quotes,q];
@@ -1234,7 +1221,7 @@ function renderQuotesList(myOnly){
   <div class="page-title">${myOnly?'عروضي':'جميع العروض'} <span style="font-size:13px;color:var(--text2);font-weight:400">(${base.length})</span></div>
   <input class="inp" id="q-srch" placeholder="بحث بالعميل أو رقم العرض..." style="margin-bottom:12px" oninput="filterQuotes(this.value,'${myOnly}')">
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="q-filters">
-    ${['all','sent','confirmed','uploaded','cancelled'].map(s=>`<button type="button" class="btn btn-ghost btn-sm" style="border-radius:20px;font-size:11px" data-sf="${s}" onclick="filterQuotesByStatus('${s}','${myOnly}')">${s==='all'?'الكل':STATUS[s]?.l||s} (${s==='all'?base.length:base.filter(q=>q.status===s).length})</button>`).join('')}
+    ${['all','sent','confirmed','uploaded','cancelled'].map(s=>`<button class="btn btn-ghost btn-sm" style="border-radius:20px;font-size:11px" data-sf="${s}" onclick="filterQuotesByStatus('${s}','${myOnly}')">${s==='all'?'الكل':STATUS[s]?.l||s} (${s==='all'?base.length:base.filter(q=>q.status===s).length})</button>`).join('')}
   </div>
   <div id="q-list">${renderQList(sorted)}</div>`;
 }
@@ -1288,7 +1275,7 @@ function renderQDetail(){
   var validExp=q.validDays?fmtD(addExpiryDate(q.date,q.validDays)):'';
 
   el('pg-qdetail').innerHTML=`
-  <button type="button" class="btn btn-ghost btn-sm" onclick="navigate('quotes')" style="margin-bottom:12px">← رجوع</button>
+  <button class="btn btn-ghost btn-sm" onclick="navigate('quotes')" style="margin-bottom:12px">← رجوع</button>
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
       <div>
@@ -1327,18 +1314,18 @@ function renderQDetail(){
   </div>
 
   <div class="grid2" style="margin-bottom:10px">
-    <button type="button" class="btn btn-ghost" onclick="copyWA()">📱 نسخ واتساب</button>
-    <button type="button" class="btn btn-primary" onclick="openInvoice()">🖨️ فاتورة PDF</button>
+    <button class="btn btn-ghost" onclick="copyWA()">📱 نسخ واتساب</button>
+    <button class="btn btn-primary" onclick="openInvoice()">🖨️ فاتورة PDF</button>
   </div>
 
   ${!done?`<div class="card">
     <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">تحديث الحالة</div>
     <div class="grid2">
-      ${q.status!=='confirmed'?`<button type="button" class="btn btn-success" onclick="updateStatus('${q.qid}','confirmed')">العميل اعتمد ✓</button>`:''}
-      ${q.status==='confirmed'?`<button type="button" class="btn" style="background:#F3E8FF;color:#6B21A8;border:1px solid #DDD6FE" onclick="updateStatus('${q.qid}','uploaded')">رفع على زد</button>`:''}
-      <button type="button" class="btn btn-danger" onclick="updateStatus('${q.qid}','cancelled')">إلغاء</button>
+      ${q.status!=='confirmed'?`<button class="btn btn-success" onclick="updateStatus('${q.qid}','confirmed')">العميل اعتمد ✓</button>`:''}
+      ${q.status==='confirmed'?`<button class="btn" style="background:#F3E8FF;color:#6B21A8;border:1px solid #DDD6FE" onclick="updateStatus('${q.qid}','uploaded')">رفع على زد</button>`:''}
+      <button class="btn btn-danger" onclick="updateStatus('${q.qid}','cancelled')">إلغاء</button>
     </div>
-    <button type="button" class="btn btn-ghost btn-full" style="margin-top:8px" onclick="startEdit('${q.qid}')">✏️ تعديل العرض</button>
+    <button class="btn btn-ghost btn-full" style="margin-top:8px" onclick="startEdit('${q.qid}')">✏️ تعديل العرض</button>
   </div>`:''}
   `;
 }
@@ -1419,7 +1406,7 @@ function openInvoice(){
   .print-btn{background:${color};color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Cairo;font-size:14px;cursor:pointer;margin-bottom:18px;font-weight:700}
   .custom-footer{text-align:center;font-size:11px;color:#6B7280;margin-top:12px;font-style:italic}
   @media print{.print-btn{display:none}.inv-overlay-header{display:none}@page{size:A4;margin:10mm}body{font-size:12px}}</style></head><body>
-  <button type="button" class="print-btn" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+  <button class="print-btn" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
   <!-- HEADER: Logo + Title -->
   <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:3px solid ${color};margin-bottom:10px">
     <div><img src="${logo}" style="height:80px;object-fit:contain;max-width:200px" onerror="this.style.display=\x27none\x27"></div>
@@ -1448,9 +1435,8 @@ function openInvoice(){
   <table><thead><tr><th>#</th><th style="text-align:right">المنتج</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
   <tbody>${rows}</tbody></table>
   <div class="totals-wrap"><div class="totals-box">
-    ${q.delivery==='yes'&&q.deliveryPrice>0?`<div class="tot-row"><span>🚚 رسوم التوصيل</span><span>SAR ${(q.deliveryPrice||0).toFixed(2)}</span></div>`:''}
-    <div class="tot-grand"><span>الإجمالي${q.delivery==='yes'?' (شامل التوصيل)':''}</span><span>SAR ${(grand+(q.delivery==='yes'?(q.deliveryPrice||0):0)).toFixed(2)}</span></div>
-    <div style="text-align:center;color:#6B7280;font-size:10px;padding:5px">شاملة ضريبة القيمة المضافة 15%${q.delivery!=='yes'?' · <span style=color:#DC2626;font-weight:700>غير شامل التوصيل</span>':''}</div>
+    <div class="tot-grand"><span>الإجمالي</span><span>SAR ${grand.toFixed(2)}</span></div>
+    <div style="text-align:center;color:#6B7280;font-size:10px;padding:5px">جميع الأسعار شاملة ضريبة القيمة المضافة 15%</div>
   </div></div>
   ${validDate?`<div class="validity">⚠️ هذا العرض ساري حتى تاريخ ${fmtD(validDate)} — ${q.validDays} يوم من تاريخ الإصدار</div>`:''}
   ${q.notes?`<div style="background:#FFF9F0;border:1px solid #F59E0B40;border-radius:8px;padding:10px;font-size:12px;margin-bottom:14px"><strong>ملاحظات:</strong> ${q.notes}</div>`:''}
@@ -1511,8 +1497,8 @@ function openInvoiceOverlay(){
   overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;overflow-y:auto;padding:20px';
   overlay.innerHTML='<div style="background:#fff;border-radius:12px;max-width:700px;margin:0 auto;overflow:hidden">'
     +'<div style="background:'+color+';padding:14px 16px;display:flex;justify-content:space-between;align-items:center">'
-    +'<button type="button" onclick="window.print()" style="background:#C8872A;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-family:Cairo,sans-serif;font-size:14px;font-weight:700;cursor:pointer">طباعة / PDF</button>'
-    +'<button type="button" onclick="document.getElementById(\'inv-overlay\').remove()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-family:Cairo,sans-serif;font-size:13px;cursor:pointer">إغلاق</button>'
+    +'<button onclick="window.print()" style="background:#C8872A;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-family:Cairo,sans-serif;font-size:14px;font-weight:700;cursor:pointer">طباعة / PDF</button>'
+    +'<button onclick="document.getElementById(\'inv-overlay\').remove()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-family:Cairo,sans-serif;font-size:13px;cursor:pointer">إغلاق</button>'
     +'</div>'+inv+'</div>';
   document.body.appendChild(overlay);
 }
@@ -1524,7 +1510,7 @@ function renderProducts(){
   el('pg-products').innerHTML=`
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <div class="page-title" style="margin:0">المنتجات (${active.length})</div>
-    <button type="button" class="btn btn-primary btn-sm" onclick="toggleAddProd()">+ منتج جديد</button>
+    <button class="btn btn-primary btn-sm" onclick="toggleAddProd()">+ منتج جديد</button>
   </div>
   <div id="add-prod-form" class="card hidden" style="margin-bottom:14px">
     <div style="font-size:13px;font-weight:700;color:var(--gold-d);margin-bottom:12px">إضافة منتج جديد</div>
@@ -1550,14 +1536,14 @@ function renderProducts(){
       </div>
     </div>
     <div style="display:flex;gap:8px">
-      <button type="button" class="btn btn-primary" type="button" type="button" onclick="addProd()">حفظ</button>
-      <button type="button" class="btn btn-ghost" type="button" type="button" onclick="toggleAddProd()">إلغاء</button>
+      <button class="btn btn-primary" onclick="addProd()">حفظ</button>
+      <button class="btn btn-ghost" onclick="toggleAddProd()">إلغاء</button>
     </div>
   </div>
   <input class="inp" id="p-srch" placeholder="بحث في المنتجات..." style="margin-bottom:12px" oninput="filterProdPage(this.value)">
   <div class="toggle" style="margin-bottom:12px">
-    <button type="button" class="toggle-btn active" onclick="switchProdView('active',this)">نشط (${active.length})</button>
-    <button type="button" class="toggle-btn" onclick="switchProdView('archived',this)">مؤرشف (${archived.length})</button>
+    <button class="toggle-btn active" onclick="switchProdView('active',this)">نشط (${active.length})</button>
+    <button class="toggle-btn" onclick="switchProdView('archived',this)">مؤرشف (${archived.length})</button>
   </div>
   <div id="prod-list">${renderProdMgmtList(active)}</div>`;
 }
@@ -1590,9 +1576,9 @@ function renderProdMgmtList(list){
         ${p.promoRule?`<div style="font-size:10px;color:var(--green);font-weight:700;margin-top:2px">🎁 ${p.promoRule.buyQty}+${p.promoRule.freeQty} مجاناً</div>`:''}
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0">
-        <button type="button" class="btn btn-ghost btn-sm" onclick="editProdInline('${p.id}')">تعديل</button>
-        <button type="button" class="btn ${p.active?'btn-danger':'btn-success'} btn-sm" onclick="archiveProd('${p.id}')">${p.active?'أرشفة':'استعادة'}</button>
-        ${!p.active?`<button type="button" class="btn btn-danger btn-sm" onclick="deleteProd('${p.id}')">حذف</button>`:''}
+        <button class="btn btn-ghost btn-sm" onclick="editProdInline('${p.id}')">تعديل</button>
+        <button class="btn ${p.active?'btn-danger':'btn-success'} btn-sm" onclick="archiveProd('${p.id}')">${p.active?'أرشفة':'استعادة'}</button>
+        ${!p.active?`<button class="btn btn-danger btn-sm" onclick="deleteProd('${p.id}')">حذف</button>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1635,27 +1621,17 @@ function updateNpImgPreview(url){
 function toggleAddProd(){el('add-prod-form').classList.toggle('hidden');}
 
 async function addProd(){
-  var brandEl=el('np-brand');var nameEl=el('np-name');
-  var brand=brandEl?brandEl.value.trim():'';
-  var name=nameEl?nameEl.value.trim():'';
+  var brand=el('np-brand').value.trim();var name=el('np-name').value.trim();
   if(!brand||!name){toast('أدخل البراند والاسم',false);return;}
-  var priceEl=el('np-price');var saleEl=el('np-sale');
-  var price=priceEl?parseFloat(priceEl.value)||null:null;
-  var sale=saleEl?parseFloat(saleEl.value)||null:null;
+  var price=parseFloat(el('np-price').value)||null;
+  var sale=parseFloat(el('np-sale').value)||null;
   var imgEl=el('np-img');
-  var img=(imgEl&&imgEl._b64)||(imgEl&&imgEl.value.trim())||null;
-  var newP={id:'p'+Date.now(),brand:brand,name:name,price:price,salePrice:sale,
-    img:img,inStock:true,active:true,qty:0};
+  var img=(imgEl&&imgEl._b64)||imgEl.value.trim()||null;
+  var newP={id:'p'+Date.now(),brand,name,price,salePrice:sale,img,inStock:true,active:true,qty:0};
   prods=[...prods,newP];
-  await fbSet('hz4_p3',prods);
-  if(brandEl)brandEl.value='';
-  if(nameEl)nameEl.value='';
-  if(priceEl)priceEl.value='';
-  if(saleEl)saleEl.value='';
-  if(imgEl)imgEl.value='';
+  await fbPatch('hz4_custom',{[newP.id]:newP});
   toast('تم إضافة المنتج: '+name);
-  var form=el('add-prod-form');
-  if(form)form.classList.add('hidden');
+  toggleAddProd();
   renderProducts();
 }
 
@@ -1694,13 +1670,13 @@ function editProdInline(pid){
         <div style="padding-bottom:11px;color:var(--gold-d);font-weight:700;font-size:16px">+</div>
         <div style="flex:1"><label class="inp-label">مجاناً</label>
           <input class="inp" id="ep-free-${pid}" type="number" min="1" value="${p.promoRule?p.promoRule.freeQty:''}" placeholder="مثال: 1"></div>
-        <button type="button" class="btn btn-danger btn-sm" style="padding:10px;margin-bottom:1px" onclick="clearPromo('${pid}')">حذف</button>
+        <button class="btn btn-danger btn-sm" style="padding:10px;margin-bottom:1px" onclick="clearPromo('${pid}')">حذف</button>
       </div>
       ${p.promoRule?`<div style="font-size:11px;color:var(--green);margin-top:6px;font-weight:700">نشط: اشترِ ${p.promoRule.buyQty} احصل على ${p.promoRule.freeQty} مجاناً</div>`:`<div style="font-size:10px;color:var(--text2);margin-top:4px">اتركه فارغاً إذا لا يوجد عرض</div>`}
     </div>
     <div style="display:flex;gap:8px">
-      <button type="button" class="btn btn-primary btn-sm" onclick="saveProdEdit('${pid}')">حفظ</button>
-      <button type="button" class="btn btn-ghost btn-sm" onclick="renderProducts()">إلغاء</button>
+      <button class="btn btn-primary btn-sm" onclick="saveProdEdit('${pid}')">حفظ</button>
+      <button class="btn btn-ghost btn-sm" onclick="renderProducts()">إلغاء</button>
     </div>
   </div>`;
 }
@@ -1743,92 +1719,89 @@ async function saveProdEdit(pid){
       inStock:el('ep-stock-'+pid).checked
     };
   });
-  prods=np;await fbSet('hz4_p3',prods);toast('تم الحفظ');renderProducts();
+  prods=np;
+  var edited=np.find(function(x){return x.id===pid;});
+  if(edited){
+    if(!IP.find(function(x){return x.id===pid;})){
+      await fbPatch('hz4_custom',{[pid]:edited});
+    } else {
+      // For IP products, only save qty override
+      await fbPatch('hz4_qty',{[pid]:edited.qty||0});
+    }
+  }
+  toast('تم الحفظ');renderProducts();
 }
 
 async function archiveProd(pid){
   prods=prods.map(function(p){return p.id===pid?Object.assign({},p,{active:!p.active}):p;});
   var p=prods.find(function(x){return x.id===pid;});
-  var ip=IP.find(function(x){return x.id===pid;});
-  await fbSet('hz4_p3',prods);
+  var existing=await fb('hz4_p3',{});
+  var ov=typeof existing==='object'&&!Array.isArray(existing)&&
+    !(existing&&Object.values(existing)[0]&&Object.values(existing)[0].name)?existing:{};
+  ov[pid]=Object.assign({},ov[pid]||{},{active:p?p.active:true});
+  await fbSet('hz4_p3',ov);
   renderProducts();
 }
 
 async function deleteProd(pid){
   if(!confirm('حذف نهائي؟ لا يمكن التراجع'))return;
-  await saveProds(prods.filter(p=>p.id!==pid));
+  prods=prods.filter(function(p){return p.id!==pid;});
+  // Remove from custom if it's a custom product
+  var custom={};
+  prods.forEach(function(p){
+    if(!IP.find(function(x){return x.id===p.id;}))custom[p.id]=p;
+  });
+  await fbSet('hz4_custom',custom);
+  // Remove qty override
+  await fbPatch('hz4_qty',{[pid]:null});
   toast('تم الحذف');renderProducts();
 }
 
 // ── INVENTORY ──────────────────────────────────────────────
 function renderInv(){
   var active=prods.filter(function(p){return p.active;});
-  var totalItems=active.length;
-  var inStockCount=active.filter(function(p){return (p.qty||0)>0;}).length;
-  var zeroCount=active.filter(function(p){return (p.qty||0)===0;}).length;
-  el('pg-inv').innerHTML=`
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-    <div class="page-title" style="margin:0">إدارة المخزون</div>
-    <button type="button" id="save-inv-btn" class="btn btn-primary" onclick="saveAllInventory()" style="padding:12px 20px;font-size:14px">
-      💾 حفظ المخزون
-    </button>
-  </div>
+  var pg=el('pg-inv');
+  pg.innerHTML='<div class="page-title">المخزون</div>'
+    +'<input class="inp" id="inv-srch" placeholder="بحث..." style="margin-bottom:12px" oninput="filterInvSimple(this.value)">'
+    +'<div id="inv-list">'+buildInvRows(active)+'</div>';
+}
 
-  <!-- Stats -->
-  <div class="grid4" style="margin-bottom:14px">
-    <div class="stat"><div class="stat-val" style="color:var(--gold-d)">${totalItems}</div><div class="stat-label">إجمالي المنتجات</div></div>
-    <div class="stat"><div class="stat-val" style="color:#166534">${inStockCount}</div><div class="stat-label">متوفر</div></div>
-    <div class="stat"><div class="stat-val" style="color:var(--red)">${zeroCount}</div><div class="stat-label">نفد المخزون</div></div>
-    <div class="stat"><div class="stat-val" style="color:#6B21A8">${active.filter(function(p){return p.qty>=9999;}).length}</div><div class="stat-label">غير محدود</div></div>
-  </div>
+function buildInvRows(list){
+  return list.map(function(p){
+    var q=p.qty||0;
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:#fff;border-radius:10px;border:1.5px solid var(--border);margin-bottom:8px">'
+      +(p.img?'<img src="'+p.img+'" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0">':
+        '<div style="width:44px;height:44px;border-radius:8px;background:var(--gold-l);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🍬</div>')
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:13px;font-weight:700;color:var(--text)">'+p.name+'</div>'
+      +'<div style="font-size:11px;color:var(--gold-d)">'+p.brand+'</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:6px">'
+      +'<input type="number" value="'+q+'" min="0"'
+      +' style="width:72px;text-align:center;border:1.5px solid var(--border);border-radius:8px;padding:8px;font-size:15px;font-weight:700;font-family:Cairo,sans-serif"'
+      +' id="qi-'+p.id+'" data-pid="'+p.id+'">'
+      +'<button type="button" style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:Cairo,sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap"'
+      +' data-pid="'+p.id+'" onclick="saveOneQty(this.dataset.pid)">حفظ</button>'
+      +'</div></div>';
+  }).join('');
+}
 
-  <!-- Add stock form -->
-  <div class="card card-gold" style="margin-bottom:14px">
-    <div style="font-size:13px;font-weight:800;color:var(--gold-d);margin-bottom:12px">إضافة كمية لمنتج</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-      <div style="flex:1;min-width:160px">
-        <label class="inp-label">اختر المنتج</label>
-        <select class="inp" id="inv-add-pid">
-          <option value="">-- اختر المنتج --</option>
-          ${active.map(function(p){return '<option value="'+p.id+'">'+p.brand+' - '+p.name+' (الحالي: '+(p.qty>=9999?'غير محدود':(p.qty||0))+')</option>';}).join('')}
-        </select>
-      </div>
-      <div style="width:120px">
-        <label class="inp-label">الكمية المضافة</label>
-        <input class="inp" type="number" id="inv-add-qty" min="1" placeholder="0" style="text-align:center">
-      </div>
-      <button type="button" class="btn btn-primary" onclick="addToInventory()">+ إضافة</button>
-      <button type="button" class="btn btn-ghost" onclick="setInventory()">تعيين مباشر</button>
-    </div>
-    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-      <button type="button" class="btn btn-ghost btn-sm" onclick="toggleExcelImport()">رفع Excel</button>
-      <button type="button" class="btn btn-ghost btn-sm" onclick="exportInvExcel()">تصدير Excel</button>
-      <button type="button" class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="confirmResetAllQty()">تصفير الكل</button>
-    </div>
-  </div>
+async function saveOneQty(pid){
+  var inp=el('qi-'+pid);
+  if(!inp)return;
+  var qty=parseInt(inp.value)||0;
+  prods=prods.map(function(p){return p.id===pid?Object.assign({},p,{qty:qty}):p;});
+  await fbPatch('hz4_qty',{[pid]:qty});
+  inp.style.borderColor='#166534';
+  inp.style.background='#F0FDF4';
+  setTimeout(function(){inp.style.borderColor='';inp.style.background='';},1500);
+  toast('✅ '+qty+' قطعة');
+}
 
-  <!-- Excel import -->
-  <div id="excel-import-box" class="card hidden" style="margin-bottom:14px;border-color:var(--gold)">
-    <div style="font-size:13px;font-weight:700;color:var(--gold-d);margin-bottom:10px">رفع جرد من Excel</div>
-    <div style="font-size:11px;color:var(--text2);margin-bottom:10px">ملف CSV يحتوي على: رقم المنتج، الاسم، الكمية</div>
-    <input type="file" id="excel-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importInvExcel(event)">
-    <div style="display:flex;gap:8px">
-      <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById(\x27excel-file\x27).click()">اختر ملف</button>
-      <button type="button" class="btn btn-ghost btn-sm" onclick="toggleExcelImport()">إغلاق</button>
-    </div>
-  </div>
-
-  <!-- Filter -->
-  <div style="display:flex;gap:8px;margin-bottom:10px">
-    <input class="inp" id="inv-srch" placeholder="بحث باسم أو براند..." style="flex:1" oninput="filterInv(this.value)">
-    <select class="inp" id="inv-filter" style="width:130px" onchange="filterInv(el('inv-srch').value)">
-      <option value="all">الكل</option>
-      <option value="instock">متوفر فقط</option>
-      <option value="zero">نفد المخزون</option>
-      <option value="infinite">غير محدود</option>
-    </select>
-  </div>
-  <div id="inv-list">${renderInvList(active,'all','')}</div>`;
+function filterInvSimple(q){
+  var list=prods.filter(function(p){return p.active;});
+  if(q)list=list.filter(function(p){return p.name.includes(q)||p.brand.includes(q);});
+  var el2=el('inv-list');if(el2)el2.innerHTML=buildInvRows(list);
 }
 
 function filterInv(q){
@@ -1903,9 +1876,7 @@ async function confirmResetAllQty(){
 async function updateQty(pid,val){
   var qty=parseInt(val)||0;
   prods=prods.map(function(p){return p.id===pid?Object.assign({},p,{qty:qty}):p;});
-  var inp=el('qty-'+pid);if(inp){inp.value=qty;inp.style.color=qty>0?'var(--green)':'var(--text)';}
-  var btn=el('save-inv-btn');
-  if(btn){btn.textContent='💾 حفظ *';btn.style.background='var(--gold-d)';}
+  await fbPatch('hz4_qty',{[pid]:qty});
 }
 
 // ── USERS ──────────────────────────────────────────────────
@@ -1913,7 +1884,7 @@ function renderUsers(){
   el('pg-users').innerHTML=`
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <div class="page-title" style="margin:0">المستخدمون (${users.length})</div>
-    <button type="button" class="btn btn-primary btn-sm" onclick="showAddUser()">+ مستخدم</button>
+    <button class="btn btn-primary btn-sm" onclick="showAddUser()">+ مستخدم</button>
   </div>
   <div id="add-user-form" class="card hidden" style="margin-bottom:14px;border-color:var(--gold)">
     <div style="font-size:13px;font-weight:700;color:var(--gold-d);margin-bottom:12px">إضافة مستخدم جديد</div>
@@ -1950,7 +1921,7 @@ function renderUsersRows(){
       +'<div style="font-size:11px;color:var(--text2)">@'+u.un+' · '+u.pw+'</div>'
       +'</div>'
       +'<span style="background:'+(roleColors[u.role]||'var(--text2)')+'20;color:'+(roleColors[u.role]||'var(--text2)')+';padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">'+(roleLabels[u.role]||u.role)+'</span>'
-      +'<button type="button" class="btn btn-ghost btn-sm" onclick="startEditUser(\''+u.id+'\')">تعديل</button>'
+      +'<button class="btn btn-ghost btn-sm" onclick="startEditUser(\''+u.id+'\')">تعديل</button>'
       +'</div>'
       +'<div id="uedit-'+u.id+'" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
       +'<div class="grid2" style="margin-bottom:8px">'
@@ -2049,8 +2020,8 @@ function renderSettings(){
       </div>
       <div>
         <input type="file" accept="image/*" id="logo-file" style="display:none" onchange="handleLogo(event)">
-        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('logo-file').click()">رفع شعار</button>
-        ${sett.logo?`<button type="button" class="btn btn-danger btn-sm" style="margin-top:6px" onclick="clearLogo()">حذف الشعار</button>`:''}
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('logo-file').click()">رفع شعار</button>
+        ${sett.logo?`<button class="btn btn-danger btn-sm" style="margin-top:6px" onclick="clearLogo()">حذف الشعار</button>`:''}
         <div style="font-size:10px;color:var(--text2);margin-top:6px">الشعار يظهر في الفاتورة فقط (بدون نص)</div>
       </div>
     </div>
@@ -2103,29 +2074,29 @@ function renderSettings(){
       <div><label class="inp-label">الاسم الظاهر</label><input class="inp" id="edit-name" value="${CU.name}"></div>
       <div><label class="inp-label">اسم المستخدم</label><input class="inp" id="edit-un" value="${CU.un}" ${CU.role!=='admin'?'readonly style="background:var(--lgray)"':''}></div>
     </div>
-    <button type="button" class="btn btn-ghost" style="margin-bottom:14px" onclick="saveMyInfo()">حفظ المعلومات</button>
+    <button class="btn btn-ghost" style="margin-bottom:14px" onclick="saveMyInfo()">حفظ المعلومات</button>
     <div style="border-top:1px solid var(--border);padding-top:14px">
     <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">تغيير كلمة السر</div>
     <div class="grid2" style="margin-bottom:10px">
       <div><label class="inp-label">كلمة السر الحالية</label><input class="inp" id="pw-old" type="password" placeholder="كلمة السر الحالية"></div>
       <div><label class="inp-label">كلمة السر الجديدة</label><input class="inp" id="pw-new" type="password" placeholder="كلمة السر الجديدة"></div>
     </div>
-    <button type="button" class="btn btn-ghost" onclick="changePw()">تغيير كلمة السر</button>
+    <button class="btn btn-ghost" onclick="changePw()">تغيير كلمة السر</button>
     </div>
   </div>
 
-  <button type="button" class="btn btn-primary btn-full" style="padding:14px;font-size:14px" onclick="saveAllSettings()">حفظ الإعدادات</button>
+  <button class="btn btn-primary btn-full" style="padding:14px;font-size:14px" onclick="saveAllSettings()">حفظ الإعدادات</button>
   <div style="margin-top:10px">
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button type="button" class="btn btn-ghost btn-full" onclick="syncProductsFromIP()">مزامنة كاملة من الإكسل</button>
+    <button class="btn btn-ghost btn-full" onclick="syncProductsFromIP()">مزامنة كاملة من الإكسل</button>
   </div>
   <div class="card" style="margin-top:12px;border-color:#DC2626">
     <div style="font-size:13px;font-weight:800;color:#DC2626;margin-bottom:10px">🆘 استعادة البيانات</div>
     <div style="font-size:11px;color:var(--text2);margin-bottom:10px">في حال فقدان البيانات — يحفظ النظام نسخة احتياطية تلقائية قبل كل تعديل</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap">
-      <button type="button" class="btn btn-danger btn-sm" onclick="restoreData('hz4_u')">استعادة المستخدمين</button>
-      <button type="button" class="btn btn-danger btn-sm" onclick="restoreData('hz4_q3')">استعادة العروض</button>
-      <button type="button" class="btn btn-ghost btn-sm" onclick="forceRestoreUsers()">إعادة ضبط المستخدمين</button>
+      <button class="btn btn-danger btn-sm" onclick="restoreData('hz4_u')">استعادة المستخدمين</button>
+      <button class="btn btn-danger btn-sm" onclick="restoreData('hz4_q3')">استعادة العروض</button>
+      <button class="btn btn-ghost btn-sm" onclick="forceRestoreUsers()">إعادة ضبط المستخدمين</button>
     </div>
   </div>
   </div>`;
@@ -2194,7 +2165,7 @@ async function renderBundles(){
   pg.innerHTML=`
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <div class="page-title" style="margin:0">الحزم التسويقية (${bundles.length})</div>
-    <button type="button" class="btn btn-primary btn-sm" onclick="showAddBundle()">+ حزمة جديدة</button>
+    <button class="btn btn-primary btn-sm" onclick="showAddBundle()">+ حزمة جديدة</button>
   </div>
   <div id="bundle-form" class="card hidden" style="margin-bottom:14px;border-color:var(--gold)">
     <div style="font-size:14px;font-weight:800;color:var(--gold-d);margin-bottom:14px">إضافة حزمة تسويقية جديدة</div>
@@ -2224,8 +2195,8 @@ async function renderBundles(){
       <input class="inp" id="b-desc" placeholder="مثال: عند شراء 9 جيوفن دائري تحصل على 1 مجاناً">
     </div>
     <div style="display:flex;gap:8px">
-      <button type="button" class="btn btn-primary" id="b-save-btn" type="button" onclick="event.preventDefault();saveNewBundle()">حفظ الحزمة</button>
-      <button type="button" class="btn btn-ghost" type="button" onclick="event.preventDefault();el('bundle-form').classList.add('hidden')">إلغاء</button>
+      <button class="btn btn-primary" id="b-save-btn" type="button" onclick="event.preventDefault();saveNewBundle()">حفظ الحزمة</button>
+      <button class="btn btn-ghost" type="button" onclick="event.preventDefault();el('bundle-form').classList.add('hidden')">إلغاء</button>
     </div>
   </div>
 
@@ -2254,9 +2225,9 @@ async function renderBundles(){
           '</div>'+
         '</div>'+
         '<div style="display:flex;gap:6px">'+
-          '<button type="button" class="btn '+(b.active?'btn-danger':'btn-success')+' btn-sm" onclick="toggleBundle(\'' +b.id+ '\')">'+
+          '<button class="btn '+(b.active?'btn-danger':'btn-success')+' btn-sm" onclick="toggleBundle(\'' +b.id+ '\')">'+
             (b.active?'إيقاف':'تفعيل')+'</button>'+
-          '<button type="button" class="btn btn-ghost btn-sm" onclick="deleteBundle(\'' +b.id+ '\')">حذف</button>'+
+          '<button class="btn btn-ghost btn-sm" onclick="deleteBundle(\'' +b.id+ '\')">حذف</button>'+
         '</div>'+
       '</div>';
     }).join('')
@@ -2489,83 +2460,8 @@ async function forceRestoreUsers(){
 }
 
 // ── INVENTORY MANAGEMENT ──────────────────────────────────
-function renderInvManagement(){
-  var pg=el('pg-inv');
-  var active=prods.filter(function(p){return p.active;});
-  pg.innerHTML=
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
-    +'<div class="page-title" style="margin:0">إدارة المخزون</div>'
-    +'<div style="display:flex;gap:6px">'
-    +'<button type="button" class="btn btn-primary btn-sm" onclick="showAddStock()">+ إضافة مخزون</button>'
-    +'<button type="button" class="btn btn-ghost btn-sm" onclick="exportInvExcel()">تصدير CSV</button>'
-    +'<button type="button" class="btn btn-ghost btn-sm" onclick="toggleExcelImport()">رفع CSV</button>'
-    +'</div></div>'
+function renderInvManagement(){renderInv();}
 
-    +'<div id="add-stock-form" class="card hidden" style="margin-bottom:12px;border-color:var(--gold)">'
-    +'<div style="font-size:13px;font-weight:700;color:var(--gold-d);margin-bottom:10px">إضافة كمية لمنتج</div>'
-    +'<div style="margin-bottom:8px"><label class="inp-label">المنتج</label>'
-    +'<select class="inp" id="add-stock-prod">'
-    +'<option value="">-- اختر المنتج --</option>'
-    +active.map(function(p){return'<option value="'+p.id+'">'+p.brand+' - '+p.name+' (حالياً: '+(p.qty||0)+')</option>';}).join('')
-    +'</select></div>'
-    +'<div class="grid2" style="margin-bottom:10px">'
-    +'<div><label class="inp-label">العملية</label>'
-    +'<select class="inp" id="add-stock-op">'
-    +'<option value="add">إضافة للكمية الحالية</option>'
-    +'<option value="set">تعيين كمية محددة</option>'
-    +'<option value="zero">تصفير المخزون</option>'
-    +'</select></div>'
-    +'<div><label class="inp-label">الكمية</label>'
-    +'<input class="inp" id="add-stock-qty" type="number" min="0" placeholder="0"></div>'
-    +'</div>'
-    +'<div style="display:flex;gap:8px">'
-    +'<button type="button" class="btn btn-primary" onclick="applyStock()">تطبيق</button>'
-    +'<button type="button" class="btn btn-ghost" onclick="el(\x27add-stock-form\x27).classList.add(\x27hidden\x27)">إلغاء</button>'
-    +'</div></div>'
-
-    +'<div id="excel-import-box" class="card hidden" style="margin-bottom:12px">'
-    +'<div style="font-size:13px;font-weight:700;margin-bottom:8px">رفع مخزون من CSV</div>'
-    +'<input type="file" id="excel-file" accept=".csv" style="display:none" onchange="importInvExcel(event)">'
-    +'<button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById(\x27excel-file\x27).click()">اختر ملف CSV</button>'
-    +'<button type="button" class="btn btn-ghost btn-sm" style="margin-right:6px" onclick="toggleExcelImport()">إلغاء</button>'
-    +'</div>'
-
-    +'<input class="inp" id="inv-srch" placeholder="بحث في المنتجات..." style="margin-bottom:10px" oninput="filterInv(this.value)">'
-    +'<div id="inv-list">'+renderInvListHTML(active)+'</div>';
-}
-
-async function saveAllInventory(){
-  var btn=el('save-inv-btn');
-  if(btn){btn.textContent='⏳ جار الحفظ...';btn.disabled=true;}
-  
-  // Update prods from all visible qty inputs
-  document.querySelectorAll('[id^="qty-"]').forEach(function(inp){
-    var pid=inp.getAttribute('data-pid')||inp.id.replace('qty-','');
-    var qty=parseInt(inp.value);
-    if(isNaN(qty))qty=0;
-    var idx2=prods.findIndex(function(x){return x.id===pid;});
-    if(idx2>=0)prods[idx2].qty=qty;
-  });
-  
-  // Convert to plain object with id keys (Firebase-safe, no numeric keys issue)
-  var fbObj={};
-  prods.forEach(function(p,i){
-    fbObj['prod_'+i]=p;
-  });
-  
-  try{
-    // Save as keyed object (not array) to avoid Firebase numeric key issue
-    await fbSet('hz4_p3',fbObj);
-    if(btn){btn.textContent='✅ محفوظ';btn.style.background='#166534';btn.disabled=false;}
-    setTimeout(function(){
-      if(btn){btn.textContent='💾 حفظ المخزون';btn.style.background='';}
-    },3000);
-    toast('✅ تم حفظ المخزون');
-  }catch(e){
-    toast('❌ فشل الحفظ: '+e.message,false);
-    if(btn){btn.textContent='💾 حفظ المخزون';btn.disabled=false;}
-  }
-}
 
 function showAddStock(){el('add-stock-form').classList.remove('hidden');}
 function toggleExcelImport(){el('excel-import-box').classList.toggle('hidden');}
@@ -2617,46 +2513,41 @@ function renderInvListHTML(list){
   }).join('');
 }
 
-function quickAdjust(pid,delta){
+async function quickAdjust(pid,delta){
   var p=prods.find(function(x){return x.id===pid;});
   if(!p)return;
   var newQty=Math.max(0,(p.qty||0)+delta);
-  updateQty(pid,newQty);
+  var inp=el('qty-'+pid);
+  if(inp)inp.value=newQty;
+  await updateQty(pid,newQty);
 }
 
 async function syncProductsFromIP(){
   if(!confirm('سيتم تحديث الصور والأسعار من الإكسل مع الحفاظ على الكميات. متابعة؟'))return;
-  toast('جار المزامنة...');
-  // Build new overrides: keep qty from current prods, rest from IP
-  var ov={};
-  var existingCustom=prods.filter(function(p){return !IP.find(function(ip){return ip.id===p.id;});});
-  
-  // For each current prod that has a qty, save the qty override
-  prods.forEach(function(p){
-    var ip=IP.find(function(x){return x.id===p.id;});
-    if(ip&&p.qty!==ip.qty)ov[p.id]={qty:p.qty};
-    if(ip&&p.promoRule)ov[p.id]=Object.assign({},ov[p.id]||{},{promoRule:p.promoRule});
+  // Keep existing qty overrides, just reload prods from IP
+  var qtyData=await fb('hz4_qty',{});
+  prods=IP.map(function(ip){
+    var qty=qtyData&&qtyData[ip.id]!==undefined?qtyData[ip.id]:ip.qty;
+    return Object.assign({},ip,{qty:qty});
   });
-  if(existingCustom.length>0)ov.__custom=existingCustom;
-  
-  // Rebuild full array from IP with preserved qtys
-  var rebuilt=IP.map(function(ip){
-    var cur=prods.find(function(p){return p.name===ip.name&&p.brand===ip.brand;});
-    return Object.assign({},ip,{qty:cur&&cur.qty>0?cur.qty:ip.qty,
-      promoRule:cur&&cur.promoRule?cur.promoRule:null});
-  }).concat(existingCustom);
-  prods=rebuilt;
-  await fbSet('hz4_p3',prods);
+  // Add back custom products
+  var customData=await fb('hz4_custom',{});
+  if(customData&&typeof customData==='object'){
+    Object.values(customData).forEach(function(cp){
+      if(cp&&cp.id&&cp.name)prods.push(cp);
+    });
+  }
   toast('✅ تم تحديث '+prods.length+' منتج من الإكسل');
 }
-
 async function resetProducts(){
-  if(!confirm('سيتم مسح جميع التعديلات وإعادة تحميل المنتجات من الإكسل بدون كميات. متابعة؟'))return;
-  await fbSet('hz4_p3',{});
+  if(!confirm('مسح التعديلات وإعادة تحميل المنتجات من الإكسل؟'))return;
+  await fbSet('hz4_qty',{});
+  await fbSet('hz4_custom',{});
   prods=IP.map(function(ip){return Object.assign({},ip);});
-  toast('تم إعادة التعيين — '+IP.length+' منتج');
+  toast('✅ تم إعادة تعيين المنتجات');
   renderProducts();
 }
+
 
 async function syncQtyOnly(){
   if(!confirm('سيتم تحديث الكميات فقط من الإكسل. متابعة؟'))return;
