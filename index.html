@@ -736,12 +736,28 @@ var DEF_SETT={logo:'',invoiceColor:'#1B2A45',validDays:7,phone:'966545065735',
   address:'الرياض، السويدي الغربي',taxNum:'310179603200003',crNum:'1010842290',
   companyName:'حلازون',invoiceFooter:'شكراً لثقتكم بنا',fontSize:'medium'};
 
+var Q_TABS_ALL=['dash','newq','quotes','myq','products','inv','users','bundles','settings','board'];
 var ROLES={
   admin:    {lbl:'مدير عام',      tabs:['dash','newq','quotes','products','inv','users','bundles','settings','board']},
   marketing:{lbl:'مدير تسويق',   tabs:['dash','newq','quotes','products','inv','users','bundles','settings','board']},
   warehouse:{lbl:'مستودع',       tabs:['dash','products','inv','board']},
   sales:    {lbl:'مندوب',        tabs:['dash','newq','myq','inv','board']},
 };
+
+/* ── الصلاحيات من Firebase (مشتركة مع نظام المخزون) ── */
+function applyRolesFromFb(dbR){
+  if(!dbR||typeof dbR!=='object') return;
+  Object.keys(dbR).forEach(function(k){
+    var v=dbR[k];
+    if(!v||!Array.isArray(v.q)) return;
+    var allowed=v.q.filter(function(x){return Q_TABS_ALL.indexOf(x)>-1;});
+    if(allowed.indexOf('dash')<0) allowed.unshift('dash');
+    if(!ROLES[k]) ROLES[k]={lbl:k,tabs:['dash']};
+    ROLES[k].tabs=allowed;
+  });
+  /* المدير العام يحتفظ بكل الصلاحيات دائماً */
+  if(ROLES.admin) ROLES.admin.tabs=Q_TABS_ALL.slice();
+}
 var TAB_LABELS={dash:'الرئيسية',newq:'عرض جديد',quotes:'العروض',myq:'عروضي',bundles:'الحزم',
   products:'المنتجات',inv:'المخزون',users:'المستخدمين',settings:'الإعدادات',board:'لوحة الشرف'};
 var STATUS={
@@ -813,11 +829,13 @@ function doLogout(){
 
 // ── DATA LOAD ─────────────────────────────────────────────
 async function loadAll(bg){
-  var[dbQty,dbQ,dbU,dbS,dbSt,dbB,dbCustom]=await Promise.all([
+  var[dbQty,dbQ,dbU,dbS,dbSt,dbB,dbCustom,dbRoles]=await Promise.all([
     fb('hz4_qty',{}),fb('hz4_q3',[]),
     fb('hz4_u',IU),fb('hz4_s1',DEF_SETT),fb('hz4_stats',{}),fb('hz4_bundles',[]),
-    fb('hz4_custom',{})
+    fb('hz4_custom',{}),fb('hz4_roles',null)
   ]);
+  applyRolesFromFb(dbRoles);
+  if(CU&&typeof buildNavTabs==='function'){try{buildNavTabs();}catch(e){}}
 
   // Products: IP base + qty overrides + custom
   var qtyMap=dbQty&&typeof dbQty==='object'?dbQty:{};
