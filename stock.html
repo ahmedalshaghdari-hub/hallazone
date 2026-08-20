@@ -159,11 +159,14 @@ button,input,select,textarea{font-family:inherit;font-size:14px}
     <div id="pg-recv"    class="pg hidden"></div>
     <div id="pg-issue"   class="pg hidden"></div>
     <div id="pg-count"   class="pg hidden"></div>
+    <div id="pg-expiry"  class="pg hidden"></div>
+    <div id="pg-reorder" class="pg hidden"></div>
     <div id="pg-alert"   class="pg hidden"></div>
     <div id="pg-log"     class="pg hidden"></div>
     <div id="pg-reports" class="pg hidden"></div>
     <div id="pg-products" class="pg hidden"></div>
     <div id="pg-users"   class="pg hidden"></div>
+    <div id="pg-settings" class="pg hidden"></div>
     <div id="pg-perms"   class="pg hidden"></div>
   </div>
 </div>
@@ -658,15 +661,15 @@ var IU=[
 
 /* role -> q:(quotes tabs)  s:(stock tabs) */
 var Q_TABS=['dash','newq','quotes','myq','products','inv','users','bundles','settings','board'];
-var S_TABS=['dash','stock','recv','issue','count','alert','log','reports','products','users','perms'];
+var S_TABS=['dash','stock','recv','issue','count','expiry','reorder','alert','log','reports','products','users','settings','perms'];
 
 var DEF_ROLES={
   admin:     {q:['dash','newq','quotes','products','inv','users','bundles','settings','board'],
-              s:['dash','stock','recv','issue','count','alert','log','reports','products','users','perms']},
+              s:['dash','stock','recv','issue','count','expiry','reorder','alert','log','products','users','settings','perms']},
   marketing: {q:['dash','newq','quotes','products','inv','users','bundles','settings','board'],
-              s:['dash','stock','recv','issue','count','alert','log','reports','products','users','perms']},
+              s:['dash','stock','recv','issue','count','expiry','reorder','alert','log','products','users','settings','perms']},
   warehouse: {q:['dash','products','inv','board'],
-              s:['dash','stock','recv','issue','count','alert','log','reports']},
+              s:['dash','stock','recv','issue','count','expiry','reorder','alert','log']},
   sales:     {q:['dash','newq','myq','inv','board'],
               s:['dash','stock','alert']}
 };
@@ -674,6 +677,29 @@ var DEF_ROLES={
 /* ═══════════ i18n ═══════════ */
 var T={
 ar:{
+ expiryTab:'الصلاحية', reorderTab:'إعادة الطلب', settingsTab:'الإعدادات',
+ batchNo:'رقم التشغيلة', expiryDate:'تاريخ الصلاحية', expiringSoon:'قاربت الصلاحية',
+ expiredItems:'منتهية الصلاحية', daysLeft:'يوم متبقٍ', daysAgo:'يوم مضى',
+ noBatches:'لا توجد تشغيلات مسجلة — سجّلها عند الاستلام',
+ batchOk:'صالحة', addBatchHint:'اختياري — لتتبع الصلاحية FIFO',
+ oldestFirst:'اصرف الأقدم أولاً', batchQty:'كمية التشغيلة',
+ reorderList:'قائمة إعادة الطلب', reorderSub:'منتجات وصلت حد إعادة الطلب',
+ suggestedQty:'الكمية المقترحة', nothingToReorder:'لا شيء يحتاج إعادة طلب',
+ avgDaily:'المعدل اليومي', coverDays:'يغطي (يوم)',
+ generalSettings:'إعدادات عامة', notifSettings:'الإشعارات',
+ lowThreshold:'حد التنبيه الافتراضي', lowThresholdHint:'يُطبَّق على المنتجات التي لم تُحدد لها قيمة خاصة',
+ expiryWarnDays:'تنبيه قبل انتهاء الصلاحية بـ (يوم)',
+ coverTarget:'أيام التغطية المستهدفة', coverTargetHint:'يُحسب عليها اقتراح كمية إعادة الطلب',
+ whatsappNumber:'رقم واتساب', whatsappHint:'بصيغة دولية بدون + مثل 9665xxxxxxxx',
+ emailAddr:'البريد الإلكتروني', saveSettings:'حفظ الإعدادات', settingsSaved:'تم حفظ الإعدادات',
+ sendWhatsapp:'إرسال على واتساب', sendEmail:'إرسال بالبريد',
+ emailjsTitle:'إعداد البريد التلقائي (EmailJS مجاني)',
+ emailjsHint:'أنشئ حساباً مجانياً على emailjs.com وضع المعرفات هنا — 200 رسالة شهرياً',
+ svcId:'Service ID', tplId:'Template ID', pubKey:'Public Key',
+ emailSent:'تم إرسال البريد', emailFail:'فشل إرسال البريد — راجع المعرفات',
+ needWa:'أدخل رقم واتساب في الإعدادات أولاً',
+ needEmail:'أكمل إعدادات البريد أولاً', nothingToSend:'لا توجد تنبيهات للإرسال',
+ alertReport:'تقرير تنبيهات المخزون', generatedOn:'بتاريخ',
  stockControl:'إدارة المخزون', stockSub:'نظام الجرد والاستوك كنترول',
  username:'اسم المستخدم', password:'كلمة السر', login:'دخول', logout:'خروج',
  dashboard:'الرئيسية', stockList:'الجرد', receive:'استلام', issue:'صرف',
@@ -735,6 +761,29 @@ ar:{
  items:'صنف', movedQty:'الكمية المتحركة'
 },
 bn:{
+ expiryTab:'মেয়াদ', reorderTab:'পুনঃঅর্ডার', settingsTab:'সেটিংস',
+ batchNo:'ব্যাচ নম্বর', expiryDate:'মেয়াদ শেষের তারিখ', expiringSoon:'মেয়াদ শেষ হচ্ছে',
+ expiredItems:'মেয়াদ উত্তীর্ণ', daysLeft:'দিন বাকি', daysAgo:'দিন আগে',
+ noBatches:'কোনো ব্যাচ নেই — গ্রহণের সময় যোগ করুন',
+ batchOk:'ভালো আছে', addBatchHint:'ঐচ্ছিক — FIFO মেয়াদ ট্র্যাকিংয়ের জন্য',
+ oldestFirst:'পুরনোটা আগে ইস্যু করুন', batchQty:'ব্যাচের পরিমাণ',
+ reorderList:'পুনঃঅর্ডার তালিকা', reorderSub:'যেসব পণ্য সীমায় পৌঁছেছে',
+ suggestedQty:'প্রস্তাবিত পরিমাণ', nothingToReorder:'পুনঃঅর্ডারের কিছু নেই',
+ avgDaily:'দৈনিক গড়', coverDays:'কভার (দিন)',
+ generalSettings:'সাধারণ সেটিংস', notifSettings:'বিজ্ঞপ্তি',
+ lowThreshold:'ডিফল্ট সতর্কতা সীমা', lowThresholdHint:'যেসব পণ্যের নিজস্ব সীমা নেই তাদের জন্য',
+ expiryWarnDays:'মেয়াদ শেষের কত দিন আগে সতর্ক করবে',
+ coverTarget:'লক্ষ্য কভার দিন', coverTargetHint:'এর ভিত্তিতে পুনঃঅর্ডার পরিমাণ হিসাব হয়',
+ whatsappNumber:'হোয়াটসঅ্যাপ নম্বর', whatsappHint:'আন্তর্জাতিক ফরম্যাটে + ছাড়া যেমন 9665xxxxxxxx',
+ emailAddr:'ইমেইল ঠিকানা', saveSettings:'সেটিংস সংরক্ষণ', settingsSaved:'সেটিংস সংরক্ষিত হয়েছে',
+ sendWhatsapp:'হোয়াটসঅ্যাপে পাঠান', sendEmail:'ইমেইলে পাঠান',
+ emailjsTitle:'স্বয়ংক্রিয় ইমেইল সেটআপ (EmailJS বিনামূল্যে)',
+ emailjsHint:'emailjs.com এ বিনামূল্যে অ্যাকাউন্ট খুলে আইডি এখানে দিন — মাসে ২০০ ইমেইল',
+ svcId:'Service ID', tplId:'Template ID', pubKey:'Public Key',
+ emailSent:'ইমেইল পাঠানো হয়েছে', emailFail:'ইমেইল ব্যর্থ — আইডি পরীক্ষা করুন',
+ needWa:'আগে সেটিংসে হোয়াটসঅ্যাপ নম্বর দিন',
+ needEmail:'আগে ইমেইল সেটিংস পূরণ করুন', nothingToSend:'পাঠানোর মতো সতর্কতা নেই',
+ alertReport:'স্টক সতর্কতা রিপোর্ট', generatedOn:'তারিখ',
  stockControl:'স্টক নিয়ন্ত্রণ', stockSub:'ইনভেন্টরি ম্যানেজমেন্ট সিস্টেম',
  username:'ইউজারনেম', password:'পাসওয়ার্ড', login:'লগইন', logout:'লগআউট',
  dashboard:'হোম', stockList:'স্টক তালিকা', receive:'গ্রহণ', issue:'ইস্যু',
@@ -794,15 +843,18 @@ var LANG='ar';
 function t(k){return (T[LANG]&&T[LANG][k])||T.ar[k]||k;}
 
 var S_LABEL={dash:'dashboard',stock:'stockList',recv:'receive',issue:'issue',
-  count:'countTab',alert:'alerts',log:'movements',reports:'reports',
-  products:'products',users:'users',perms:'perms'};
+  count:'countTab',expiry:'expiryTab',reorder:'reorderTab',alert:'alerts',
+  log:'movements',reports:'reports',products:'products',users:'users',
+  settings:'settingsTab',perms:'perms'};
 var Q_LABEL={dash:'tDash',newq:'tNewq',quotes:'tQuotes',myq:'tMyq',products:'tProducts',
   inv:'tInv',users:'tUsers',bundles:'tBundles',settings:'tSettings',board:'tBoard'};
 var ROLE_LABEL={admin:'rAdmin',marketing:'rMarketing',warehouse:'rWarehouse',sales:'rSales'};
 
 /* ═══════════ STATE ═══════════ */
 var CU=null, prods=[], users=IU, logs=[], mins={}, custom={}, roles=DEF_ROLES;
-var page='dash', countData={};
+var page='dash', countData={}, batches=[], SET={};
+var DEF_SET={lowDefault:20, expiryDays:30, coverDays:30, wa:'', email:'',
+  ejsService:'', ejsTemplate:'', ejsKey:''};
 
 /* ═══════════ HELPERS ═══════════ */
 function el(i){return document.getElementById(i);}
@@ -904,9 +956,24 @@ function startApp(){
 function loadAll(){
   return Promise.all([
     fb('hz4_qty',{}), fb('hz4_u',IU), fb('hz4_sc_log',[]),
-    fb('hz4_sc_min',{}), fb('hz4_custom',{}), fb('hz4_roles',null)
+    fb('hz4_sc_min',{}), fb('hz4_custom',{}), fb('hz4_roles',null),
+    fb('hz4_sc_set',null), fb('hz4_sc_batch',{})
   ]).then(function(r){
-    var qty=r[0]||{}, dbU=r[1], dbL=r[2], dbM=r[3], dbC=r[4], dbR=r[5];
+    var qty=r[0]||{}, dbU=r[1], dbL=r[2], dbM=r[3], dbC=r[4], dbR=r[5],
+        dbS=r[6], dbB2=r[7];
+    SET={};
+    Object.keys(DEF_SET).forEach(function(k){SET[k]=DEF_SET[k];});
+    if(dbS&&typeof dbS==='object')
+      Object.keys(DEF_SET).forEach(function(k){
+        if(dbS[k]!==undefined&&dbS[k]!==null) SET[k]=dbS[k];
+      });
+    LOW_DEFAULT=num(SET.lowDefault)||20;
+    batches=(dbB2&&typeof dbB2==='object')?Object.keys(dbB2).map(function(k){
+      var b=dbB2[k]; if(!b||!b.pid) return null;
+      return {key:k,pid:b.pid,pname:b.pname||'',batch:b.batch||'',
+              exp:b.exp||'',qty:num(b.qty),date:b.date||'',by:b.by||''};
+    }).filter(Boolean):[];
+    batches.sort(function(a,b){return (a.exp||'9999').localeCompare(b.exp||'9999');});
 
     prods=IP.map(function(ip){
       var q=qty[ip.id];
@@ -992,6 +1059,9 @@ function render(){
   if(page==='recv')     renderMove('recv');
   if(page==='issue')    renderMove('issue');
   if(page==='count')    renderCount();
+  if(page==='expiry')   renderExpiry();
+  if(page==='reorder')  renderReorder();
+  if(page==='settings') renderSettings();
   if(page==='alert')    renderAlert();
   if(page==='log')      renderLog();
   if(page==='reports')  renderReports();
@@ -1122,7 +1192,13 @@ function renderMove(mode){
     +'</select></div>';
   var sup=isRecv?
      '<div style="margin-bottom:11px"><label class="lbl">'+esc(t('supplier'))+'</label>'
-    +'<input class="inp" id="m-sup" placeholder="—"></div>':'';
+    +'<input class="inp" id="m-sup" placeholder="—"></div>'
+    +'<div class="grid2" style="margin-bottom:11px">'
+    +'<div><label class="lbl">'+esc(t('batchNo'))+'</label>'
+    +'<input class="inp" id="m-batch" placeholder="—"></div>'
+    +'<div><label class="lbl">'+esc(t('expiryDate'))+'</label>'
+    +'<input class="inp" id="m-exp" type="date"></div></div>'
+    +'<div style="font-size:11px;color:var(--text3);margin:-6px 0 11px">'+esc(t('addBatchHint'))+'</div>':'';
   el('pg-'+mode).innerHTML=
    '<div class="page-title">'+esc(isRecv?t('receiveTitle'):t('issueTitle'))+'</div>'
   +'<div class="card">'
@@ -1195,8 +1271,21 @@ function doMove(mode){
   }
   p.qty=after;
   var patch={}; patch[selPid]=after;
+  var bEl=el('m-batch'), eEl=el('m-exp');
+  var bNo=bEl?bEl.value.trim():'', bExp=eEl?eEl.value:'';
   fbPatch('hz4_qty',patch)
     .then(function(){return addLog(selPid,mode==='recv'?'in':'out',after-before,before,after,note);})
+    .then(function(){
+      if(mode==='recv'&&(bNo||bExp)){
+        var key='b'+Date.now()+Math.floor(Math.random()*900);
+        var rec={pid:selPid,pname:p.brand+' - '+p.name,batch:bNo,exp:bExp,
+                 qty:amt,date:today(),by:CU?CU.name:'-'};
+        var bp={}; bp[key]=rec;
+        batches.push(Object.assign({key:key},rec));
+        batches.sort(function(a,b){return (a.exp||'9999').localeCompare(b.exp||'9999');});
+        return fbPatch('hz4_sc_batch',bp);
+      }
+    })
     .then(function(){
       toast((mode==='recv'?t('received'):t('issued'))+' — '+amt+' '+t('pcs'),'ok');
       renderMove(mode);
@@ -1709,6 +1798,267 @@ function resetPerms(){
   }).catch(function(){toast(t('savingErr'),'err');});
 }
 
+
+/* ═══════════ EXPIRY / BATCHES ═══════════ */
+function daysBetween(dateStr){
+  if(!dateStr) return null;
+  var d=new Date(dateStr+'T00:00:00');
+  if(isNaN(d.getTime())) return null;
+  var now=new Date(today()+'T00:00:00');
+  return Math.round((d-now)/864e5);
+}
+function renderExpiry(){
+  var warn=num(SET.expiryDays)||30;
+  var withExp=batches.filter(function(b){return b.exp;});
+  var expired=[], soon=[], fine=[];
+  withExp.forEach(function(b){
+    var d=daysBetween(b.exp);
+    b._d=d;
+    if(d===null) return;
+    if(d<0) expired.push(b); else if(d<=warn) soon.push(b); else fine.push(b);
+  });
+  var h='<div class="page-title">'+esc(t('expiryTab'))+'</div>';
+  if(!withExp.length){
+    el('pg-expiry').innerHTML=h+'<div class="card"><div class="empty">'+esc(t('noBatches'))+'</div></div>';
+    return;
+  }
+  h+='<div class="stats">'
+   +'<div class="stat"><div class="stat-val" style="color:var(--red)">'+expired.length+'</div><div class="stat-lbl">'+esc(t('expiredItems'))+'</div></div>'
+   +'<div class="stat"><div class="stat-val" style="color:var(--amber)">'+soon.length+'</div><div class="stat-lbl">'+esc(t('expiringSoon'))+'</div></div>'
+   +'<div class="stat"><div class="stat-val" style="color:var(--green)">'+fine.length+'</div><div class="stat-lbl">'+esc(t('batchOk'))+'</div></div>'
+   +'<div class="stat"><div class="stat-val" style="color:var(--navy)">'+withExp.length+'</div><div class="stat-lbl">'+esc(t('items'))+'</div></div>'
+   +'</div>';
+  if(expired.length) h+=batchBlock(t('expiredItems'),expired,'var(--red)');
+  if(soon.length)    h+=batchBlock(t('expiringSoon'),soon,'var(--amber)');
+  if(fine.length)    h+=batchBlock(t('batchOk'),fine.slice(0,30),'var(--green)');
+  el('pg-expiry').innerHTML=h;
+}
+function batchBlock(title,list,color){
+  return '<div class="card" style="border-color:'+color+'">'
+   +'<div class="sec-title" style="color:'+color+'">'+esc(title)+' ('+list.length+')</div>'
+   +'<div style="font-size:11px;color:var(--text3);margin-bottom:9px">'+esc(t('oldestFirst'))+'</div>'
+   +'<div class="scroll-x"><table class="tbl"><tr>'
+   +'<th>'+esc(t('product'))+'</th><th>'+esc(t('batchNo'))+'</th>'
+   +'<th>'+esc(t('expiryDate'))+'</th><th>'+esc(t('batchQty'))+'</th><th></th></tr>'
+   +list.map(function(b){
+      var d=b._d;
+      var lbl=d===null?'—':(d<0?Math.abs(d)+' '+t('daysAgo'):d+' '+t('daysLeft'));
+      return '<tr><td class="nm">'+esc(b.pname)+'</td><td>'+esc(b.batch||'—')+'</td>'
+       +'<td>'+esc(b.exp||'—')+'</td><td style="font-weight:800">'+b.qty+'</td>'
+       +'<td style="font-weight:800;color:'+color+'">'+esc(lbl)+'</td>'
+       +'<td><button class="btn btn-g btn-sm" data-k="'+esc(b.key)+'" '
+       +'onclick="delBatch(this.getAttribute(\'data-k\'))">&times;</button></td></tr>';
+    }).join('')
+   +'</table></div></div>';
+}
+function delBatch(key){
+  if(!confirm(t('confirmDelete'))) return;
+  var pt={}; pt[key]=null;
+  fbPatch('hz4_sc_batch',pt).then(function(){
+    batches=batches.filter(function(b){return b.key!==key;});
+    toast(t('deletedProduct'),'ok');
+    renderExpiry();
+  }).catch(function(){toast(t('savingErr'),'err');});
+}
+
+/* ═══════════ REORDER ═══════════ */
+function avgDailyOut(pid,days){
+  var cutoff=Date.now()-days*864e5, tot=0;
+  logs.forEach(function(m){
+    if(m.pid===pid && m.type==='out' && (m.ts||0)>=cutoff) tot+=Math.abs(m.delta||0);
+  });
+  return tot/days;
+}
+function reorderRows(){
+  var cover=num(SET.coverDays)||30;
+  return actives().filter(function(p){return p.qty<=minOf(p.id);})
+    .map(function(p){
+      var avg=avgDailyOut(p.id,30);
+      var target=Math.max(minOf(p.id)*2, Math.ceil(avg*cover));
+      var sug=Math.max(0,target-p.qty);
+      if(sug<=0) sug=Math.max(1,minOf(p.id));
+      return {p:p, avg:avg, sug:sug, coverNow:avg>0?Math.floor(p.qty/avg):null};
+    })
+    .sort(function(a,b){
+      if(a.p.qty!==b.p.qty) return a.p.qty-b.p.qty;
+      return b.sug-a.sug;
+    });
+}
+function renderReorder(){
+  var rows=reorderRows();
+  var h='<div class="head"><div class="page-title" style="margin:0">'+esc(t('reorderList'))+'</div>'
+   +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+   +'<button class="btn btn-g btn-sm" onclick="exportReorder()">'+esc(t('exportCsv'))+'</button>'
+   +'<button class="btn btn-ok btn-sm" onclick="sendWa(\'reorder\')">'+esc(t('sendWhatsapp'))+'</button>'
+   +'<button class="btn btn-n btn-sm" onclick="sendMail(\'reorder\')">'+esc(t('sendEmail'))+'</button>'
+   +'</div></div>'
+   +'<div class="card"><div style="font-size:12px;color:var(--text2)">'+esc(t('reorderSub'))+'</div></div>';
+  if(!rows.length){
+    el('pg-reorder').innerHTML=h+'<div class="card"><div class="empty">'+esc(t('nothingToReorder'))+'</div></div>';
+    return;
+  }
+  h+='<div class="card"><div class="scroll-x"><table class="tbl"><tr>'
+   +'<th>'+esc(t('product'))+'</th><th>'+esc(t('quantity'))+'</th>'
+   +'<th>'+esc(t('reorderPoint'))+'</th><th>'+esc(t('avgDaily'))+'</th>'
+   +'<th>'+esc(t('coverDays'))+'</th><th>'+esc(t('suggestedQty'))+'</th></tr>'
+   +rows.map(function(r){
+      return '<tr><td class="nm">'+esc(r.p.brand+' - '+r.p.name)+'</td>'
+       +'<td style="color:'+(r.p.qty<=0?'var(--red)':'var(--amber)')+';font-weight:800">'+r.p.qty+'</td>'
+       +'<td>'+minOf(r.p.id)+'</td>'
+       +'<td>'+r.avg.toFixed(1)+'</td>'
+       +'<td>'+(r.coverNow===null?'—':r.coverNow)+'</td>'
+       +'<td style="font-weight:900;color:var(--green)">'+r.sug+'</td></tr>';
+    }).join('')
+   +'</table></div></div>';
+  el('pg-reorder').innerHTML=h;
+}
+function exportReorder(){
+  var rows=reorderRows();
+  if(!rows.length){toast(t('nothingToReorder'),'err');return;}
+  var out=[['brand','name','current','reorderPoint','avgDaily','suggested']];
+  rows.forEach(function(r){
+    out.push([r.p.brand,r.p.name,r.p.qty,minOf(r.p.id),r.avg.toFixed(1),r.sug]);
+  });
+  downloadCsv(out,'hallazone_reorder_'+today()+'.csv');
+}
+function downloadCsv(rows,fname){
+  var csv=rows.map(function(r){
+    return r.map(function(c){return '"'+String(c).split('"').join('""')+'"';}).join(',');
+  }).join('\n');
+  var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=fname; a.click();
+  toast(t('saved'),'ok');
+}
+
+/* ═══════════ NOTIFICATIONS ═══════════ */
+function buildAlertText(kind){
+  var lines=[];
+  lines.push('*'+t('alertReport')+' — Hallazone*');
+  lines.push(t('generatedOn')+': '+nowStr());
+  lines.push('');
+  if(kind==='reorder'){
+    var rows=reorderRows();
+    if(!rows.length) return null;
+    lines.push('*'+t('reorderList')+'* ('+rows.length+')');
+    rows.slice(0,40).forEach(function(r){
+      lines.push('• '+r.p.brand+' - '+r.p.name+' | '+t('current')+': '+r.p.qty+' | '+t('suggestedQty')+': '+r.sug);
+    });
+    if(rows.length>40) lines.push('... +'+(rows.length-40));
+  } else {
+    var list=actives();
+    var outL=list.filter(function(p){return p.qty<=0;});
+    var lowL=list.filter(function(p){return p.qty>0&&p.qty<=minOf(p.id);});
+    var warn=num(SET.expiryDays)||30;
+    var expB=batches.filter(function(b){
+      var d=daysBetween(b.exp); return d!==null&&d<=warn;
+    });
+    if(!outL.length&&!lowL.length&&!expB.length) return null;
+    if(outL.length){
+      lines.push('*'+t('outOfStock')+'* ('+outL.length+')');
+      outL.slice(0,25).forEach(function(p){lines.push('• '+p.brand+' - '+p.name);});
+      if(outL.length>25) lines.push('... +'+(outL.length-25));
+      lines.push('');
+    }
+    if(lowL.length){
+      lines.push('*'+t('lowStockAlert')+'* ('+lowL.length+')');
+      lowL.slice(0,25).forEach(function(p){lines.push('• '+p.brand+' - '+p.name+': '+p.qty);});
+      if(lowL.length>25) lines.push('... +'+(lowL.length-25));
+      lines.push('');
+    }
+    if(expB.length){
+      lines.push('*'+t('expiringSoon')+'* ('+expB.length+')');
+      expB.slice(0,25).forEach(function(b){
+        var d=daysBetween(b.exp);
+        lines.push('• '+b.pname+' | '+b.exp+' | '+(d<0?Math.abs(d)+' '+t('daysAgo'):d+' '+t('daysLeft')));
+      });
+    }
+  }
+  return lines.join('\n');
+}
+function sendWa(kind){
+  var wa=String(SET.wa||'').replace(/[^0-9]/g,'');
+  if(!wa){toast(t('needWa'),'err');return;}
+  var txt=buildAlertText(kind);
+  if(!txt){toast(t('nothingToSend'),'ok');return;}
+  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(txt),'_blank');
+}
+function sendMail(kind){
+  var svc=String(SET.ejsService||'').trim(),
+      tpl=String(SET.ejsTemplate||'').trim(),
+      key=String(SET.ejsKey||'').trim(),
+      to =String(SET.email||'').trim();
+  if(!svc||!tpl||!key||!to){toast(t('needEmail'),'err');return;}
+  var txt=buildAlertText(kind);
+  if(!txt){toast(t('nothingToSend'),'ok');return;}
+  fetch('https://api.emailjs.com/api/v1.0/email/send',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({service_id:svc,template_id:tpl,user_id:key,
+      template_params:{to_email:to,subject:t('alertReport')+' — Hallazone',
+        message:txt.split('*').join(''),date:nowStr()}})
+  }).then(function(r){
+    if(r.ok) toast(t('emailSent'),'ok');
+    else toast(t('emailFail'),'err');
+  }).catch(function(){toast(t('emailFail'),'err');});
+}
+
+/* ═══════════ SETTINGS ═══════════ */
+function renderSettings(){
+  el('pg-settings').innerHTML=
+   '<div class="page-title">'+esc(t('settingsTab'))+'</div>'
+
+  +'<div class="card"><div class="sec-title">'+esc(t('generalSettings'))+'</div>'
+  +'<div class="grid2" style="margin-bottom:10px">'
+  +'<div><label class="lbl">'+esc(t('lowThreshold'))+'</label>'
+  +'<input class="inp" id="st-low" type="number" min="0" value="'+num(SET.lowDefault)+'"></div>'
+  +'<div><label class="lbl">'+esc(t('expiryWarnDays'))+'</label>'
+  +'<input class="inp" id="st-exp" type="number" min="1" value="'+num(SET.expiryDays)+'"></div></div>'
+  +'<div style="font-size:11px;color:var(--text3);margin-bottom:10px">'+esc(t('lowThresholdHint'))+'</div>'
+  +'<div style="margin-bottom:6px"><label class="lbl">'+esc(t('coverTarget'))+'</label>'
+  +'<input class="inp" id="st-cover" type="number" min="1" value="'+num(SET.coverDays)+'" style="max-width:180px"></div>'
+  +'<div style="font-size:11px;color:var(--text3)">'+esc(t('coverTargetHint'))+'</div></div>'
+
+  +'<div class="card"><div class="sec-title">'+esc(t('notifSettings'))+'</div>'
+  +'<div style="margin-bottom:6px"><label class="lbl">'+esc(t('whatsappNumber'))+'</label>'
+  +'<input class="inp" id="st-wa" value="'+esc(SET.wa||'')+'" placeholder="9665xxxxxxxx" inputmode="numeric"></div>'
+  +'<div style="font-size:11px;color:var(--text3);margin-bottom:12px">'+esc(t('whatsappHint'))+'</div>'
+  +'<div style="margin-bottom:12px"><label class="lbl">'+esc(t('emailAddr'))+'</label>'
+  +'<input class="inp" id="st-email" type="email" value="'+esc(SET.email||'')+'" placeholder="name@company.com"></div>'
+  +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+  +'<button class="btn btn-ok btn-sm" onclick="sendWa(\'alerts\')">'+esc(t('sendWhatsapp'))+'</button>'
+  +'<button class="btn btn-n btn-sm" onclick="sendMail(\'alerts\')">'+esc(t('sendEmail'))+'</button>'
+  +'</div></div>'
+
+  +'<div class="card"><div class="sec-title">'+esc(t('emailjsTitle'))+'</div>'
+  +'<div style="font-size:11px;color:var(--text3);margin-bottom:12px">'+esc(t('emailjsHint'))+'</div>'
+  +'<div style="margin-bottom:10px"><label class="lbl">'+esc(t('svcId'))+'</label>'
+  +'<input class="inp" id="st-svc" value="'+esc(SET.ejsService||'')+'" autocomplete="off"></div>'
+  +'<div style="margin-bottom:10px"><label class="lbl">'+esc(t('tplId'))+'</label>'
+  +'<input class="inp" id="st-tpl" value="'+esc(SET.ejsTemplate||'')+'" autocomplete="off"></div>'
+  +'<div><label class="lbl">'+esc(t('pubKey'))+'</label>'
+  +'<input class="inp" id="st-key" value="'+esc(SET.ejsKey||'')+'" autocomplete="off"></div></div>'
+
+  +'<button class="btn btn-p btn-full" style="padding:13px" onclick="saveSettings()">'
+  +esc(t('saveSettings'))+'</button>';
+}
+function saveSettings(){
+  var next={
+    lowDefault:num(el('st-low').value),
+    expiryDays:Math.max(1,num(el('st-exp').value)||30),
+    coverDays:Math.max(1,num(el('st-cover').value)||30),
+    wa:String(el('st-wa').value||'').replace(/[^0-9]/g,''),
+    email:String(el('st-email').value||'').trim(),
+    ejsService:String(el('st-svc').value||'').trim(),
+    ejsTemplate:String(el('st-tpl').value||'').trim(),
+    ejsKey:String(el('st-key').value||'').trim()
+  };
+  fbSet('hz4_sc_set',next).then(function(){
+    SET=next;
+    LOW_DEFAULT=num(next.lowDefault)||20;
+    toast(t('settingsSaved'),'ok');
+  }).catch(function(){toast(t('savingErr'),'err');});
+}
+
 /* ═══════════ BOOT ═══════════ */
 (function(){
   try{
@@ -1728,10 +2078,10 @@ function resetPerms(){
 
   setInterval(function(){
     if(!CU) return;
-    if(page==='count'||page==='perms') return;
+    if(page==='count'||page==='perms'||page==='settings') return;
     loadAll().then(function(){
       buildTabs();
-      if(page==='dash'||page==='alert'||page==='log'||page==='reports') render();
+      if(page==='dash'||page==='alert'||page==='log'||page==='reports'||page==='expiry'||page==='reorder') render();
     }).catch(function(){});
   },30000);
 })();
