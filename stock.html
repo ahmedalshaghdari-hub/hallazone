@@ -677,6 +677,16 @@ var DEF_ROLES={
 /* ═══════════ i18n ═══════════ */
 var T={
 ar:{
+ thresholdsSection:'حدود تنبيه المخزون', perProductThreshold:'حد كل منتج',
+ applyToAll:'تطبيق على كل المنتجات', applyToAllHint:'يستبدل الحد الخاص بكل المنتجات بالقيمة أعلاه',
+ confirmApplyAll:'سيتم تطبيق الحد على جميع المنتجات واستبدال أي حد خاص. متابعة؟',
+ appliedAll:'تم التطبيق على كل المنتجات', globalThreshold:'الحد العام',
+ globalThresholdHint:'يُستخدم لأي منتج لم تحدد له حداً خاصاً',
+ suppliers:'الموردون', addSupplier:'إضافة مورد', supplierName:'اسم المورد',
+ newSupplier:'مورد جديد', selectSupplier:'اختر المورد', supplierAdded:'تم إضافة المورد',
+ supplierExists:'المورد موجود مسبقاً', noSuppliers:'لا يوجد موردون — أضفهم من الإعدادات أو عند الاستلام',
+ supplierPhone:'الجوال', sendAlertsWa:'إرسال التنبيهات واتساب',
+ searchProduct:'ابحث عن منتج لتحديد حده',
  expiryTab:'الصلاحية', reorderTab:'إعادة الطلب', settingsTab:'الإعدادات',
  batchNo:'رقم التشغيلة', expiryDate:'تاريخ الصلاحية', expiringSoon:'قاربت الصلاحية',
  expiredItems:'منتهية الصلاحية', daysLeft:'يوم متبقٍ', daysAgo:'يوم مضى',
@@ -761,6 +771,16 @@ ar:{
  items:'صنف', movedQty:'الكمية المتحركة'
 },
 bn:{
+ thresholdsSection:'স্টক সতর্কতা সীমা', perProductThreshold:'প্রতি পণ্যের সীমা',
+ applyToAll:'সব পণ্যে প্রয়োগ করুন', applyToAllHint:'উপরের মান দিয়ে প্রতিটি পণ্যের সীমা বদলে যাবে',
+ confirmApplyAll:'সব পণ্যে এই সীমা প্রয়োগ হবে এবং আলাদা সীমা মুছে যাবে। চালিয়ে যাবেন?',
+ appliedAll:'সব পণ্যে প্রয়োগ হয়েছে', globalThreshold:'সাধারণ সীমা',
+ globalThresholdHint:'যেসব পণ্যের আলাদা সীমা নেই তাদের জন্য',
+ suppliers:'সরবরাহকারী', addSupplier:'সরবরাহকারী যোগ করুন', supplierName:'সরবরাহকারীর নাম',
+ newSupplier:'নতুন সরবরাহকারী', selectSupplier:'সরবরাহকারী নির্বাচন করুন', supplierAdded:'সরবরাহকারী যোগ হয়েছে',
+ supplierExists:'এই সরবরাহকারী আগে থেকেই আছে', noSuppliers:'কোনো সরবরাহকারী নেই — সেটিংস বা গ্রহণ পাতা থেকে যোগ করুন',
+ supplierPhone:'মোবাইল', sendAlertsWa:'হোয়াটসঅ্যাপে সতর্কতা পাঠান',
+ searchProduct:'সীমা নির্ধারণে পণ্য খুঁজুন',
  expiryTab:'মেয়াদ', reorderTab:'পুনঃঅর্ডার', settingsTab:'সেটিংস',
  batchNo:'ব্যাচ নম্বর', expiryDate:'মেয়াদ শেষের তারিখ', expiringSoon:'মেয়াদ শেষ হচ্ছে',
  expiredItems:'মেয়াদ উত্তীর্ণ', daysLeft:'দিন বাকি', daysAgo:'দিন আগে',
@@ -852,7 +872,7 @@ var ROLE_LABEL={admin:'rAdmin',marketing:'rMarketing',warehouse:'rWarehouse',sal
 
 /* ═══════════ STATE ═══════════ */
 var CU=null, prods=[], users=IU, logs=[], mins={}, custom={}, roles=DEF_ROLES;
-var page='dash', countData={}, batches=[], SET={};
+var page='dash', countData={}, batches=[], SET={}, sups=[];
 var DEF_SET={lowDefault:20, expiryDays:30, coverDays:30, wa:'', email:'',
   ejsService:'', ejsTemplate:'', ejsKey:''};
 
@@ -957,10 +977,10 @@ function loadAll(){
   return Promise.all([
     fb('hz4_qty',{}), fb('hz4_u',IU), fb('hz4_sc_log',[]),
     fb('hz4_sc_min',{}), fb('hz4_custom',{}), fb('hz4_roles',null),
-    fb('hz4_sc_set',null), fb('hz4_sc_batch',{})
+    fb('hz4_sc_set',null), fb('hz4_sc_batch',{}), fb('hz4_sc_sup',[])
   ]).then(function(r){
     var qty=r[0]||{}, dbU=r[1], dbL=r[2], dbM=r[3], dbC=r[4], dbR=r[5],
-        dbS=r[6], dbB2=r[7];
+        dbS=r[6], dbB2=r[7], dbSup=r[8];
     SET={};
     Object.keys(DEF_SET).forEach(function(k){SET[k]=DEF_SET[k];});
     if(dbS&&typeof dbS==='object')
@@ -974,6 +994,8 @@ function loadAll(){
               exp:b.exp||'',qty:num(b.qty),date:b.date||'',by:b.by||''};
     }).filter(Boolean):[];
     batches.sort(function(a,b){return (a.exp||'9999').localeCompare(b.exp||'9999');});
+    sups=(Array.isArray(dbSup)?dbSup:(dbSup?Object.values(dbSup):[]))
+      .filter(function(x){return x&&x.name;});
 
     prods=IP.map(function(ip){
       var q=qty[ip.id];
@@ -1192,7 +1214,12 @@ function renderMove(mode){
     +'</select></div>';
   var sup=isRecv?
      '<div style="margin-bottom:11px"><label class="lbl">'+esc(t('supplier'))+'</label>'
-    +'<input class="inp" id="m-sup" placeholder="—"></div>'
+    +'<select class="inp" id="m-sup" onchange="onSupChange(this.value)">'
+    +'<option value="">'+esc(t('selectSupplier'))+'</option>'
+    +sups.map(function(x){return '<option value="'+esc(x.name)+'">'+esc(x.name)+'</option>';}).join('')
+    +'<option value="__new">+ '+esc(t('newSupplier'))+'</option></select>'
+    +'<input class="inp hidden" id="m-supnew" style="margin-top:8px" placeholder="'+esc(t('supplierName'))+'">'
+    +'</div>'
     +'<div class="grid2" style="margin-bottom:11px">'
     +'<div><label class="lbl">'+esc(t('batchNo'))+'</label>'
     +'<input class="inp" id="m-batch" placeholder="—"></div>'
@@ -1222,6 +1249,28 @@ function renderMove(mode){
   +'</div></div>';
   selPid=null;
   drawPick();
+}
+function onSupChange(v){
+  var box=el('m-supnew'); if(!box) return;
+  if(v==='__new'){box.classList.remove('hidden');box.focus();}
+  else {box.classList.add('hidden');box.value='';}
+}
+function supName(){
+  var sel=el('m-sup'); if(!sel) return '';
+  if(sel.value==='__new'){
+    var nb=el('m-supnew');
+    return nb?nb.value.trim():'';
+  }
+  return sel.value||'';
+}
+function ensureSupplier(name){
+  if(!name) return Promise.resolve();
+  var exists=sups.some(function(x){
+    return String(x.name).trim().toLowerCase()===name.trim().toLowerCase();
+  });
+  if(exists) return Promise.resolve();
+  sups.push({name:name.trim(),phone:'',added:today()});
+  return fbSet('hz4_sc_sup',sups);
 }
 function drawPick(){
   var box=el('m-srch'), q=box?box.value.trim():'';
@@ -1260,10 +1309,10 @@ function doMove(mode){
   if(amt<=0){toast(t('enterAmount'),'err');return;}
   var p=prods.find(function(x){return x.id===selPid;}); if(!p) return;
   var before=p.qty, after=mode==='recv'?before+amt:Math.max(0,before-amt);
-  var noteEl=el('m-note'), supEl=el('m-sup'), rsnEl=el('m-reason');
+  var noteEl=el('m-note'), rsnEl=el('m-reason');
   var note=noteEl?noteEl.value.trim():'';
-  if(mode==='recv'&&supEl&&supEl.value.trim())
-    note=t('supplier')+': '+supEl.value.trim()+(note?' — '+note:'');
+  var supN=mode==='recv'?supName():'';
+  if(supN) note=t('supplier')+': '+supN+(note?' — '+note:'');
   if(mode==='issue'&&rsnEl){
     var map={sale:t('reasonSale'),damage:t('reasonDamage'),sample:t('reasonSample'),
              'return':t('reasonReturn'),other:t('reasonOther')};
@@ -1274,15 +1323,18 @@ function doMove(mode){
   var bEl=el('m-batch'), eEl=el('m-exp');
   var bNo=bEl?bEl.value.trim():'', bExp=eEl?eEl.value:'';
   fbPatch('hz4_qty',patch)
+    .then(function(){return ensureSupplier(supN);})
     .then(function(){return addLog(selPid,mode==='recv'?'in':'out',after-before,before,after,note);})
     .then(function(){
       if(mode==='recv'&&(bNo||bExp)){
         var key='b'+Date.now()+Math.floor(Math.random()*900);
         var rec={pid:selPid,pname:p.brand+' - '+p.name,batch:bNo,exp:bExp,
-                 qty:amt,date:today(),by:CU?CU.name:'-'};
+                 qty:amt,date:today(),by:CU?CU.name:'-',sup:supN};
         var bp={}; bp[key]=rec;
         batches.push(Object.assign({key:key},rec));
         batches.sort(function(a,b){return (a.exp||'9999').localeCompare(b.exp||'9999');});
+    sups=(Array.isArray(dbSup)?dbSup:(dbSup?Object.values(dbSup):[]))
+      .filter(function(x){return x&&x.name;});
         return fbPatch('hz4_sc_batch',bp);
       }
     })
@@ -1395,7 +1447,11 @@ function renderAlert(){
   var list=actives();
   var outL=list.filter(function(p){return p.qty<=0;});
   var lowL=list.filter(function(p){return p.qty>0&&p.qty<=minOf(p.id);});
-  var h='<div class="page-title">'+esc(t('alerts'))+'</div>';
+  var h='<div class="head"><div class="page-title" style="margin:0">'+esc(t('alerts'))+'</div>'
+   +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+   +'<button class="btn btn-ok btn-sm" onclick="sendWa(\'alerts\')">'+esc(t('sendAlertsWa'))+'</button>'
+   +'<button class="btn btn-n btn-sm" onclick="sendMail(\'alerts\')">'+esc(t('sendEmail'))+'</button>'
+   +'</div></div>';
   if(!outL.length&&!lowL.length){
     el('pg-alert').innerHTML=h+'<div class="card"><div class="empty">'+esc(t('noAlerts'))+'</div></div>';
     return;
@@ -1547,9 +1603,6 @@ function prodRow(p){
    +'<div class="row-brand">'+esc(p.brand)+' &middot; '+(p.price||0)+' '+esc(t('riyal'))
    +' &middot; '+esc(t('reorderPoint'))+': '+minOf(p.id)+'</div></div>'
    +'<div style="display:flex;gap:6px;align-items:center">'
-   +'<input type="number" class="qty-inp" style="width:66px" id="rp-'+p.id+'" value="'+minOf(p.id)+'" min="0" '
-   +'title="'+esc(t('reorderPoint'))+'">'
-   +'<button class="btn btn-g btn-sm" data-pid="'+p.id+'" onclick="saveMin(this.getAttribute(\'data-pid\'))">'+esc(t('save'))+'</button>'
    +'<button class="btn btn-g btn-sm" data-pid="'+p.id+'" onclick="toggleArchive(this.getAttribute(\'data-pid\'))">'
    +esc(p.active?t('archive'):t('unarchive'))+'</button>'
    +(p.custom?'<button class="btn btn-r btn-sm" data-pid="'+p.id+'" onclick="delProd(this.getAttribute(\'data-pid\'))">'+esc(t('del'))+'</button>':'')
@@ -2007,17 +2060,29 @@ function renderSettings(){
   el('pg-settings').innerHTML=
    '<div class="page-title">'+esc(t('settingsTab'))+'</div>'
 
-  +'<div class="card"><div class="sec-title">'+esc(t('generalSettings'))+'</div>'
-  +'<div class="grid2" style="margin-bottom:10px">'
-  +'<div><label class="lbl">'+esc(t('lowThreshold'))+'</label>'
-  +'<input class="inp" id="st-low" type="number" min="0" value="'+num(SET.lowDefault)+'"></div>'
-  +'<div><label class="lbl">'+esc(t('expiryWarnDays'))+'</label>'
-  +'<input class="inp" id="st-exp" type="number" min="1" value="'+num(SET.expiryDays)+'"></div></div>'
-  +'<div style="font-size:11px;color:var(--text3);margin-bottom:10px">'+esc(t('lowThresholdHint'))+'</div>'
-  +'<div style="margin-bottom:6px"><label class="lbl">'+esc(t('coverTarget'))+'</label>'
-  +'<input class="inp" id="st-cover" type="number" min="1" value="'+num(SET.coverDays)+'" style="max-width:180px"></div>'
-  +'<div style="font-size:11px;color:var(--text3)">'+esc(t('coverTargetHint'))+'</div></div>'
+  /* ── حدود التنبيه ── */
+  +'<div class="card" style="border-color:var(--gold)">'
+  +'<div class="sec-title">'+esc(t('thresholdsSection'))+'</div>'
+  +'<label class="lbl">'+esc(t('globalThreshold'))+'</label>'
+  +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'
+  +'<input class="inp" id="st-low" type="number" min="0" value="'+num(SET.lowDefault)+'" style="max-width:140px">'
+  +'<button class="btn btn-n btn-sm" onclick="applyAllMins()">'+esc(t('applyToAll'))+'</button></div>'
+  +'<div style="font-size:11px;color:var(--text3);margin-top:7px">'+esc(t('globalThresholdHint'))+'</div>'
+  +'<div style="font-size:11px;color:var(--text3);margin-top:3px">'+esc(t('applyToAllHint'))+'</div>'
+  +'<div style="border-top:1px solid var(--border);margin:14px 0 12px"></div>'
+  +'<label class="lbl">'+esc(t('perProductThreshold'))+'</label>'
+  +'<input class="inp" id="st-psrch" placeholder="'+esc(t('searchProduct'))+'" oninput="drawMinList()" style="margin-bottom:10px">'
+  +'<div id="st-plist"></div></div>'
 
+  /* ── الموردون ── */
+  +'<div class="card"><div class="sec-title">'+esc(t('suppliers'))+' ('+sups.length+')</div>'
+  +'<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">'
+  +'<input class="inp" id="st-supname" placeholder="'+esc(t('supplierName'))+'" style="flex:1;min-width:140px">'
+  +'<input class="inp" id="st-supphone" placeholder="'+esc(t('supplierPhone'))+'" style="flex:1;min-width:120px" inputmode="tel">'
+  +'<button class="btn btn-p btn-sm" onclick="addSupplier()">+ '+esc(t('addSupplier'))+'</button></div>'
+  +'<div id="st-suplist">'+supListHtml()+'</div></div>'
+
+  /* ── الإشعارات ── */
   +'<div class="card"><div class="sec-title">'+esc(t('notifSettings'))+'</div>'
   +'<div style="margin-bottom:6px"><label class="lbl">'+esc(t('whatsappNumber'))+'</label>'
   +'<input class="inp" id="st-wa" value="'+esc(SET.wa||'')+'" placeholder="9665xxxxxxxx" inputmode="numeric"></div>'
@@ -2029,6 +2094,16 @@ function renderSettings(){
   +'<button class="btn btn-n btn-sm" onclick="sendMail(\'alerts\')">'+esc(t('sendEmail'))+'</button>'
   +'</div></div>'
 
+  /* ── الصلاحية وإعادة الطلب ── */
+  +'<div class="card"><div class="sec-title">'+esc(t('expiryTab'))+' / '+esc(t('reorderTab'))+'</div>'
+  +'<div class="grid2">'
+  +'<div><label class="lbl">'+esc(t('expiryWarnDays'))+'</label>'
+  +'<input class="inp" id="st-exp" type="number" min="1" value="'+num(SET.expiryDays)+'"></div>'
+  +'<div><label class="lbl">'+esc(t('coverTarget'))+'</label>'
+  +'<input class="inp" id="st-cover" type="number" min="1" value="'+num(SET.coverDays)+'"></div></div>'
+  +'<div style="font-size:11px;color:var(--text3);margin-top:7px">'+esc(t('coverTargetHint'))+'</div></div>'
+
+  /* ── EmailJS ── */
   +'<div class="card"><div class="sec-title">'+esc(t('emailjsTitle'))+'</div>'
   +'<div style="font-size:11px;color:var(--text3);margin-bottom:12px">'+esc(t('emailjsHint'))+'</div>'
   +'<div style="margin-bottom:10px"><label class="lbl">'+esc(t('svcId'))+'</label>'
@@ -2040,7 +2115,84 @@ function renderSettings(){
 
   +'<button class="btn btn-p btn-full" style="padding:13px" onclick="saveSettings()">'
   +esc(t('saveSettings'))+'</button>';
+  drawMinList();
 }
+
+/* ── per-product thresholds ── */
+function drawMinList(){
+  var box=el('st-psrch'), q=box?box.value.trim():'';
+  var out=el('st-plist'); if(!out) return;
+  var list=actives();
+  if(q) list=list.filter(function(p){return (p.name+' '+p.brand).indexOf(q)>-1;});
+  else list=list.filter(function(p){return mins[p.id]!==undefined&&mins[p.id]!==null;});
+  if(!list.length){
+    out.innerHTML='<div class="empty" style="padding:16px">'
+      +esc(q?t('noResults'):t('searchProduct'))+'</div>';
+    return;
+  }
+  out.innerHTML=list.slice(0,40).map(function(p){
+    return '<div class="row" style="padding:8px">'+imgTag(p,34)
+     +'<div class="row-mid"><div class="row-name" style="font-size:12.5px">'+esc(p.name)+'</div>'
+     +'<div class="row-brand">'+esc(p.brand)+' &middot; '+esc(t('current'))+': '+p.qty+'</div></div>'
+     +'<input type="number" class="qty-inp" style="width:70px" id="rp-'+p.id+'" min="0" value="'+minOf(p.id)+'">'
+     +'<button class="btn btn-p btn-sm" data-pid="'+p.id+'" onclick="saveMin(this.getAttribute(\'data-pid\'))">'
+     +esc(t('save'))+'</button></div>';
+  }).join('')+(list.length>40?'<div class="empty" style="padding:8px">+ '+(list.length-40)+'</div>':'');
+}
+function applyAllMins(){
+  var v=num(el('st-low').value);
+  if(!confirm(t('confirmApplyAll'))) return;
+  var next={};
+  prods.forEach(function(p){next[p.id]=v;});
+  fbSet('hz4_sc_min',next).then(function(){
+    mins=next;
+    SET.lowDefault=v; LOW_DEFAULT=v||20;
+    return fbPatch('hz4_sc_set',{lowDefault:v});
+  }).then(function(){
+    toast(t('appliedAll')+' — '+v,'ok');
+    drawMinList();
+  }).catch(function(){toast(t('savingErr'),'err');});
+}
+
+/* ── suppliers ── */
+function supListHtml(){
+  if(!sups.length) return '<div class="empty" style="padding:16px">'+esc(t('noSuppliers'))+'</div>';
+  return sups.map(function(x,i){
+    return '<div class="row" style="padding:9px">'
+     +'<div class="row-ph" style="width:34px;height:34px;font-size:15px">&#127978;</div>'
+     +'<div class="row-mid"><div class="row-name" style="font-size:12.5px">'+esc(x.name)+'</div>'
+     +(x.phone?'<div class="row-brand">'+esc(x.phone)+'</div>':'')+'</div>'
+     +'<button class="btn btn-r btn-sm" data-i="'+i+'" onclick="delSupplier(this.getAttribute(\'data-i\'))">&times;</button>'
+     +'</div>';
+  }).join('');
+}
+function addSupplier(){
+  var n=(el('st-supname').value||'').trim();
+  var ph=(el('st-supphone').value||'').trim();
+  if(!n){toast(t('fillFields'),'err');return;}
+  if(sups.some(function(x){return String(x.name).trim().toLowerCase()===n.toLowerCase();})){
+    toast(t('supplierExists'),'err');return;
+  }
+  var next=sups.concat([{name:n,phone:ph,added:today()}]);
+  fbSet('hz4_sc_sup',next).then(function(){
+    sups=next;
+    el('st-supname').value=''; el('st-supphone').value='';
+    var lb=el('st-suplist'); if(lb) lb.innerHTML=supListHtml();
+    toast(t('supplierAdded')+': '+n,'ok');
+  }).catch(function(){toast(t('savingErr'),'err');});
+}
+function delSupplier(i){
+  var idx=parseInt(i,10);
+  if(isNaN(idx)||!sups[idx]) return;
+  if(!confirm(t('confirmDelete'))) return;
+  var next=sups.filter(function(x,j){return j!==idx;});
+  fbSet('hz4_sc_sup',next).then(function(){
+    sups=next;
+    var lb=el('st-suplist'); if(lb) lb.innerHTML=supListHtml();
+    toast(t('deletedProduct'),'ok');
+  }).catch(function(){toast(t('savingErr'),'err');});
+}
+
 function saveSettings(){
   var next={
     lowDefault:num(el('st-low').value),
