@@ -161,6 +161,7 @@ button,input,select,textarea{font-family:inherit;font-size:14px}
     <div id="pg-count"   class="pg hidden"></div>
     <div id="pg-expiry"  class="pg hidden"></div>
     <div id="pg-reorder" class="pg hidden"></div>
+    <div id="pg-po" class="pg hidden"></div>
     <div id="pg-returns" class="pg hidden"></div>
     <div id="pg-alert"   class="pg hidden"></div>
     <div id="pg-log"     class="pg hidden"></div>
@@ -177,475 +178,112 @@ button,input,select,textarea{font-family:inherit;font-size:14px}
 <script>
 /* ═══════════ PRODUCTS ═══════════ */
 var IP = [
-  {id:"p001",brand:"ديفون",name:"بوكس الترند",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/4cbb0652-35a4-4890-81d9-dcec22fdd171.jpg",inStock:true,active:true,qty:500},
-  {id:"p002",brand:"جيوفن",name:"شوكو موكا",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8da985e1-6ac0-403f-a0d0-dff9c5cd6f0f.JPG-thumbnail-500x500-70.jpg",inStock:true,active:true,qty:500},
-  {id:"p003",brand:"ميني بايت",name:"كلاسيك",price:44.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1b641504-cc82-4338-812f-164bbfda3218.jpg",inStock:true,active:true,qty:500},
-  {id:"p004",brand:"تاتش",name:"كوفي جوي",price:49.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1f72dd29-bf18-4279-8f90-8e0a127376ec.png",inStock:true,active:true,qty:500},
-  {id:"p005",brand:"تاتش",name:"بوكس العيد عبارات توت ورمان",price:92.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/87435b26-492b-4e97-8983-493b796c351f.jpg",inStock:true,active:true,qty:500},
-  {id:"p006",brand:"ماتشي",name:"تاكو",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/30be0a42-11e1-4f73-bb24-9e53c547a1e6.jpg",inStock:true,active:true,qty:500},
-  {id:"p007",brand:"",name:"بوكس أطايب (مشكل كبير) R",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0592b048-57da-4891-b45b-ce2f209f0abc.jpg",inStock:true,active:true,qty:500},
-  {id:"p008",brand:"",name:"بوكس أطايب مقرمشات (تشكيلة عالمية) R",price:30.48,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b2367812-ee83-46cf-bb4a-fe33cfc9e3ca.jpg",inStock:true,active:true,qty:500},
-  {id:"p009",brand:"",name:"بوكس أطايب مكسرات (التشكيلة السبعة) R",price:43.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ff06b7ed-9e2a-4eeb-9fb9-d7d60f04ed68.jpg",inStock:true,active:true,qty:500},
-  {id:"p010",brand:"سوتشيل",name:"بوكس تشلو",price:59.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5adc3659-9f6a-4d23-854d-f771ad93b662.png",inStock:true,active:true,qty:500},
-  {id:"p011",brand:"تاوة",name:"معمول التمر كبير 54 قطعة",price:71.43,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e58d4a6b-f61f-4bf2-99c4-7344da8c7bb0.jpg",inStock:true,active:true,qty:500},
-  {id:"p012",brand:"تاوة",name:"معمول التمر دائري 65 قطعة",price:78.57,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ac2bb960-5052-4a60-84b9-8326ff178c7f.jpg",inStock:true,active:true,qty:500},
-  {id:"p013",brand:"",name:"كنافة سعودية",price:35.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/73cad350-341d-4404-9896-81111fdded06.jpg",inStock:true,active:true,qty:500},
-  {id:"p014",brand:"مافري",name:"سويس R",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d4bf199e-8359-498b-8bf2-c372bf2d1514.jpg",inStock:true,active:true,qty:500},
-  {id:"p015",brand:"",name:"باقة التوفير (نهاية العام)",price:33.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7865d3a6-557d-4a04-a4d3-ae9953d99ff8.png",inStock:true,active:true,qty:500},
-  {id:"p016",brand:"نوشية",name:"كرات الرمان R",price:39.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/784819bf-3758-4e7c-aff6-0535a24c37a4.jpg",inStock:true,active:true,qty:500},
-  {id:"p017",brand:"ليوفن",name:"بيكانو مستطيل R",price:38.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/040404d1-1d8d-415e-a407-072491774d84.jpg",inStock:true,active:true,qty:500},
-  {id:"p018",brand:"غورمية",name:"ترفل   |   Gourmet-Tervel",price:68.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/54a9ef09-e2bb-4b57-a15a-615f10293257.jpg",inStock:true,active:true,qty:500},
-  {id:"p019",brand:"جيوفن",name:"حلا سقنتشر",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3c432562-d2a6-49c9-a539-49d5b4c44302.jpg",inStock:true,active:true,qty:500},
-  {id:"p020",brand:"جيوفن",name:"حلا دايموند",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/73f2dee2-bc2e-4d84-9d87-cd6c737736d1.jpg",inStock:true,active:true,qty:500},
-  {id:"p021",brand:"جيوفن",name:"بقلاوة بيكان نوفا دائري",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5f160c9d-eacd-40fd-a4e1-e688443ba640.jpg",inStock:true,active:true,qty:500},
-  {id:"p022",brand:"بايت",name:"لولي بوتيك R",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5de1db48-1f1c-4299-9892-510a4a09959d.jpg",inStock:true,active:true,qty:500},
-  {id:"p023",brand:"نوشية",name:"اصابع البستاشيو R",price:39.0,salePrice:28.7,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e8657265-9c36-4935-957b-ac443276ec95.png",inStock:true,active:true,qty:500},
-  {id:"p024",brand:"لوتشير",name:"قولدR",price:32.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c11297b9-96a5-4948-843b-f7113b316a13.jpg",inStock:true,active:true,qty:500},
-  {id:"p025",brand:"لوتشير",name:"ميكس R",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/bcc357a9-edc9-449d-8545-d7987e9c89c7.jpg",inStock:true,active:true,qty:500},
-  {id:"p026",brand:"نوشية",name:"الضيافة R",price:75.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6e0b40aa-9431-4bf2-b02c-d3a1a77dac0b.jpg",inStock:true,active:true,qty:500},
-  {id:"p027",brand:"",name:"معمول ريمة",price:41.4,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8ce3cdd0-162c-4f98-b4fb-2c16c053335c.jpg",inStock:true,active:true,qty:500},
-  {id:"p028",brand:"جيوفن",name:"كلاسيك",price:67.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0d2e6562-7d18-4c94-a0c7-93b0e1245410.jpg",inStock:true,active:true,qty:500},
-  {id:"p029",brand:"ماتشي",name:"مكس استكس",price:33.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b9b31888-4f2d-4f77-b57c-65b949b0f9c3.png",inStock:true,active:true,qty:500},
-  {id:"p030",brand:"",name:"حالي مالح ميس سويتيR",price:45.83,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7350edad-0b75-47ff-b664-a3ac457ab481.png",inStock:true,active:true,qty:500},
-  {id:"p031",brand:"",name:"موالح رند نتس صغير",price:22.49,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b75a0fc9-c6fe-4caf-a69e-7f7a94d7f48d.png",inStock:true,active:true,qty:500},
-  {id:"p032",brand:"",name:"موالح رند نتس كبيرR",price:40.83,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8a222c86-31b1-49bd-a255-9f482d5a4567.jpeg",inStock:true,active:true,qty:500},
-  {id:"p033",brand:"",name:"سيلفارة دايموندR",price:65.83,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5991510b-5fc4-4e75-a849-613620a0a548.jpeg",inStock:true,active:true,qty:500},
-  {id:"p034",brand:"",name:"سيلفارة دولسيR",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/effd0c54-7b1a-4a5e-a9bc-471112e3dfd0.jpg",inStock:true,active:true,qty:500},
-  {id:"p035",brand:"المميز",name:"معمول بالتمر ابيض نص كيلو R",price:35.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a8cc13e5-675c-4035-84af-c8be6bd03615.jpeg",inStock:true,active:true,qty:500},
-  {id:"p036",brand:"",name:"المميز-معمول تمر بالدخن نص كيلو R",price:35.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/71338e0b-a0a2-42cb-b17b-1eab73dad61b.png",inStock:true,active:true,qty:500},
-  {id:"p037",brand:"",name:"المميز-معمول تمر بالبر نص كيلو R",price:35.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fa692efd-2d91-449e-9cc1-af6e5e581443.png",inStock:true,active:true,qty:500},
-  {id:"p038",brand:"",name:"المميز-معمول تمر بالحليب المحموس نص كيلو R",price:36.8,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0d9da23f-d7e3-4f52-9c39-d02339f92074.jpeg",inStock:true,active:true,qty:500},
-  {id:"p039",brand:"المميز",name:"معمول بالتمر كيلوR",price:71.3,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8debf89c-c66e-45dc-8082-b7d0226d4a3a.jpeg",inStock:true,active:true,qty:500},
-  {id:"p040",brand:"",name:"زاد الشرق-فاخورس",price:48.3,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e72690d3-6c52-4c6d-a7f8-4ab0a36f5f63.png",inStock:true,active:true,qty:500},
-  {id:"p041",brand:"",name:"لوتشير-باقة ناتورا R",price:55.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f46a5e65-b6d1-4726-b8fe-62e37aa0b325.jpg",inStock:true,active:true,qty:500},
-  {id:"p042",brand:"تاوة",name:"معمول ميني(كرات المعمول)",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1feb5b99-1992-4be1-a556-343a2a7ae3bc.jpg",inStock:true,active:true,qty:500},
-  {id:"p043",brand:"نورسين",name:"بقلاوة شوكلت",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/45f113d7-3a5f-441c-9dab-070d7b4a1899.jpeg",inStock:true,active:true,qty:500},
-  {id:"p044",brand:"نورسين",name:"أصابع بقلاوة",price:28.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fbb9741b-155e-47f3-ba88-2fc6bd115208.jpeg",inStock:true,active:true,qty:500},
-  {id:"p045",brand:"نورسين",name:"بقلاوة جوزية بيكان",price:32.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/29798d8f-716d-4526-abe0-d1165b4bbb59.jpeg",inStock:true,active:true,qty:500},
-  {id:"p046",brand:"نورسين",name:"لاكجري بوكس",price:82.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e2a24545-83dd-415a-a466-895f30d42f6b.jpeg",inStock:true,active:true,qty:500},
-  {id:"p047",brand:"نورسين",name:"تويكس",price:74.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/17a234cb-a73d-427b-a1f7-01e211c367af.jpeg",inStock:true,active:true,qty:500},
-  {id:"p048",brand:"نورسين",name:"بوكس الترافيل",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d35bd95e-1ae9-4218-81d6-6d88bba8d28e.jpeg",inStock:true,active:true,qty:500},
-  {id:"p049",brand:"ديفون",name:"بوكس فلاورز 001",price:24.87,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/313b3e2d-cb0d-4c16-805a-30a49f15de54.jpeg",inStock:true,active:true,qty:500},
-  {id:"p050",brand:"ديفون",name:"بوكس حلا رمان",price:57.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/252daeda-ba85-4c27-bc0d-292b8a5726cd.jpg",inStock:true,active:true,qty:500},
-  {id:"p051",brand:"",name:"باقة منتصف الأسبوع",price:638.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fea0e45f-a058-4ed7-813d-b417e9227a46.png",inStock:true,active:true,qty:500},
-  {id:"p052",brand:"",name:"شوكو بيلا",price:43.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/13bfc581-1996-4814-b1c5-efd56a06327b.png",inStock:true,active:true,qty:500},
-  {id:"p053",brand:"",name:"تمرية الحليب المحموس",price:27.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/84b1830f-5cf8-42b8-9ed0-8617e822fcb6.jpg",inStock:true,active:true,qty:500},
-  {id:"p054",brand:"",name:"كنافة الجبن",price:41.4,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0284372e-d654-46b6-8666-55018a0c7c38.jpg",inStock:true,active:true,qty:500},
-  {id:"p055",brand:"مافري",name:"فيينا R",price:54.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/373d1649-bbac-4f3d-8cfb-5a559592ac3c.jpg",inStock:true,active:true,qty:500},
-  {id:"p056",brand:"نوفا",name:"أورا  كاكو",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c34f4457-e872-4c2e-a6ef-a1040a05e766.jpg",inStock:true,active:true,qty:500},
-  {id:"p057",brand:"",name:"بلوم-روزان",price:44.82,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/cf3c7091-6e43-423c-b951-ed6ec5252653.jpeg",inStock:true,active:true,qty:500},
-  {id:"p058",brand:"",name:"بلوم-هييرا",price:44.82,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8c544792-4191-4543-a511-ea909c4be90c.jpeg",inStock:true,active:true,qty:500},
-  {id:"p059",brand:"بلوم",name:"آشا",price:44.82,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/40c07de7-fe16-4fac-952b-214a805007c6.jpeg",inStock:true,active:true,qty:500},
-  {id:"p060",brand:"حلا البستان",name:"مكس حالي مالح",price:50.03,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ac92f18d-382d-49b7-82fe-fbfb4f62f467.png",inStock:true,active:true,qty:500},
-  {id:"p061",brand:"",name:"ليبونير-بيكان",price:75.21,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/75e55467-ddb0-42a9-8950-925ea081877a.jpg",inStock:true,active:true,qty:500},
-  {id:"p062",brand:"",name:"ليبونير-رمان",price:75.21,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f68c7981-2459-461e-a8c1-9b004d8f4838.jpg",inStock:true,active:true,qty:500},
-  {id:"p063",brand:"",name:"ليبونير-هارموني",price:108.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a05df90c-a312-473c-81b7-eb1da4991001.jpg",inStock:true,active:true,qty:500},
-  {id:"p064",brand:"",name:"لافا-لونا",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c13bd6fc-412c-4afc-865c-195ee02a6491.jpg",inStock:true,active:true,qty:500},
-  {id:"p065",brand:"",name:"لافا-دروبس",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/60162edb-bdd8-4330-a001-cabcee3c5d5d.jpg",inStock:true,active:true,qty:500},
-  {id:"p066",brand:"",name:"لافا-كوزي",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/68f2d140-6c0e-45a3-8136-829a114a0937.jpg",inStock:true,active:true,qty:500},
-  {id:"p067",brand:"",name:"لافا-أوليفيا",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3ba9fa7d-59d4-401a-8c1a-7d2c72daac48.jpg",inStock:true,active:true,qty:500},
-  {id:"p068",brand:"",name:"لافا-ساكورا",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/98cb6f88-c4c8-48ca-b674-b92cfdd31474.jpg",inStock:true,active:true,qty:500},
-  {id:"p069",brand:"",name:"لافا-دريمز",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7ed6f6e7-32b4-4ce5-bc3c-a95a2dbd83ab.jpg",inStock:true,active:true,qty:500},
-  {id:"p070",brand:"ﺑﺎﻗـﺔ اﻟﻌﻴﺪ",name:"3",price:163.43,salePrice:151.18,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1ac18dde-aaef-487f-a391-c1e6fdd44d74.png",inStock:true,active:true,qty:500},
-  {id:"p071",brand:"ﺑﺎﻗـة اﻟﻌﻴﺪ",name:"4",price:151.75,salePrice:132.8,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/048650cb-3eb7-403c-8eee-5fe19c6d727b.png",inStock:true,active:true,qty:500},
-  {id:"p072",brand:"ﺑﺎﻗـﺔ اﻟﻌﻴﺪ",name:"2",price:165.45,salePrice:137.94,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a5aa18c0-dd5c-4277-b26b-f19e1482f794.png",inStock:true,active:true,qty:500},
-  {id:"p073",brand:"",name:"باقة العيد 1",price:159.7,salePrice:120.73,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7406e5c6-3ba4-4523-a387-e96bce90625c.png",inStock:true,active:true,qty:500},
-  {id:"p074",brand:"ليوفن",name:"بيراميدز R",price:72.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8dce1928-7d95-479c-9a4c-7a91bb2f79a4.jpg",inStock:true,active:true,qty:500},
-  {id:"p075",brand:"",name:"سافور ديلوكس",price:47.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1e4319ee-e26c-49c2-87ac-84ee5a9a5e50.jpg",inStock:true,active:true,qty:500},
-  {id:"p076",brand:"",name:"سافور ترافلينو",price:47.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e192a9c3-aa49-46ea-b020-14906fe09638.jpg",inStock:true,active:true,qty:500},
-  {id:"p077",brand:"",name:"سافور شوكو كريب",price:59.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/971d73ca-c1aa-4e78-8e56-f9037d31bb15.jpg",inStock:true,active:true,qty:500},
-  {id:"p078",brand:"",name:"سافور فليكس",price:59.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d019809d-da3e-41d0-9a53-5214538481e7.jpg",inStock:true,active:true,qty:500},
-  {id:"p079",brand:"",name:"غلامور فانسي",price:56.14,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0abf40d8-3574-4892-99b6-c008c86ea81f.jpg",inStock:true,active:true,qty:500},
-  {id:"p080",brand:"",name:"غلامور بيكان",price:57.11,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/74c358d4-9ccb-4cf8-8a93-89dec0d80c29.jpg",inStock:true,active:true,qty:500},
-  {id:"p081",brand:"",name:"غلامور هاش",price:62.54,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5bff3a69-d4cc-40e7-8bfc-c14c930d697f.jpg",inStock:true,active:true,qty:500},
-  {id:"p082",brand:"",name:"غلامور فيولا",price:36.8,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/dd5e40ea-7207-412e-a54e-1e9323b82db6.jpg",inStock:true,active:true,qty:500},
-  {id:"p083",brand:"",name:"غلامور ميلا",price:56.03,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/78b7fe07-810f-48e0-be5e-42c5fb8b53f6.jpg",inStock:true,active:true,qty:500},
-  {id:"p084",brand:"",name:"بوكس أطايب شابورة (مع صوصات التغميس)",price:39.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/42acc55a-2245-4f60-96b4-803752061b91.jpg",inStock:true,active:true,qty:500},
-  {id:"p085",brand:"",name:"الباقة الذهبية ✨",price:2311.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0c4fc663-fd34-48ea-80a6-165b9e4bc987.png",inStock:true,active:true,qty:500},
-  {id:"p086",brand:"",name:"الباقة الماسية ✨",price:4263.8,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d79ea31b-dda3-4e90-bfae-00e68ec4f07a.png",inStock:true,active:true,qty:500},
-  {id:"p087",brand:"تاتش",name:"ستيكس اصابع كنافة الفستق",price:33.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/90c1525a-13b2-42b8-929c-3951815115d5.jpg",inStock:true,active:true,qty:500},
-  {id:"p088",brand:"",name:"الباقة المميزة 🤩",price:1800.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fcd8417d-a94c-4826-b767-01627a0a7515.png",inStock:true,active:true,qty:500},
-  {id:"p089",brand:"",name:"باقة التوفير 🫰",price:3625.23,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/240c6803-be32-42c6-818c-2b6bcdba42b8.png",inStock:true,active:true,qty:500},
-  {id:"p090",brand:"لوتشير",name:"بينك R",price:30.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/16b9555e-4dc4-47af-889a-aed7c86b5352.jpg",inStock:true,active:true,qty:500},
-  {id:"p091",brand:"",name:"باقة ليوفن 20✨",price:1170.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/53a9a4ce-0c64-4d41-b306-6923b6d000c9.png",inStock:true,active:true,qty:500},
-  {id:"p092",brand:"تاتش",name:"توزيعات اليوم الوطني",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c9eab2df-9a75-4697-85a0-9c345fbf97e4.jpg",inStock:true,active:true,qty:500},
-  {id:"p093",brand:"",name:"باقه ازهلها",price:1818.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8d539b55-3cb9-4af3-a2be-c6bc3bfea0c8.png",inStock:true,active:true,qty:500},
-  {id:"p094",brand:"مالومه",name:"كرات السميد",price:58.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6b857da4-bbff-457e-9048-de5cac202aab.png",inStock:true,active:true,qty:500},
-  {id:"p095",brand:"مالومة",name:"توزيعات اليوم الوطني",price:27.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/bb090f0f-6272-4018-9b8a-a159a4295cd3.jpg",inStock:true,active:true,qty:500},
-  {id:"p096",brand:"",name:"الباقة الخاصة",price:1930.5,salePrice:1755.0,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/83ec02f5-97d0-45aa-8888-ea6f25da222a.png",inStock:true,active:true,qty:500},
-  {id:"p097",brand:"",name:"شوكولاتة الموند",price:41.4,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8ee5b0c0-f3c9-4b19-8cfa-640b4b09befc.jpg",inStock:true,active:true,qty:500},
-  {id:"p098",brand:"مالومه",name:"لوتس بايتسR",price:48.9,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1f9dfa0f-f5e9-4b1b-984f-32a3ba559182.jpg",inStock:true,active:true,qty:500},
-  {id:"p099",brand:"اولكر",name:"كيك اولكر",price:250.0,salePrice:230.0,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e32d47e2-c62d-4c1c-a300-d0e061380c7b.png",inStock:true,active:true,qty:500},
-  {id:"p100",brand:"ليوفين",name:"حلقوم دبل شوكتR",price:58.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ce93ad99-9597-4be4-af4f-ffbeab6a750b.jpg",inStock:true,active:true,qty:500},
-  {id:"p101",brand:"تاتش",name:"ذوق رمان",price:41.69,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c5029314-2f2a-4e49-9f23-82003db7fe1d.png",inStock:true,active:true,qty:500},
-  {id:"p102",brand:"ديفون",name:"بوكس كلاسيك دائري",price:65.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1745b812-1383-4232-8a32-e2f8a0c21d95.png",inStock:true,active:true,qty:500},
-  {id:"p103",brand:"زي الللوز",name:"حلا الرمان (فنيس)",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c39931b7-e801-4846-a5d6-ed7353f81fb9.jpg",inStock:true,active:true,qty:500},
-  {id:"p104",brand:"لاشو",name:"ميني لاشو فيوتن",price:17.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/306791b0-8ba8-41d6-8763-40d0924ccca7.jpg",inStock:true,active:true,qty:500},
-  {id:"p105",brand:"لاشو",name:"ميني لاشو مانجو",price:17.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/04f4cef2-a1e3-4ea1-bffe-c823a9a692c8.jpg",inStock:true,active:true,qty:500},
-  {id:"p106",brand:"لاشو",name:"ميني لاشو توت",price:17.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/be619051-1ad6-4414-b479-fbc3cbe8edfa.jpg",inStock:true,active:true,qty:500},
-  {id:"p107",brand:"لاشو",name:"ميني لاشو بيكان كراميل",price:20.8,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/cde35bee-907f-472e-ae87-ff8b317adc1c.jpg",inStock:true,active:true,qty:500},
-  {id:"p108",brand:"لاشو",name:"ميني لاشو كراميل",price:17.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6eb97f60-bc1f-4a29-bd0e-ca15779e5c9a.jpg",inStock:true,active:true,qty:500},
-  {id:"p109",brand:"لاشو",name:"بيكان بكراميل",price:67.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fa757b3e-14d6-4e0a-9ce3-e1ae0ec80ec3.jpg",inStock:true,active:true,qty:500},
-  {id:"p110",brand:"لاشو",name:"شوكولاتة لاشو",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/24316486-8105-485a-a766-41fdffa8828d.jpg",inStock:true,active:true,qty:500},
-  {id:"p111",brand:"أثرية",name:"بقلاوة بالبيكان كبير",price:79.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/451b3c04-a6fa-40aa-b9aa-152a546a7b9c.png",inStock:true,active:true,qty:500},
-  {id:"p112",brand:"تاتش",name:"موف صنعت بحب",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/31ca2b65-ae85-415c-bd6c-2812a6e2a871.png",inStock:true,active:true,qty:500},
-  {id:"p113",brand:"تاتش",name:"ذوق الهبة",price:39.1,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5dd72931-5c9d-4315-9aba-2d1dcfec05eb.jpg",inStock:true,active:true,qty:500},
-  {id:"p114",brand:"تاتش",name:"توزيعات الأطفال",price:48.3,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7378a748-7f26-41ca-8ad4-b13a24be35f4.jpg",inStock:true,active:true,qty:500},
-  {id:"p115",brand:"اوفر سويت",name:"اورلين (شوكلت الهبه)R",price:66.13,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e897615e-307f-4c9d-8bce-ae090624c047.jpg",inStock:true,active:true,qty:500},
-  {id:"p116",brand:"اوفر سويت",name:"روزيلاR",price:36.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b5f2936c-7681-40e5-95b4-c12b23079329.png",inStock:true,active:true,qty:500},
-  {id:"p117",brand:"نوى",name:"بقلاة نوى أصابع بالشكولاته",price:60.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c3954335-2baa-4858-b9f9-cd8381196e33.jpg",inStock:true,active:true,qty:500},
-  {id:"p118",brand:"",name:"نوى -بقلاوة نوي بالتمر والبيكانR",price:52.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/cf86af6a-1a8c-4f5b-b36e-4d6f44827eb9.jpg",inStock:true,active:true,qty:500},
-  {id:"p119",brand:"",name:"نوى -بقلاوة نوي مثلثاتR",price:49.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ef03223c-c516-40d9-96e7-2ab8f9e51e86.png",inStock:true,active:true,qty:500},
-  {id:"p120",brand:"نوى",name:"بقلاوة نوي أصابع بيكانR",price:52.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/56cf2b99-7fb3-4ef0-9ba8-fade8527b051.png",inStock:true,active:true,qty:500},
-  {id:"p121",brand:"نوى",name:"بقلاوة نوي مثلثات البيكان بالشوكولاتةR",price:60.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/275da5db-bca8-4a94-bcde-65ac9de1b48d.jpg",inStock:true,active:true,qty:500},
-  {id:"p122",brand:"الفاس",name:"شوكلت بار اللوتس صغير",price:7.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/4a1f8c2c-e23a-4b86-b677-4ffb4490569a.jpg",inStock:true,active:true,qty:500},
-  {id:"p123",brand:"الفاس",name:"شوكلت بار اللوتس وسط",price:15.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/249dc79d-5f5e-4027-9421-2dc0236db808.jpg",inStock:true,active:true,qty:500},
-  {id:"p124",brand:"تاتش",name:"حلا بيض صغير",price:28.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/16a799d9-b687-4e8a-b941-aab85ad772fe.png",inStock:true,active:true,qty:500},
-  {id:"p125",brand:"تاتش",name:"نورا",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3a61afac-252d-41cc-9aa6-105631f2f540.jpg",inStock:true,active:true,qty:500},
-  {id:"p126",brand:"تاتش",name:"مكس شوكولاتة",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/11d58e70-1630-4118-8d14-b6d6544d0545.png",inStock:true,active:true,qty:500},
-  {id:"p127",brand:"رودير",name:"شوكو موكا",price:48.97,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/769cc27e-3140-4fd7-aae4-2ec384ede5b2.jpg",inStock:true,active:true,qty:500},
-  {id:"p128",brand:"كروكنت",name:"كروكنت ابو بنت",price:85.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/96a953ad-f307-44c1-9dbf-928756eb1756.jpg",inStock:true,active:true,qty:500},
-  {id:"p129",brand:"فيوتين",name:"مكس نوفيل",price:72.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/79f825ca-6ee7-4c0c-8f06-5c2d1af8a25c.jpg",inStock:true,active:true,qty:500},
-  {id:"p130",brand:"فيوتين",name:"امبر",price:63.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ae388334-f867-4ef5-9895-8a46b2be4649.jpg",inStock:true,active:true,qty:500},
-  {id:"p131",brand:"",name:"فيوتين -مكس بيستاشيو و فرولينو",price:55.89,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d5ac9134-e8bf-470e-8527-1e99e151f33f.jpg",inStock:true,active:true,qty:500},
-  {id:"p132",brand:"كيت",name:"ديليشس",price:71.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/03e7b9a6-2c8d-4b2c-8089-69d656c0d45c.jpg",inStock:true,active:true,qty:500},
-  {id:"p133",brand:"كيت",name:"هاف رولز",price:68.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/413b7a3d-0f36-4493-a92c-fc81268b874b.jpg",inStock:true,active:true,qty:500},
-  {id:"p134",brand:"",name:"بيرلنت-لينس",price:80.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/175f1058-c342-451c-bfb8-67ec5be353e0.jpg",inStock:true,active:true,qty:500},
-  {id:"p135",brand:"",name:"بيرلنت-هاف شوكلت",price:80.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/52050889-d543-4aa2-93d9-0409ac7d463e.jpg",inStock:true,active:true,qty:500},
-  {id:"p136",brand:"جيوفن",name:"جيوفن الدائري",price:67.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b2f36358-c094-4eb8-a49e-6955309c4de9.jpg",inStock:true,active:true,qty:500},
-  {id:"p137",brand:"لوفر",name:"شوكولاتة لوفرR",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1cb3cf4b-d58e-46a3-9b70-482671e05579.jpg",inStock:true,active:true,qty:500},
-  {id:"p138",brand:"هانوفيريان",name:"باوتش",price:145.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/16373685-185e-4b44-8236-438c343b1489.jpg",inStock:true,active:true,qty:500},
-  {id:"p139",brand:"جيوفن",name:"جيوفن مستطيل",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8571d939-30d2-4f3e-86f8-71e1227fa87d.jpg",inStock:true,active:true,qty:500},
-  {id:"p140",brand:"تاتش",name:"بوكس صينية دائري 615 جرام",price:115.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/594dfee1-6ad2-4fab-8790-21135a5f3978.jpg",inStock:true,active:true,qty:500},
-  {id:"p141",brand:"آحلا حلى",name:"فلورنتين مكرمل",price:49.55,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b1ba40c4-9600-491c-8914-12f8f7876515.jpg",inStock:true,active:true,qty:500},
-  {id:"p142",brand:"آحلا حلى",name:"بوكس حلا رمان",price:41.3,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5e7dccc9-3c7c-4078-a1f0-d85c3affe7c9.jpg",inStock:true,active:true,qty:500},
-  {id:"p143",brand:"لونت",name:"بوكس المشاركة",price:35.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f2558618-2484-43ca-b6ab-8414d2be813f.jpg",inStock:true,active:true,qty:500},
-  {id:"p144",brand:"",name:"بيتيفور حميدة اصابع شوكولاته",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/07b114c9-6d22-4f05-ad1e-b5ec635218ad.jpg",inStock:true,active:true,qty:500},
-  {id:"p145",brand:"فايتي بلجيكي 10 كجم",name:"خام",price:562.06,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ff1ace18-2481-4898-82b2-12dc2ef031c1.jpg",inStock:true,active:true,qty:500},
-  {id:"p146",brand:"ليوفن",name:"حلقوم كرانشR",price:58.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/83d406b6-8dea-4770-8a71-77fb8d1369c0.jpg",inStock:true,active:true,qty:500},
-  {id:"p147",brand:"",name:"ابكوريا حشوة  كراميل بروكسل 5 كيلو",price:150.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d4cf7191-b031-485a-b5be-6b81aecee44c.jpg",inStock:true,active:true,qty:500},
-  {id:"p148",brand:"ميني سنيكرز",name:"رمانR",price:71.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1e4d9edb-6489-4f32-babc-636d75d5032e.jpg",inStock:true,active:true,qty:500},
-  {id:"p149",brand:"ميني كرانش",name:"رمانR",price:71.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/cdf70909-74ce-4b76-8a58-525f6dfed2c8.png",inStock:true,active:true,qty:500},
-  {id:"p150",brand:"ويفر",name:"بايتR",price:36.23,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f1acbd6c-f879-4190-af5a-f655ebf02dc7.jpg",inStock:true,active:true,qty:500},
-  {id:"p151",brand:"بايتس",name:"بايتR",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5703441e-7b3b-4c89-afa7-6ebac6fc1df9.jpg",inStock:true,active:true,qty:500},
-  {id:"p152",brand:"كرانشي",name:"بايتR",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/de2ab6f2-a459-49ab-9462-cc09f8bc0c86.jpg",inStock:true,active:true,qty:500},
-  {id:"p153",brand:"سيقنتشر",name:"فلافونويد",price:69.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/26f11e2a-4cc7-4759-8e35-769ed4b81a82.jpg",inStock:true,active:true,qty:500},
-  {id:"p154",brand:"",name:"ونتر بوكس _ فلافونويد",price:82.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0e5e9c60-6a48-4668-8fc1-229754b63ee6.jpg",inStock:true,active:true,qty:500},
-  {id:"p155",brand:"رافينيل",name:"موالحR",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0d76401d-ede3-4bc9-a38e-6fb5b4265830.jpg",inStock:true,active:true,qty:500},
-  {id:"p156",brand:"رافينيل",name:"كرانشي R",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/05375406-b992-4671-b43b-72022ee46bcd.jpg",inStock:true,active:true,qty:500},
-  {id:"p157",brand:"تايلور",name:"اعواد النوتيلا",price:48.3,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b78b8ad1-43d7-4b41-b606-f46494a4a949.jpg",inStock:true,active:true,qty:500},
-  {id:"p158",brand:"تايلور",name:"اعواد الفستق",price:48.3,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f17036ae-7a28-4bb8-a9de-c4d526de2a19.jpg",inStock:true,active:true,qty:500},
-  {id:"p159",brand:"تايلور",name:"مكعبات النوتيلا",price:65.55,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ee7e4948-dc96-43aa-acac-f7648671aae1.jpg",inStock:true,active:true,qty:500},
-  {id:"p160",brand:"كريب دولسي",name:"هانوفيريان",price:125.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/de4886cc-e4c3-448f-a6fd-6a2439a902fd.jpg",inStock:true,active:true,qty:500},
-  {id:"p161",brand:"",name:"هانوفيريان بيكان مملح",price:147.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b46f8de4-12a3-433a-9bcb-68cb0e6905a0.jpg",inStock:true,active:true,qty:500},
-  {id:"p162",brand:"فيوتين",name:"بيستاشو صغير",price:55.89,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2251718d-e5f2-4a4b-89af-f65c2eff38ed.jpg",inStock:true,active:true,qty:500},
-  {id:"p163",brand:"فيوتين",name:"فرولينو",price:72.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/799297c9-997b-4de0-9f18-c90ecdab90fc.jpg",inStock:true,active:true,qty:500},
-  {id:"p164",brand:"فيوتين",name:"بيستاشو كبير",price:96.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5ecb679b-3682-4c3b-8496-d3d2ed387e7c.jpg",inStock:true,active:true,qty:500},
-  {id:"p165",brand:"",name:"فلافونويد برو",price:63.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/dc072285-d3db-4bb1-b011-db3cf65d2c8e.jpg",inStock:true,active:true,qty:500},
-  {id:"p166",brand:"",name:"حميدة بقلاوة أصابع الكاجو",price:34.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/24f29ebb-8edf-48f8-b0fe-12e3e53495e7.jpg",inStock:true,active:true,qty:500},
-  {id:"p167",brand:"",name:"برديسي برازق وغريبة",price:37.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5652db61-4859-4c05-af1a-e520de7b46aa.jpg",inStock:true,active:true,qty:500},
-  {id:"p168",brand:"",name:"برديسي معمول مشكل",price:44.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3aae9460-ac34-4370-a821-3f59195f4305.jpg",inStock:true,active:true,qty:500},
-  {id:"p169",brand:"",name:"برديسي بتيفور مالح",price:56.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/011960a7-d45c-4993-9001-b7670a3b0b83.jpg",inStock:true,active:true,qty:500},
-  {id:"p170",brand:"",name:"برديسي بتيفور كاجو فانيليا",price:65.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/588a8664-e993-4a44-834e-0215276eb975.jpg",inStock:true,active:true,qty:500},
-  {id:"p171",brand:"",name:"كروكنت سقنتشر",price:101.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/9c815e01-0191-4c74-bab7-905fa46ac4b5.png",inStock:true,active:true,qty:500},
-  {id:"p172",brand:"حميده",name:"معمول مغطس بلميرا",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ea5665c3-59a9-41a5-a604-c9c5f8866078.jpg",inStock:true,active:true,qty:500},
-  {id:"p173",brand:"",name:"بيتيفور حميدة  دائري فانيليا",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f61a9f2b-8bea-4c25-9d28-8eb29faf65bc.jpg",inStock:true,active:true,qty:500},
-  {id:"p174",brand:"",name:"نوتس بوكس مقرمشات",price:30.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6f751413-9456-464e-a24c-f8eb22b8355d.jpg",inStock:true,active:true,qty:500},
-  {id:"p175",brand:"برازق بالسمسم",name:"حلا البستان",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c0bd3f4c-41f0-4162-be66-6f6351aa6de2.jpg",inStock:true,active:true,qty:500},
-  {id:"p176",brand:"موالح",name:"حلا البستان",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fea87da5-c0f8-4c24-ba04-3a3f4513b2d2.jpg",inStock:true,active:true,qty:500},
-  {id:"p177",brand:"",name:"حلا البستان معمول مشكل",price:50.03,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/4c77d4ab-6178-495b-a448-32f7e3ebfe3b.jpg",inStock:true,active:true,qty:500},
-  {id:"p178",brand:"ليوفن",name:"بيكانوR",price:58.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ded5290e-84d0-4b2a-83ef-cb88a956ca75.png",inStock:true,active:true,qty:500},
-  {id:"p179",brand:"",name:"اور سويتس شوكو أصابع المها",price:37.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/da773daa-cc0a-4e5d-88d0-f4cbfe4c0c26.jpg",inStock:true,active:true,qty:500},
-  {id:"p180",brand:"",name:"اور سويتس شوكو ريتز",price:37.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c913e4cc-1983-4635-9f01-998eea584c2e.jpg",inStock:true,active:true,qty:500},
-  {id:"p181",brand:"",name:"اور سويتس شوكو ويفر",price:37.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d3218cb5-6b1c-4910-89f4-44229d9a89af.jpg",inStock:true,active:true,qty:500},
-  {id:"p182",brand:"",name:"اور سويتس شوكو  لاتيه",price:37.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ff24e5d9-8531-4edf-9df0-84acc87f77c0.jpg",inStock:true,active:true,qty:500},
-  {id:"p183",brand:"",name:"إم سويت نوتيلا بايتس",price:45.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fd8b6d38-8bce-4fd4-aa88-49b9ffc4e524.jpg",inStock:true,active:true,qty:500},
-  {id:"p184",brand:"",name:"شوقر كوتد كراميل مملح",price:74.24,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e5220f76-2d60-45e3-a8eb-7bb09cdeed2a.jpg",inStock:true,active:true,qty:500},
-  {id:"p185",brand:"",name:"شوقر كوتد تشيز كيك بالتوت",price:72.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8b53e6f5-a7b2-4bab-8d7c-ab478ecd5685.jpg",inStock:true,active:true,qty:500},
-  {id:"p186",brand:"",name:"شوقر كوتد اوليو بكس",price:141.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3247bc09-c2ff-4c21-8a08-657559d34eb2.jpg",inStock:true,active:true,qty:500},
-  {id:"p187",brand:"",name:"شوقر كوتد توفي كرمبل",price:63.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6afc28c3-3d32-4aeb-bc64-f401c2218e5f.png",inStock:true,active:true,qty:500},
-  {id:"p188",brand:"",name:"شوقر كوتد ماجيك بار التمر",price:57.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d90b3384-b92d-4bff-81b2-3b30a74d7e2e.png",inStock:true,active:true,qty:500},
-  {id:"p189",brand:"",name:"شوقر كوتد أوبايتس",price:49.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/58f78497-2ca0-4d66-86d5-2062a4be2d8a.jpg",inStock:true,active:true,qty:500},
-  {id:"p190",brand:"",name:"شوقر كوتد ماجيك بار الشوكولات",price:59.26,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0ac75242-71a1-4183-83e5-9395863e840d.png",inStock:true,active:true,qty:500},
-  {id:"p191",brand:"",name:"هانوفيريان كراميل",price:111.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/610d671b-b1a2-4a43-9298-c3c47799ce78.jpg",inStock:true,active:true,qty:500},
-  {id:"p192",brand:"",name:"هانوفيريان ترافل",price:111.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/32f032fd-473b-4e6f-ac10-e64d7a447c5e.jpg",inStock:true,active:true,qty:500},
-  {id:"p193",brand:"",name:"هانوفيريان مكس براند",price:121.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/142f04b2-cbab-4b2a-9c65-9a6e23ffc498.jpg",inStock:true,active:true,qty:500},
-  {id:"p194",brand:"",name:"جوزية حكاية",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/44b1834c-fe85-4272-9811-074e103aa47e.jpg",inStock:true,active:true,qty:500},
-  {id:"p195",brand:"",name:"بوكس فلاورز 005",price:24.87,salePrice:null,img:null,inStock:true,active:true,qty:500},
-  {id:"p196",brand:"ديفون",name:"بوكس فلاورز 004",price:24.87,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b2ba6e71-b748-4561-a10a-c1ecb606533e.jpeg",inStock:true,active:true,qty:500},
-  {id:"p197",brand:"ديفون",name:"بوكس فلاورز 003",price:24.87,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/9f9e9cad-ec9b-40f6-9245-a8136b87b3f3.jpeg",inStock:true,active:true,qty:500},
-  {id:"p198",brand:"ديفون",name:"بوكس فلاورز 002",price:24.87,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f2385e45-d323-4180-b968-1314d3c79ba2.jpg",inStock:true,active:true,qty:500},
-  {id:"p199",brand:"ديفون",name:"صواني العيد دائري",price:80.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3ba17256-443d-4b16-b32a-a798168a5801.jpg",inStock:true,active:true,qty:500},
-  {id:"p200",brand:"",name:"ديفون صينية العيد مستطيل",price:80.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3694264a-a909-4e15-b33d-fbccefa81c8c.jpg",inStock:true,active:true,qty:500},
-  {id:"p201",brand:"هانوفيريان",name:"توزيعات العيد اطار الكنوز",price:275.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a24295cd-3a24-4997-9f2e-784e473fe8f3.jpg",inStock:true,active:true,qty:500},
-  {id:"p202",brand:"",name:"هانوفيريان -توزيعات العيد  دس كايد",price:275.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6d6a1ea2-35b9-4a96-b65d-5a4112d1ce89.jpg",inStock:true,active:true,qty:500},
-  {id:"p203",brand:"",name:"هانوفيريان – توزيعات العيد كوفيرية",price:275.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8b9743d0-6051-4487-af7a-96b0616a19dd.jpg",inStock:true,active:true,qty:500},
-  {id:"p204",brand:"ديفون",name:"بوكس حالي ومالح دائري",price:65.45,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3e2abb25-edf5-47ac-b322-80dc0a234f8d.jpg",inStock:true,active:true,qty:500},
-  {id:"p205",brand:"ديفون",name:"بوكس كلاسيك فيوتين",price:57.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/9aa15cc2-258a-4b3a-853d-cc571f758dc2.jpeg",inStock:true,active:true,qty:500},
-  {id:"p206",brand:"ديفون",name:"بوكس رمان دائري",price:80.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2ddc930d-253c-4cc8-80fc-80e7da0a8274.jpeg",inStock:true,active:true,qty:500},
-  {id:"p207",brand:"ديفون",name:"بوكس سولتد بيكان دائري",price:74.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ffcbe3d1-17d2-430b-81ae-e97b8a812990.jpeg",inStock:true,active:true,qty:500},
-  {id:"p208",brand:"ديفون",name:"بوكس 002",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e9224b77-7fbf-4168-9134-e54241636a68.jpeg",inStock:true,active:true,qty:500},
-  {id:"p209",brand:"",name:"ديفون-عبارات العيد",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/894fb449-a6e6-4ac1-b9ce-7210e4ef0bf8.jpg",inStock:true,active:true,qty:500},
-  {id:"p210",brand:"",name:"TEST1  at 12:03",price:15.0,salePrice:null,img:null,inStock:true,active:true,qty:500},
-  {id:"p211",brand:"مافري",name:"بلجيان R",price:44.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/48025290-3dff-4aaa-8e55-dc1dc4192a92.jpg",inStock:true,active:true,qty:500},
-  {id:"p212",brand:"",name:"بلوم-سيليا",price:44.83,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/938cdacd-dd0f-4f03-8fc8-63f99a205c51.jpeg",inStock:true,active:true,qty:500},
-  {id:"p213",brand:"",name:"بلوم-لورا",price:44.82,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/916b5b02-8bdd-4d62-b8c8-558932b13af0.jpeg",inStock:true,active:true,qty:500},
-  {id:"p214",brand:"",name:"بلوم-فلوريان",price:44.82,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/139bc369-3fac-40eb-8688-f374530e6ea8.jpeg",inStock:true,active:true,qty:500},
-  {id:"p215",brand:"زي اللوز",name:"حكاية موالح",price:36.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/63cd2d1b-692a-4d40-ab5b-cca86c63cee6.jpeg",inStock:true,active:true,qty:500},
-  {id:"p216",brand:"زي اللوز",name:"ميكس كعك الفرح",price:34.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d2d9babf-3fd1-43e5-a15d-0d246465efb8.jpeg",inStock:true,active:true,qty:500},
-  {id:"p217",brand:"",name:"جيوفن-عبارات العيد",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/583961cc-7d88-4754-b9ca-93ca548b700e.jpeg",inStock:true,active:true,qty:500},
-  {id:"p218",brand:"",name:"جيوفن-توزيعات العيد",price:74.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/594e2d50-5f71-4590-8c9b-f725879f16b6.jpeg",inStock:true,active:true,qty:500},
-  {id:"p219",brand:"",name:"توزيعات عبارات العيد بني",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ab1e214c-2252-4d0a-bff6-b3f35b7cfd9e.jpeg",inStock:true,active:true,qty:500},
-  {id:"p220",brand:"",name:"توزيعات عبارات العيد كحلي",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5b7d691a-b66d-42e5-a32d-558e27ae122b.jpeg",inStock:true,active:true,qty:500},
-  {id:"p221",brand:"",name:"ضيافة الأندلس (صينية مغلفة فاخرة)",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/611b8ef1-b23b-4493-aa71-3ce450363fcc.jpeg",inStock:true,active:true,qty:500},
-  {id:"p222",brand:"",name:"ضيافة الأندلس (صينية شوكولاتة دائري )",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/55abcfbc-bef7-4fe0-a6db-b86b4af52f4c.jpeg",inStock:true,active:true,qty:500},
-  {id:"p223",brand:"",name:"ضيافة الأندلس (صينية شوكولاتة ثمانية الشكل )",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d7e30878-facc-430f-84c4-c2dd9980b0ac.jpeg",inStock:true,active:true,qty:500},
-  {id:"p224",brand:"باقة اﻟﻌﻴﺪ",name:"5",price:131.5,salePrice:106.87,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d2cf2700-5f4b-43a6-b7a4-2d1fe2b60cab.png",inStock:true,active:true,qty:500},
-  {id:"p225",brand:"ﺗﺎﺗﺶ",name:"ﺑﻮﻛﺲ اﻟﻌﻴﺪ",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a56bcfd7-6da7-4f0a-b666-50b7329a6d02.jpeg",inStock:true,active:true,qty:500},
-  {id:"p226",brand:"تاتش",name:"صينية العيد ﻓﻴﱪ داﺋﺮي",price:115.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7c5e8594-dd2d-4689-8f09-6b76d9cc947b.jpeg",inStock:true,active:true,qty:500},
-  {id:"p227",brand:"تاتش",name:"ﺻﻴﻨﻴﻪ اﻟﻌﻴﺪ ﻋﺒﻖ اﻟﻔﺨﺎﻣﺔ",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/02030fc7-cbc3-4dca-ba87-10e85ccd552a.jpg",inStock:true,active:true,qty:500},
-  {id:"p228",brand:"تاتش",name:"ﺻﻴﻨﻴﺔ اﻟﻌﻴﺪ ﻣﻜﺲ",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c8682111-ce0e-467c-afc8-eea28daa2dd5.png",inStock:true,active:true,qty:500},
-  {id:"p229",brand:"تاتش",name:"صينية العيد - VIP",price:129.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3886664f-ab37-438b-97f8-8654de01080d.png",inStock:true,active:true,qty:500},
-  {id:"p230",brand:"تاتش",name:"صينية الورد",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/063014ae-8664-4070-b74c-c03764e59c7e.png",inStock:true,active:true,qty:500},
-  {id:"p231",brand:"ريمة",name:"توزيعات العيد",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/35fc6115-36a8-4bcc-b727-95277608433a.png",inStock:true,active:true,qty:500},
-  {id:"p232",brand:"نوشية",name:"حالي مالح R",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e6a529ca-6b8d-4151-831c-6c55bdc37cc5.jpg",inStock:true,active:true,qty:500},
-  {id:"p233",brand:"دوسور",name:"بوكس الذهب  R",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a52ad775-ebd1-4524-b296-236ed2094da4.png",inStock:true,active:true,qty:500},
-  {id:"p234",brand:"دوسور",name:"عبق الفخامة R",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/98953498-cd50-4b7c-9815-8d5a8b2e1b19.png",inStock:true,active:true,qty:500},
-  {id:"p235",brand:"دوسور",name:"حلا البقل R",price:66.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/668d45e7-91f6-4aba-ac34-359878a2a2a0.png",inStock:true,active:true,qty:500},
-  {id:"p236",brand:"دوسور",name:"بوكس دوسور R",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5db59712-28f2-4273-a29f-9c0e30ea4a6b.png",inStock:true,active:true,qty:500},
-  {id:"p237",brand:"دوسور",name:"باريس R",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8f6b63ed-1e42-4f25-9a08-d002a7bbc683.png",inStock:true,active:true,qty:500},
-  {id:"p238",brand:"دوسور",name:"بلو دور R",price:63.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8f5c3b8d-caad-4dac-a7a1-5e9a40a8ee2c.png",inStock:true,active:true,qty:500},
-  {id:"p239",brand:"دوسور",name:"باقة دوسور R",price:75.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/637180c4-0468-459f-bd5b-4a4ed348ea48.png",inStock:true,active:true,qty:500},
-  {id:"p240",brand:"دوسور",name:"الرمان R",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8b698103-84c5-4a5a-af5e-2b2f789b7dc6.png",inStock:true,active:true,qty:500},
-  {id:"p241",brand:"دوسور",name:"اصابع ستيكس R",price:52.9,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3e96d17c-2e7b-4090-8b9d-3ccb6a89c83d.png",inStock:true,active:true,qty:500},
-  {id:"p242",brand:"دوسور",name:"حلا جمعتنا R",price:109.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/31fedf51-cf52-4ae7-a4ee-23f29d74a581.png",inStock:true,active:true,qty:500},
-  {id:"p243",brand:"جيوفن",name:"جلامور",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/73a3cb43-c686-41b5-896b-85e92ef8a584.jpg",inStock:true,active:true,qty:500},
-  {id:"p244",brand:"جيوفن",name:"فانتازيا",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6484c69e-d780-48b5-8eb1-1849044add16.png",inStock:true,active:true,qty:500},
-  {id:"p245",brand:"",name:"باقة النمو",price:520.9,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ffbbe3f0-f408-4c97-8f48-87bf5e678b87.png",inStock:true,active:true,qty:500},
-  {id:"p246",brand:"جيوفن",name:"لانكشير",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b7b7568a-ef60-4bdc-a770-88adf719ad10.jpg",inStock:true,active:true,qty:500},
-  {id:"p247",brand:"",name:"كوكيز بالحليب المحموس",price:41.4,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/99072966-6874-4646-b97b-4bacfb3498dc.jpg",inStock:true,active:true,qty:500},
-  {id:"p248",brand:"",name:"كوين كليجة بالحليب المحموس",price:41.4,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2592eedd-b33a-48b3-b523-810e05eb02ff.jpg",inStock:true,active:true,qty:500},
-  {id:"p249",brand:"جيوفن",name:"حلا كيوبس",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6ab2dc85-675e-4ba5-ad6e-7ebbb3f697c2.jpg",inStock:true,active:true,qty:500},
-  {id:"p250",brand:"جيوفن",name:"بيسكت",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a99a167e-864e-423a-a117-f4c048159c40.jpg",inStock:true,active:true,qty:500},
-  {id:"p251",brand:"فيلونا",name:"شوكولاتة 2",price:49.16,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/31434a8a-e5ca-405e-8c1d-088e4727229b.jpg",inStock:true,active:true,qty:500},
-  {id:"p252",brand:"فيلونا",name:"شوكولاتة 1",price:49.16,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/be922c5f-a73b-4630-b95d-0009264be338.jpg",inStock:true,active:true,qty:500},
-  {id:"p253",brand:"تاتش",name:"ستيكس مكس",price:33.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/da058702-fd07-485f-a1d2-7be6150d40a8.jpg",inStock:true,active:true,qty:500},
-  {id:"p254",brand:"تاتش",name:"ستيكس كراميل كرانش",price:33.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/9b25420c-e7de-4245-a203-60227b7c4e94.jpg",inStock:true,active:true,qty:500},
-  {id:"p255",brand:"تاتش",name:"ذوق السعادة",price:28.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7dbc83a1-e8ec-4626-975d-69dcd9d54a23.jpg",inStock:true,active:true,qty:500},
-  {id:"p256",brand:"",name:"باقة لوتشير  R",price:510.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/80083b08-14d7-492d-b815-48b124cdf975.png",inStock:true,active:true,qty:500},
-  {id:"p257",brand:"لوتشير",name:"مينيR",price:24.15,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/631a93ba-99f6-4d4e-b47b-37997948db2f.jpg",inStock:true,active:true,qty:500},
-  {id:"p258",brand:"كحيلة",name:"بيتي فور كحيلة",price:54.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/052b071c-6e43-4671-ac2a-a687a01f6bf7.jpg",inStock:true,active:true,qty:500},
-  {id:"p259",brand:"كحيلة",name:"معمول المحموس الحجم الصغير",price:41.4,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/50b13f60-ad4e-440f-b572-73b06f86a37e.jpg",inStock:true,active:true,qty:500},
-  {id:"p260",brand:"كحيلة",name:"معمول المحموس الحجم الكبير",price:63.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1c024a0b-36ec-4155-9593-93212f6e47aa.jpg",inStock:true,active:true,qty:500},
-  {id:"p261",brand:"نوفا",name:"بقلاوة نوفا بيكان",price:37.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/bd84e8c2-29ab-47ad-882d-f2635ea4c25b.jpg",inStock:true,active:true,qty:500},
-  {id:"p262",brand:"مالومة",name:"توزيعات اليوم الوطني2",price:27.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/df25255d-7c72-46a4-b5d3-24cd0ddad423.jpg",inStock:true,active:true,qty:500},
-  {id:"p263",brand:"فيلونا",name:"اصابع البقلاوة بالبيكان والشوكولاتة كبير",price:74.16,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b4d81879-97cc-42bb-ac94-0034dca9e0ce.jpg",inStock:true,active:true,qty:500},
-  {id:"p264",brand:"فيلونا",name:"اصابع البقلاوة  بالبيكان والشوكلاته  صغير",price:49.16,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/db1db7a2-e7c7-45d2-8935-21a993fb3647.jpg",inStock:true,active:true,qty:500},
-  {id:"p265",brand:"فيلونا",name:"أصابع البقلاوة بالكاجو صغير",price:36.67,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/95b658e2-b340-4b99-aad0-69399d520b9d.jpg",inStock:true,active:true,qty:500},
-  {id:"p266",brand:"تراينقل",name:"اوريجنال",price:52.9,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a08678f2-0eab-4c83-883d-15c6e23c8f61.jpg",inStock:true,active:true,qty:500},
-  {id:"p267",brand:"تراينقل",name:"ريتز",price:63.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/999dd021-abd8-4b71-92a0-913aa360ee6f.jpg",inStock:true,active:true,qty:500},
-  {id:"p268",brand:"تراينقل",name:"لايت شوكو",price:52.9,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/02e6d59c-dddd-46de-a720-cc1a5d32c9f0.jpg",inStock:true,active:true,qty:500},
-  {id:"p269",brand:"تراينقل",name:"كرانشي",price:63.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d45251f0-11e7-466e-94b0-614fc762e1d2.jpg",inStock:true,active:true,qty:500},
-  {id:"p270",brand:"تراينقل",name:"مكس",price:52.9,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/62e8ae96-ece2-44a2-818d-ad7fb559954d.jpg",inStock:true,active:true,qty:500},
-  {id:"p271",brand:"تراينقل",name:"لايت كرانشي",price:52.9,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/02921d2a-5d17-4e70-b7c3-a6f04524d262.jpg",inStock:true,active:true,qty:500},
-  {id:"p272",brand:"",name:"باقة جيوفن المتنوعة",price:3697.5,salePrice:3298.2,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/aec507d1-23ef-4c88-b193-b28b88e4b895.png",inStock:true,active:true,qty:500},
-  {id:"p273",brand:"جيوفن",name:"براوني",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/dae5e4bf-f114-426a-bb0f-94692d843665.jpg",inStock:true,active:true,qty:500},
-  {id:"p274",brand:"جيوفن",name:"مكس شوكلت",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d43b29e4-c39b-4f5b-93c3-bb9cb43a4770.png",inStock:true,active:true,qty:500},
-  {id:"p275",brand:"تاتش",name:"ستيكس",price:33.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/58a9a84c-f972-46f8-9951-3d5726a9811e.jpg",inStock:true,active:true,qty:500},
-  {id:"p276",brand:"فيوتين",name:"ماسكربيا",price:103.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/42f0b308-93ba-4468-9592-ef26ef92f4e1.png",inStock:true,active:true,qty:500},
-  {id:"p277",brand:"",name:"باقة تاوة 100 بوكس",price:5900.0,salePrice:null,img:null,inStock:true,active:true,qty:500},
-  {id:"p278",brand:"ديفون",name:"بوكس حلا القهوة صغير",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/aa8595fe-8f53-4f06-b954-90d179721b54.jpg",inStock:true,active:true,qty:500},
-  {id:"p279",brand:"ديفون",name:"بوكس حلا القهوة",price:74.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/76c9cc09-f310-4708-b10a-b55f8fde4519.jpg",inStock:true,active:true,qty:500},
-  {id:"p280",brand:"ديفون",name:"حالي ومالح دائري",price:74.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f96e28ae-f3ae-4780-a169-11db9dd2de8c.png",inStock:true,active:true,qty:500},
-  {id:"p281",brand:"تاتش",name:"بوكس كشخة",price:100.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c7af369d-156f-4821-b79b-d3478a8314c7.jpg",inStock:true,active:true,qty:500},
-  {id:"p282",brand:"زي اللوز",name:"دبل جامبو",price:58.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/002dd8af-b7e9-476d-a440-a99a1920ff33.png",inStock:true,active:true,qty:500},
-  {id:"p283",brand:"زي اللوز",name:"دبل مكس",price:58.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5a2f6878-1719-495e-861e-644d9fd91095.jpg",inStock:true,active:true,qty:500},
-  {id:"p284",brand:"زي اللوز",name:"سوبر جامبو",price:67.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/9f0d7e1e-79da-401e-8ced-4e82e9864338.jpg",inStock:true,active:true,qty:500},
-  {id:"p285",brand:"زي اللوز",name:"دبل ماريو",price:58.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/edf395ef-84ea-452d-871b-2b0af70702ec.jpg",inStock:true,active:true,qty:500},
-  {id:"p286",brand:"زي اللوز",name:"سوبر ماريو",price:67.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/37678bf3-240f-415e-8aee-58dff2e31afd.jpg",inStock:true,active:true,qty:500},
-  {id:"p287",brand:"زي اللوز",name:"سوبر مكس",price:67.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5a5b3855-a6f0-46ab-a07a-f5d0656d0b70.jpg",inStock:true,active:true,qty:500},
-  {id:"p288",brand:"زي اللوز",name:"امادور",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2ac0fd2b-944e-481f-b23f-b904998c55d4.jpg",inStock:true,active:true,qty:500},
-  {id:"p289",brand:"",name:"زي اللوز -بيكانو جلاش",price:48.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/49f7ffab-ece9-4b84-90ed-d50e6170ad74.jpg",inStock:true,active:true,qty:500},
-  {id:"p290",brand:"لوفين",name:"بوكس توزيعات عيد الأضحى",price:59.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/dfe5b8c7-0fa9-4dcf-b96a-2e2966184fe2.jpg",inStock:true,active:true,qty:500},
-  {id:"p291",brand:"فينو",name:"شوكو فلاورز",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/40b5d694-68a3-43f9-a506-fd7284d60984.jpg",inStock:true,active:true,qty:500},
-  {id:"p292",brand:"أثرية",name:"بقلاوة بالبيكان صغير",price:49.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3f78168b-0e45-45cc-af6b-24ccc56f891b.jpg",inStock:true,active:true,qty:500},
-  {id:"p293",brand:"ميني بايت",name:"كرانش",price:44.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8a75c9f7-47c0-4b6d-8e8a-94cfb2fc60bb.jpg",inStock:true,active:true,qty:500},
-  {id:"p294",brand:"ميني بايت",name:"جواهر",price:44.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c214896e-30b9-4bb2-8807-3a631710b745.jpg",inStock:true,active:true,qty:500},
-  {id:"p295",brand:"ميني بايت",name:"اكواب",price:44.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c63dc072-c620-4be3-a9aa-673cfe3c3211.jpg",inStock:true,active:true,qty:500},
-  {id:"p296",brand:"تاتش",name:"ذوق ويفر",price:33.1,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/85343275-92f1-46fb-a224-2f501765aa4b.png",inStock:true,active:true,qty:500},
-  {id:"p297",brand:"تاتش",name:"ذوق بايتس",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/14fc9e1f-e384-4611-b096-3f3fd9e48ef3.jpg",inStock:true,active:true,qty:500},
-  {id:"p298",brand:"تاتش",name:"ذوق زوارة",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a37b7400-80c6-4edc-9ab5-fd29947ffa11.jpg",inStock:true,active:true,qty:500},
-  {id:"p299",brand:"احلا حلى",name:"بوكس حلا الرمان كبير",price:72.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/bf661f68-d3db-4847-80b0-8506127cb269.jpg",inStock:true,active:true,qty:500},
-  {id:"p300",brand:"ايدن",name:"بار بستاشيو وسط",price:18.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6405bab8-7a65-4718-8ce1-e61b5ce502db.jpg",inStock:true,active:true,qty:500},
-  {id:"p301",brand:"ايدن",name:"بار بستاشيو كبير",price:28.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7c0eecf3-35a9-4981-9bb2-6a3e7d81f370.jpg",inStock:true,active:true,qty:500},
-  {id:"p302",brand:"ايدن",name:"بار بستاشيو صغير",price:7.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/338669b6-104f-4394-978e-dec3c40632cd.jpg",inStock:true,active:true,qty:500},
-  {id:"p303",brand:"ليفانا",name:"ميني بيتي فور",price:37.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a6816c9c-c7b7-4ad3-8a55-7869a33a13ac.jpg",inStock:true,active:true,qty:500},
-  {id:"p304",brand:"ليفانا",name:"بيتي فور اصابع",price:43.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/24d3c702-202e-4ce1-b496-26002bb60907.jpg",inStock:true,active:true,qty:500},
-  {id:"p305",brand:"",name:"باقة جوفين دائري 60",price:4071.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8e169d58-7631-4e87-9a0a-1c344e7ce40c.png",inStock:true,active:true,qty:500},
-  {id:"p306",brand:"",name:"باقة جيوفن مستطيل 60",price:3105.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2ceaa864-2b7c-46e4-90ad-287f835b9c6e.png",inStock:true,active:true,qty:500},
-  {id:"p307",brand:"لوفين",name:"توزيعات العيد",price:55.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0b5d104a-f9c4-4cb3-8478-e355b11541b9.jpg",inStock:true,active:true,qty:500},
-  {id:"p308",brand:"تاتش",name:"بوكس رمان VIP",price:92.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a471649a-fc23-446a-9e0e-b7f090edda08.jpg",inStock:true,active:true,qty:500},
-  {id:"p309",brand:"",name:"باقة جيوفن 500",price:25875.0,salePrice:null,img:null,inStock:true,active:true,qty:500},
-  {id:"p310",brand:"جيوفن",name:"بينك دائري",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0908680b-ee88-4649-bdfe-20698f3e5714.jpg",inStock:true,active:true,qty:500},
-  {id:"p311",brand:"احلا حلى",name:"بوكس سبشيال أحلا حلى",price:72.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/9c793829-24c2-41eb-918b-41ca2f38dda5.jpg",inStock:true,active:true,qty:500},
-  {id:"p312",brand:"احلا حلى",name:"بوكس ريتز كرانشي",price:48.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3f1e4bb0-c43f-4c07-8961-ff9824412bbd.jpg",inStock:true,active:true,qty:500},
-  {id:"p313",brand:"احلا حلى",name:"بوكس شوكولاته ديجيستيف",price:68.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/11145908-fcd8-45cc-9afd-f9153c39b006.jpg",inStock:true,active:true,qty:500},
-  {id:"p314",brand:"احلا حلى",name:"كاكاو ورايس كرسبي",price:68.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/159d6f4c-d10a-4820-9ea5-a1c61c201f52.jpg",inStock:true,active:true,qty:500},
-  {id:"p315",brand:"احلا حلى",name:"بوكس شوكلت فول سوداني",price:68.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2b4d3b0b-2d12-42ce-8741-508da29df259.jpg",inStock:true,active:true,qty:500},
-  {id:"p316",brand:"اوفر سويت",name:"سويتياR",price:66.13,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d13375ad-ed89-4eef-bbb9-059aecb7b1be.jpg",inStock:true,active:true,qty:500},
-  {id:"p317",brand:"اوفر سويت",name:"هارفيلاR",price:58.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/59749ca0-2a4d-48c3-ae6d-a88dc294b8b9.jpg",inStock:true,active:true,qty:500},
-  {id:"p318",brand:"اوفر سويت",name:"روزاR",price:58.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ef0165b5-6277-489c-b932-06e23e8ffd9b.jpg",inStock:true,active:true,qty:500},
-  {id:"p319",brand:"اوفر سويت",name:"فروتيلاR",price:48.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/06f444c8-051c-4c3a-86e0-2dd18bcadcbc.webp",inStock:true,active:true,qty:500},
-  {id:"p320",brand:"غرتاف",name:"بقلاوة أصابع الكاجو",price:36.55,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/148269e3-4390-4226-9b62-be951f7ec3bc.jpg",inStock:true,active:true,qty:500},
-  {id:"p321",brand:"جوستوزو",name:"مكس",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/26821c99-9021-4108-abe6-1638e1364f95.jpg",inStock:true,active:true,qty:500},
-  {id:"p322",brand:"جوستوزو",name:"إستيكس",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7e73cab9-defa-4841-bd04-562599252869.jpg",inStock:true,active:true,qty:500},
-  {id:"p323",brand:"جوستوزو",name:"تاكو",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fb7cec39-1021-47dc-8659-bab9b1cf2092.jpg",inStock:true,active:true,qty:500},
-  {id:"p324",brand:"اكلا",name:"شكولاتة كيندر مع اللوز",price:52.9,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/4bed39e6-a1b8-4847-8a19-a42454739b41.jpg",inStock:true,active:true,qty:500},
-  {id:"p325",brand:"اكلا",name:"شوكلاته بيكان كراميل",price:52.9,salePrice:50.25,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6876681c-4f8e-4a7b-b656-828fa83b0fd1.jpg",inStock:true,active:true,qty:500},
-  {id:"p326",brand:"اكلا",name:"شكولاتة مارشملو",price:52.9,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8794f6dc-4e84-400a-b155-85bc50149576.jpg",inStock:true,active:true,qty:500},
-  {id:"p327",brand:"اكلا",name:"شكولاتة كرانشي كراميل",price:52.9,salePrice:50.25,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ff88b622-ac6e-4589-8fd5-273f63f526f4.jpg",inStock:true,active:true,qty:500},
-  {id:"p328",brand:"اكلا",name:"شكولاتة ترافل طحينة مع البيكان",price:52.9,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/97cadc0a-c61f-4fba-b5d3-1d39371aeb5d.jpg",inStock:true,active:true,qty:500},
-  {id:"p329",brand:"جيوفن",name:"باقه 250 دائري",price:16962.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7e22b536-5875-45de-bfa3-7ae726022cd0.jpg",inStock:true,active:true,qty:500},
-  {id:"p330",brand:"بلورة",name:"شوكو زون",price:50.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/23f059ea-b8da-47b9-861c-c7428dc7a9f1.jpg",inStock:true,active:true,qty:500},
-  {id:"p331",brand:"بلورة",name:"نقنـقة اليـوم",price:50.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/da737502-bb1f-4541-bc42-eb9dee55bf6d.jpg",inStock:true,active:true,qty:500},
-  {id:"p332",brand:"بلورة",name:"بـيكـان محـشي",price:73.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8d7b54a5-7097-4c5d-861d-7ba5d9a1246d.jpg",inStock:true,active:true,qty:500},
-  {id:"p333",brand:"بلورة",name:"ريـتز البـيكان",price:50.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/417b684b-1e62-4158-ac61-682575b172a9.jpg",inStock:true,active:true,qty:500},
-  {id:"p334",brand:"بلورة",name:"قطـع الـذهبية",price:50.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e58b7e38-5332-43a2-861f-ccc636c0c11a.jpg",inStock:true,active:true,qty:500},
-  {id:"p335",brand:"بلورة",name:"كـور كـرسبي",price:50.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b02d7ade-4fc3-44aa-9e73-6820a925b35c.jpg",inStock:true,active:true,qty:500},
-  {id:"p336",brand:"بلورة",name:"أعـواد القـهوة",price:50.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/db7a390f-8091-4c97-8eaa-a0cc6c290134.jpg",inStock:true,active:true,qty:500},
-  {id:"p337",brand:"الفاس",name:"شوكلت بار اللوتس كبير",price:28.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b8ee71c3-1cca-45a3-8c3a-b53cde35bf49.jpg",inStock:true,active:true,qty:500},
-  {id:"p338",brand:"الفاس",name:"شوكلت بار بستاشيو صغير",price:7.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/4a1f8c2c-e23a-4b86-b677-4ffb4490569a.jpg",inStock:true,active:true,qty:500},
-  {id:"p339",brand:"الفاس",name:"شوكلت بار بستاشيو وسط",price:15.0,salePrice:14.25,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/45fde7bd-3846-4423-a7ff-506badec9329.jpg",inStock:true,active:true,qty:500},
-  {id:"p340",brand:"الفاس",name:"شوكلت بار بستاشيو كبير",price:28.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/35eaad70-d164-463b-8df7-bdd44bacd61b.jpg",inStock:true,active:true,qty:500},
-  {id:"p341",brand:"تاتش",name:"مكس المشاهير",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/dcc1b612-7ac8-4c60-8237-6d9a3b948a45.png",inStock:true,active:true,qty:500},
-  {id:"p342",brand:"كراش",name:"بستاشيو",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/91926ad5-6555-4877-ad2b-0f51c933fccf.jpg",inStock:true,active:true,qty:500},
-  {id:"p343",brand:"كراش",name:"كراش البيكان",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/4a33ef55-50a6-415b-80dc-c1ed4526cade.jpg",inStock:true,active:true,qty:500},
-  {id:"p344",brand:"روبينا",name:"أصابع بيتي فور مشكل كبير",price:41.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/245307f9-8482-44e3-8d8b-5995256a3faf.jpg",inStock:true,active:true,qty:500},
-  {id:"p345",brand:"روبينا",name:"معمول تمر",price:39.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/31dd3068-91bd-4a01-a0de-378334ed73ac.jpg",inStock:true,active:true,qty:500},
-  {id:"p346",brand:"تاتش",name:"حلا الفخامة الأخضر",price:45.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/37b41add-f4ae-403f-8ffe-34315fd5a34b.png",inStock:true,active:true,qty:500},
-  {id:"p347",brand:"تاتش",name:"حلا الفخامة الأحمر",price:45.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2a69e32e-6c52-4e66-b13c-05f90171a09a.png",inStock:true,active:true,qty:500},
-  {id:"p348",brand:"تاتش",name:"خيال",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0c45df6e-b9f6-41fb-8c4a-17ccedda7e2d.jpg",inStock:true,active:true,qty:500},
-  {id:"p349",brand:"تاتش",name:"فكتوريا",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b3f944cd-552b-4d61-8380-d2a4bec3627f.png",inStock:true,active:true,qty:500},
-  {id:"p350",brand:"تاتش",name:"فرح",price:85.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/241b431e-49b9-4db9-887a-988f712a815d.png",inStock:true,active:true,qty:500},
-  {id:"p351",brand:"تاتش",name:"تولين",price:28.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/94f08580-9286-487c-a105-975823dbdc5f.jpg",inStock:true,active:true,qty:500},
-  {id:"p352",brand:"تاتش",name:"روزي",price:28.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/52e0b312-4d92-448d-8c38-24949de2ce71.jpg",inStock:true,active:true,qty:500},
-  {id:"p353",brand:"تاتش",name:"سيدرا",price:28.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0a91363f-16d3-4607-b54c-f0e8903fb827.jpg",inStock:true,active:true,qty:500},
-  {id:"p354",brand:"تاتش",name:"كارمن",price:28.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8361b993-79cb-4514-b11e-48b6156eef3b.jpg",inStock:true,active:true,qty:500},
-  {id:"p355",brand:"رودير",name:"رويال",price:69.72,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3890f77d-c23a-440a-98cf-bbeda9ed1e6f.jpg",inStock:true,active:true,qty:500},
-  {id:"p356",brand:"رودير",name:"كيكة التمر",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a039534a-adef-4c77-ae9d-2761a9a0b9a7.jpg",inStock:true,active:true,qty:500},
-  {id:"p357",brand:"روبينا",name:"برازق",price:37.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5a485715-ca0c-495c-a3b8-0126e884e9e9.jpg",inStock:true,active:true,qty:500},
-  {id:"p358",brand:"باب شرقي",name:"بقلاوة البيكان كبير",price:90.47,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2ac69d82-f125-47c1-a0b0-ac6be1b85043.jpg",inStock:true,active:true,qty:500},
-  {id:"p359",brand:"باب شرقي",name:"بقلاوة البيكان صغير",price:48.97,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/cabf0e7a-8ab4-4349-af96-f6722ff98639.jpg",inStock:true,active:true,qty:500},
-  {id:"p360",brand:"باب شرقي",name:"أصابع البقلاوة بالكاجو والشوكولاتة كبير",price:94.62,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/acfb5461-69a4-460e-87be-2630707e059c.jpg",inStock:true,active:true,qty:500},
-  {id:"p361",brand:"باب شرقي",name:"اصابع البقلاوة بالكاجو والشوكولاتة صغير",price:53.12,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8022b4da-2e57-4fbc-afa3-2a0985242a51.jpg",inStock:true,active:true,qty:500},
-  {id:"p362",brand:"باب شرقي",name:"مكعبات البقلاوة بالفستق صغير",price:40.67,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c36b5cc5-bc3f-4aa7-88ef-91d4e0a20e0a.jpg",inStock:true,active:true,qty:500},
-  {id:"p363",brand:"باب شرقي",name:"مكعبات البقلاوة بالفستق كبير",price:82.17,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/34be5dff-c72f-46af-8a95-e39f336b37a9.jpg",inStock:true,active:true,qty:500},
-  {id:"p364",brand:"باب شرقي",name:"أصابع البقلاوة بالكاجو صغير",price:40.67,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/824184fe-10d4-4587-879a-38bb64215a6b.jpg",inStock:true,active:true,qty:500},
-  {id:"p365",brand:"باب شرقي",name:"اصابع البقلاوة بالكاجو كبير",price:82.17,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0273e0c6-1195-4041-81b1-c0c56146f3a5.jpg",inStock:true,active:true,qty:500},
-  {id:"p366",brand:"غرتاف",name:"ميني تارت غرتاف",price:38.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/52650ddf-9999-42b2-a608-4e4d182d09bf.jpg",inStock:true,active:true,qty:500},
-  {id:"p367",brand:"غرتاف",name:"حلا غرتاشيو",price:41.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/aa77ec97-8262-48c2-ad53-aa130e2a0b50.jpg",inStock:true,active:true,qty:500},
-  {id:"p368",brand:"غرتاف",name:"حلا ترافلز غرتاف",price:39.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ce479b0a-eb5e-4468-8450-250380428f12.jpg",inStock:true,active:true,qty:500},
-  {id:"p369",brand:"غرتاف",name:"حلا تريانقلز",price:41.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d69c1842-07f0-4df0-be04-12a2c4e6499e.jpg",inStock:true,active:true,qty:500},
-  {id:"p370",brand:"غرتاف",name:"حلا طبقات الجوزاء",price:37.4,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8d1effcf-8dd3-44f9-a036-f8ef1fd7ef15.jpg",inStock:true,active:true,qty:500},
-  {id:"p371",brand:"باب شرقي",name:"بيتفور الحليب كبير",price:73.87,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0c5cc93f-695f-48d1-a8d0-d1691b18535c.jpg",inStock:true,active:true,qty:500},
-  {id:"p372",brand:"باب شرقي",name:"بيتفور الحليب صغير",price:32.37,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2b66455e-3c9a-4f33-a2ba-f4847812d00a.jpg",inStock:true,active:true,qty:500},
-  {id:"p373",brand:"باب شرقي",name:"بيتفور الشوكولاتة صغير",price:32.37,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/bdaf1339-c657-4807-beb3-9edc040ae913.jpg",inStock:true,active:true,qty:500},
-  {id:"p374",brand:"باب شرقي",name:"مشكل البيتفور كبير",price:65.58,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b7835923-10e2-4679-9490-94b8c5d3bc06.jpg",inStock:true,active:true,qty:500},
-  {id:"p375",brand:"باب شرقي",name:"شرقيات",price:140.27,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/86a2338b-58bc-4645-936a-b96e0f2e763a.jpg",inStock:true,active:true,qty:500},
-  {id:"p376",brand:"تاتش",name:"هافانا دائري",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/22efe3b6-a65b-46fe-8cda-50fd9aeddd2d.jpg",inStock:true,active:true,qty:500},
-  {id:"p377",brand:"سويت شادن",name:"بيكان براونيز",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d9a47b5d-e3c8-44c1-bc4a-43736c8cc05f.jpg",inStock:true,active:true,qty:500},
-  {id:"p378",brand:"كيت",name:"ديلايت",price:63.19,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/48590e68-ae64-4a35-9108-16f1a06c29c8.jpg",inStock:true,active:true,qty:500},
-  {id:"p379",brand:"كيت",name:"ماجيك بايتس",price:79.19,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/85609750-4f1a-4529-a1a9-efca8ea07f52.png",inStock:true,active:true,qty:500},
-  {id:"p380",brand:"",name:"بيرلنت-فلات شوكلت",price:92.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3c49539f-fcdc-4454-a7a0-b89b2866d516.jpg",inStock:true,active:true,qty:500},
-  {id:"p381",brand:"",name:"بيرلنت-كرانشي",price:89.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/496a2718-8462-453d-b969-ba4c3f9cebc5.jpg",inStock:true,active:true,qty:500},
-  {id:"p382",brand:"كيت",name:"بيتي فور مغمس بالشوكولاتة",price:47.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/866cbace-7f58-4d91-9b0f-6eb7fcca181b.jpg",inStock:true,active:true,qty:500},
-  {id:"p383",brand:"كيت",name:"موالح",price:30.41,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7c4313a0-6526-4b5d-bbf4-77cd54370984.jpg",inStock:true,active:true,qty:500},
-  {id:"p384",brand:"كيت",name:"كرانشي شوكلت",price:47.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/4d57613d-e0dd-483a-88c2-6649bd0a8d19.jpg",inStock:true,active:true,qty:500},
-  {id:"p385",brand:"تاتش",name:"بلجيكان",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/790e8df1-e07c-4343-9328-fdf2e3977e78.png",inStock:true,active:true,qty:500},
-  {id:"p386",brand:"تاتش",name:"بوكس سيلا دائري",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f8429f6e-89ad-4838-a3f5-807c8a0036ba.jpg",inStock:true,active:true,qty:500},
-  {id:"p387",brand:"رمان",name:"ميني ويفرR",price:71.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/727fe78e-c35c-480f-844d-8b5b3a93e0d1.png",inStock:true,active:true,qty:500},
-  {id:"p388",brand:"رهش",name:"فلورنتيناR",price:34.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/83b505bf-ab26-48b8-8ee5-cf3aae4db85d.jpg",inStock:true,active:true,qty:500},
-  {id:"p389",brand:"سوريزو",name:"كرانشي",price:59.22,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0e7afb60-2aec-4042-abd8-d29c4ca6224a.jpg",inStock:true,active:true,qty:500},
-  {id:"p390",brand:"لونت",name:"كنافة بالفستق",price:40.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e2b50ed4-85a6-4adb-ad52-238f6165d9c2.jpg",inStock:true,active:true,qty:500},
-  {id:"p391",brand:"جوستوزو",name:"ويفر سيجار",price:71.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a56d8a62-06e2-4c34-9d70-188ddec121e3.jpg",inStock:true,active:true,qty:500},
-  {id:"p392",brand:"جوستوزو",name:"إستيكس",price:60.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fef87188-65d8-4206-9058-7d235aadd78f.jpg",inStock:true,active:true,qty:500},
-  {id:"p393",brand:"تاتش",name:"ياقوت",price:64.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c7c29b58-b839-4fd8-b383-e80af4fac8b9.png",inStock:true,active:true,qty:500},
-  {id:"p394",brand:"",name:"تاتش -الحمدلله على السلامة",price:62.1,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/91475579-3d4a-4ead-bccd-6643e3d88945.jpg",inStock:true,active:true,qty:500},
-  {id:"p395",brand:"تاتش",name:"بيوقلز",price:39.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c6777a5a-6e32-42bd-ae1d-b03b88acb1c1.jpg",inStock:true,active:true,qty:500},
-  {id:"p396",brand:"رهش",name:"بيكانوR",price:34.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8d047a3d-1104-4192-8fdc-424b14bfa4ca.jpg",inStock:true,active:true,qty:500},
-  {id:"p397",brand:"رهش",name:"كاكاو لندنR",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/efeb9f9c-ab68-4bfa-aa57-f9c1cd9b2665.jpg",inStock:true,active:true,qty:500},
-  {id:"p398",brand:"لوفين",name:"آيس براوني",price:63.25,salePrice:56.92,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/26c7f784-5d2f-4c45-9b1d-1e77290f4142.jpg",inStock:true,active:true,qty:500},
-  {id:"p399",brand:"تاتش",name:"بوكس الفخامة",price:58.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/aea21304-97b7-429e-91df-e54677663de2.png",inStock:true,active:true,qty:500},
-  {id:"p400",brand:"تاتش",name:"بوكس vip",price:53.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/49c6d796-5ced-48f0-8058-38643aae6b11.jpg",inStock:true,active:true,qty:500},
-  {id:"p401",brand:"تاتش",name:"فيف الوردي",price:58.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0d6c3599-afdc-4988-b44c-28825c9aad00.jpg",inStock:true,active:true,qty:500},
-  {id:"p402",brand:"تاتش",name:"فيف الازرق",price:58.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0261d0f4-f3db-4761-b79e-a285110b5e55.jpg",inStock:true,active:true,qty:500},
-  {id:"p403",brand:"",name:"بلورة  -شوكلت الهبة",price:20.3,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e7afb559-c532-460c-a774-8e0a566b60c6.jpg",inStock:true,active:true,qty:500},
-  {id:"p404",brand:"تاتش",name:"باريس شوكلت مكس",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/52d8c99f-a239-4bad-87d6-b0de6feacb30.jpg",inStock:true,active:true,qty:500},
-  {id:"p405",brand:"",name:"آحلا حلى -كوكوميلك",price:74.33,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/947528c6-c4d9-4f53-8531-517584e97d28.jpg",inStock:true,active:true,qty:500},
-  {id:"p406",brand:"",name:"آحلا حلى -ميكس طحينية",price:82.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3e9603c9-6920-468f-91b0-14446be09dd7.jpg",inStock:true,active:true,qty:500},
-  {id:"p407",brand:"",name:"آحلا حلى -مفروكة الفستق",price:90.86,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1933fff5-4a4e-4a7c-8b23-bba3df908220.jpg",inStock:true,active:true,qty:500},
-  {id:"p408",brand:"آحلا حلى",name:"معمول ميني",price:33.04,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e23d70af-e592-44aa-a5ea-5d4224d8c3d8.jpg",inStock:true,active:true,qty:500},
-  {id:"p409",brand:"",name:"آحلا حلى -هوت شوكلت",price:61.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8d651c1f-1bd0-4b89-b611-a901a42ebe75.jpg",inStock:true,active:true,qty:500},
-  {id:"p410",brand:"آحلا حلى",name:"كرانشي كراميل",price:49.55,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b323327d-351f-4a34-86f2-00099b311a80.jpg",inStock:true,active:true,qty:500},
-  {id:"p411",brand:"آحلا حلى",name:"شوكودير",price:94.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a8d8643d-6a33-4ffb-ba74-de433f824f08.jpg",inStock:true,active:true,qty:500},
-  {id:"p412",brand:"آحلا حلى",name:"سولتد كراميل صغير",price:35.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e04bba09-3ac1-4ccd-9a60-95170dd891fe.jpg",inStock:true,active:true,qty:500},
-  {id:"p413",brand:"آحلا حلى",name:"بوكس رمان وروزبيري",price:41.3,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/748d6bf8-8dfc-488d-882b-087da859a97c.jpg",inStock:true,active:true,qty:500},
-  {id:"p414",brand:"آحلا حلى",name:"بوكس بيكان صغير",price:45.44,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0442755d-eb7f-4ad8-b397-50a3884aa765.jpg",inStock:true,active:true,qty:500},
-  {id:"p415",brand:"آحلا حلى",name:"بوكس الحمد لله على السلامة",price:94.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/010100cb-9575-461f-ba8f-7a1760bc05d3.jpg",inStock:true,active:true,qty:500},
-  {id:"p416",brand:"هشة برشة",name:"عرض هشة1",price:82.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2ba100a8-ad93-472a-8045-c8a4454ef2a9.jpg",inStock:true,active:true,qty:500},
-  {id:"p417",brand:"تايلور",name:"ماكس مثلثات البجعة",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/83ce123e-fb37-4948-9d4a-2bd3ac8767e0.jpg",inStock:true,active:true,qty:500},
-  {id:"p418",brand:"تايلور",name:"الثاني يناير (شوكلت الهبه)",price:65.55,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1f020765-8089-4393-af31-1d34dc324b3b.jpg",inStock:true,active:true,qty:500},
-  {id:"p419",brand:"تايلور",name:"الأول فبراير",price:70.15,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/725d8980-41ae-4fbe-b5b0-003a1e841887.jpg",inStock:true,active:true,qty:500},
-  {id:"p420",brand:"لابوشيه",name:"بوكس الموالح",price:52.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8140104a-6b2a-499d-9d04-77bec6740856.jpg",inStock:true,active:true,qty:500},
-  {id:"p421",brand:"لونت",name:"بوكس التجربة",price:12.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/61885331-5d18-4f4e-839d-82772ebb885e.jpg",inStock:true,active:true,qty:500},
-  {id:"p422",brand:"لونت",name:"بوكس الأحباب",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/cc55bb54-90e8-4a88-b39b-6fc715cb4005.jpg",inStock:true,active:true,qty:500},
-  {id:"p423",brand:"رهش",name:"حالي ومالحR",price:35.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/78767823-9fe7-4d33-85de-96c4824f8920.jpg",inStock:true,active:true,qty:500},
-  {id:"p424",brand:"لوفين",name:"بيكاتشو",price:58.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/50c56a56-c338-49d1-9ec6-2cfcb8e6f225.jpg",inStock:true,active:true,qty:500},
-  {id:"p425",brand:"فايتي دارك بلجيكي 10 كجم",name:"خام",price:355.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6062719c-d688-4f1d-be61-6aea87e71b26.jpg",inStock:true,active:true,qty:500},
-  {id:"p426",brand:"تايلور",name:"بايتس",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/4f1368ef-807d-4c8a-9f27-2d264b9ea8d8.jpg",inStock:true,active:true,qty:500},
-  {id:"p427",brand:"تي دي",name:"كرانشي كبير R",price:74.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/70f36904-8987-4ed3-bb0e-88d0ea25462b.jpg",inStock:true,active:true,qty:500},
-  {id:"p428",brand:"تي دي",name:"سانتي صغيرR",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/69bd1e6d-7c94-44a2-9877-dc137b490f30.jpg",inStock:true,active:true,qty:500},
-  {id:"p429",brand:"تي دي",name:"تيستي وسطR",price:65.55,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/4dd7fa28-7989-4f77-bd71-7176f38107cd.jpg",inStock:true,active:true,qty:500},
-  {id:"p430",brand:"رافينيل",name:"بيتي فور روزبيلR",price:52.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/35a27d38-a61c-41fb-a7e1-18dbe0baca1f.jpg",inStock:true,active:true,qty:500},
-  {id:"p431",brand:"رافينيل",name:"بيتي فور  سان لورانR",price:37.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/aaae4869-8784-434d-93b3-3b2303137c4f.jpg",inStock:true,active:true,qty:500},
-  {id:"p432",brand:"رافينيل",name:"شوكولاتة مكعبات رافينيلR",price:71.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/cff013bb-c71f-49e6-b1ff-984ba310979b.jpg",inStock:true,active:true,qty:500},
-  {id:"p433",brand:"تايلور",name:"مثلثات",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1bdb6510-1f08-4852-a82a-fdbf93ca4fff.jpg",inStock:true,active:true,qty:500},
-  {id:"p434",brand:"غريبة الشوكولا والفانيلا",name:"حلا البستان",price:40.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/739a6891-8c4b-452c-a27d-b86a5c6456c3.jpg",inStock:true,active:true,qty:500},
-  {id:"p435",brand:"تايلور",name:"مكعبات الفستق",price:72.45,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2871bec1-4193-4782-8e23-c444d0874342.jpg",inStock:true,active:true,qty:500},
-  {id:"p436",brand:"مادلين",name:"اعواد مادلين R",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e41c04f2-9aac-437b-8190-94bd3fa13854.jpg",inStock:true,active:true,qty:500},
-  {id:"p437",brand:"حلقوم كرانشي",name:"تارتلين",price:78.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8ac3dca8-4355-4820-90e8-e3a64b03c91d.jpg",inStock:true,active:true,qty:500},
-  {id:"p438",brand:"اوريو لوتس بوكس التحدي",name:"ديفون",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1af72348-c45b-431e-b6fc-2a53faf26a79.jpg",inStock:true,active:true,qty:500},
-  {id:"p439",brand:"",name:"برديسي بتيفور شوكولاتة",price:65.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b38fdbd0-9ae1-4cd6-9243-09bf7ee7ce44.png",inStock:true,active:true,qty:500},
-  {id:"p440",brand:"",name:"برديسي بتيفور الفستق",price:65.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5b5d5203-dcab-441b-862e-e660e2784039.jpg",inStock:true,active:true,qty:500},
-  {id:"p441",brand:"",name:"برديسي بيتيفور مشكل",price:65.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/df1b8787-0716-433e-82a2-cac059b5de5c.jpg",inStock:true,active:true,qty:500},
-  {id:"p442",brand:"",name:"ديفون شوكولاتة شوكو مكس",price:38.53,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/040a9283-6af4-41d4-9fcd-bd4a6a632e51.jpg",inStock:true,active:true,qty:500},
-  {id:"p443",brand:"",name:"ديفون شوكولاتة بيوقلز",price:38.53,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a9b70ec8-fca8-4858-a38b-b566a5759e25.jpg",inStock:true,active:true,qty:500},
-  {id:"p444",brand:"",name:"ديفون موالح مشكلة",price:38.53,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/76d0c15f-69f6-4f7f-9c2c-1bcea5fc79fd.jpg",inStock:true,active:true,qty:500},
-  {id:"p445",brand:"",name:"ديفون شوكولاته حالي ومالح",price:72.45,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/53ab792c-699c-4a75-aac1-0e78e086f412.jpg",inStock:true,active:true,qty:500},
-  {id:"p446",brand:"",name:"حلا البستان مربعات البقلاوة",price:45.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f26bef81-20d6-40bb-9292-74c9bf350e5f.jpg",inStock:true,active:true,qty:500},
-  {id:"p447",brand:"أصابع البقلاوة",name:"حلا البستان",price:45.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/92802da0-b737-49d0-9832-f64a60249ba2.jpg",inStock:true,active:true,qty:500},
-  {id:"p448",brand:"",name:"حميدة معمول شوكه",price:28.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fbb2ccfc-536e-4e71-945f-fda5621c98a0.png",inStock:true,active:true,qty:500},
-  {id:"p449",brand:"حميده",name:"بيتي فور دائري مغطس",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/9cf42e5c-dd38-44af-88f3-7a8c362a0223.jpg",inStock:true,active:true,qty:500},
-  {id:"p450",brand:"",name:"بيتيفور حميدة اصابع فانيليا",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/06a9240d-ec53-4952-a519-881cf4377b05.jpg",inStock:true,active:true,qty:500},
-  {id:"p451",brand:"",name:"نوتس بوكس بارتي كرنش",price:51.29,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d1b9261d-8547-44bd-956f-d4cfd4e5a51b.jpg",inStock:true,active:true,qty:500},
-  {id:"p452",brand:"",name:"نوتس بوكس بارتي رسك",price:60.78,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8c645423-1869-4628-988d-f4fdebc992e4.jpg",inStock:true,active:true,qty:500},
-  {id:"p453",brand:"",name:"نوتس بوكس شابورة",price:34.79,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0a2f3345-cfb4-4906-839d-a642eb848b46.jpg",inStock:true,active:true,qty:500},
-  {id:"p454",brand:"",name:"نوتس بوكس مكسرات مكس",price:43.94,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/202165d5-2a20-427f-8b67-60c0f19ccce0.jpg",inStock:true,active:true,qty:500},
-  {id:"p455",brand:"",name:"لابوشيه شوكو بوكس كبير",price:79.8,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/74e9ab6c-4741-47e0-a0f9-652f483b2464.jpg",inStock:true,active:true,qty:500},
-  {id:"p456",brand:"",name:"لابوشيه شوكو بوكس وسط",price:56.01,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/961a84a7-a042-4789-a26a-88f1d1edadf6.jpg",inStock:true,active:true,qty:500},
-  {id:"p457",brand:"",name:"لابوشيه حلا الروشيه",price:56.01,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/74902349-89d1-44bf-b4b7-129a94908964.jpg",inStock:true,active:true,qty:500},
-  {id:"p458",brand:"",name:"لابوشيه كريب دانتيل",price:60.01,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e1fae349-8bf4-4cbd-9563-f8ca71cf34c3.jpg",inStock:true,active:true,qty:500},
-  {id:"p459",brand:"",name:"لابوشيه سويت نايت",price:64.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/53333f07-3104-4674-999d-d6a38ed9c3aa.jpg",inStock:true,active:true,qty:500},
-  {id:"p460",brand:"",name:"اور سويتس شوكو مكس",price:37.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/71ed5fc9-84ae-4875-9f42-9bc9830bc68f.jpg",inStock:true,active:true,qty:500},
-  {id:"p461",brand:"برازق بالكاجو",name:"حلا البستان",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d15c95d0-b753-4068-a993-dd4ce79694e0.jpg",inStock:true,active:true,qty:500},
-  {id:"p462",brand:"تمريات",name:"حلا البستان",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b42610b2-423b-4c72-bbb1-40b4abd8473e.jpg",inStock:true,active:true,qty:500},
-  {id:"p463",brand:"كليجة بالتمر",name:"حلا البستان",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7ae72762-fc19-44c0-8ac8-9f58b04881b6.jpg",inStock:true,active:true,qty:500},
-  {id:"p464",brand:"بيتي فور",name:"حلا البستان",price:35.08,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/71d8ebb4-c993-4e9a-9ab7-bc0966559681.jpg",inStock:true,active:true,qty:500},
-  {id:"p465",brand:"معمول أصابع الشوكولاته",name:"حلا البستان",price:50.03,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/62f21f06-41cd-49ca-bc31-0bf3f8ec007b.jpg",inStock:true,active:true,qty:500},
-  {id:"p466",brand:"",name:"ابكوريا حشوة كراميل سولتد بروكسل 5 كيلو",price:150.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d4cf7191-b031-485a-b5be-6b81aecee44c.jpg",inStock:true,active:true,qty:500},
-  {id:"p467",brand:"",name:"شوقر كوتد ماجيك بار الفول السوداني",price:60.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8aa61fa2-e644-4b1f-99ac-32355943dffc.png",inStock:true,active:true,qty:500},
-  {id:"p468",brand:"",name:"إم سويت ترافل مكعبات الجوزاء",price:39.56,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/46909db7-5088-4bb6-b65c-83629b3c66be.jpg",inStock:true,active:true,qty:500},
-  {id:"p469",brand:"",name:"إم سويت ترافلز  كرانشي",price:39.56,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/26cf05f4-98d7-42b2-9312-7d25078af045.jpg",inStock:true,active:true,qty:500}
+  {id:"CH100189",sku:"CH100189",brand:"جيوفن",name:"شوكو موكا",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8da985e1-6ac0-403f-a0d0-dff9c5cd6f0f.JPG",inStock:true,active:true,qty:69},
+  {id:"CH100362",sku:"CH100362",brand:"ماتشي",name:"تاكو",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/30be0a42-11e1-4f73-bb24-9e53c547a1e6.jpg",inStock:true,active:true,qty:98},
+  {id:"CH100359",sku:"CH100359",brand:"",name:"بوكس أطايب (مشكل كبير) R",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0592b048-57da-4891-b45b-ce2f209f0abc.jpg",inStock:true,active:true,qty:49},
+  {id:"CH100360",sku:"CH100360",brand:"",name:"بوكس أطايب مقرمشات (تشكيلة عالمية) R",price:30.48,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b2367812-ee83-46cf-bb4a-fe33cfc9e3ca.jpg",inStock:true,active:true,qty:5},
+  {id:"CH100361",sku:"CH100361",brand:"",name:"بوكس أطايب مكسرات (التشكيلة السبعة) R",price:43.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ff06b7ed-9e2a-4eeb-9fb9-d7d60f04ed68.jpg",inStock:true,active:true,qty:27},
+  {id:"CH100317",sku:"CH100317",brand:"سوتشيل",name:"بوكس تشلو",price:59.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5adc3659-9f6a-4d23-854d-f771ad93b662.png",inStock:true,active:true,qty:315},
+  {id:"OS100043",sku:"OS100043",brand:"تاوة",name:"معمول التمر كبير 54 قطعة",price:71.43,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e58d4a6b-f61f-4bf2-99c4-7344da8c7bb0.jpg",inStock:true,active:true,qty:50},
+  {id:"OS100044",sku:"OS100044",brand:"تاوة",name:"معمول التمر دائري 65 قطعة",price:78.57,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ac2bb960-5052-4a60-84b9-8326ff178c7f.jpg",inStock:true,active:true,qty:113},
+  {id:"OS100042",sku:"OS100042",brand:"",name:"كنافة سعودية",price:35.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/73cad350-341d-4404-9896-81111fdded06.jpg",inStock:true,active:true,qty:3},
+  {id:"CH100313",sku:"CH100313",brand:"مافري",name:"سويس R",price:46.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d4bf199e-8359-498b-8bf2-c372bf2d1514.jpg",inStock:true,active:true,qty:98},
+  {id:"CH100251",sku:"CH100251",brand:"نوشية",name:"كرات الرمان R",price:39.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/784819bf-3758-4e7c-aff6-0535a24c37a4.jpg",inStock:true,active:true,qty:57},
+  {id:"CH100312",sku:"CH100312",brand:"ليوفن",name:"بيكانو مستطيل R",price:38.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/040404d1-1d8d-415e-a407-072491774d84.jpg",inStock:true,active:true,qty:171},
+  {id:"CH100295",sku:"CH100295",brand:"جيوفن",name:"حلا سقنتشر",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3c432562-d2a6-49c9-a539-49d5b4c44302.jpg",inStock:true,active:true,qty:18},
+  {id:"CH100297",sku:"CH100297",brand:"جيوفن",name:"حلا دايموند",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/73f2dee2-bc2e-4d84-9d87-cd6c737736d1.jpg",inStock:true,active:true,qty:91},
+  {id:"CH100299",sku:"CH100299",brand:"جيوفن",name:"بقلاوة بيكان نوفا دائري",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5f160c9d-eacd-40fd-a4e1-e688443ba640.jpg",inStock:true,active:true,qty:174},
+  {id:"CH100279",sku:"CH100279",brand:"بايت",name:"لولي بوتيك R",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5de1db48-1f1c-4299-9892-510a4a09959d.jpg",inStock:true,active:true,qty:56},
+  {id:"CH100252",sku:"CH100252",brand:"نوشية",name:"اصابع البستاشيو R",price:39.0,salePrice:28.7,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e8657265-9c36-4935-957b-ac443276ec95.png",inStock:true,active:true,qty:1},
+  {id:"CH100284",sku:"CH100284",brand:"لوتشير",name:"قولدR",price:32.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c11297b9-96a5-4948-843b-f7113b316a13.jpg",inStock:true,active:true,qty:146},
+  {id:"CH100249",sku:"CH100249",brand:"نوشية",name:"الضيافة R",price:75.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/6e0b40aa-9431-4bf2-b02c-d3a1a77dac0b.jpg",inStock:true,active:true,qty:501},
+  {id:"CH100268",sku:"CH100268",brand:"",name:"معمول ريمة",price:41.4,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8ce3cdd0-162c-4f98-b4fb-2c16c053335c.jpg",inStock:true,active:true,qty:114},
+  {id:"CH100262",sku:"CH100262",brand:"جيوفن",name:"كلاسيك",price:67.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0d2e6562-7d18-4c94-a0c7-93b0e1245410.jpg",inStock:true,active:true,qty:164},
+  {id:"OS100057",sku:"OS100057",brand:"",name:"معمول الشيبف",price:35.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/10c14a86-85de-4add-bd11-8bf09970ef5c.png",inStock:true,active:true,qty:35},
+  {id:"CH100421",sku:"CH100421",brand:"ماتشي",name:"مكس استكس",price:33.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b9b31888-4f2d-4f77-b57c-65b949b0f9c3.png",inStock:true,active:true,qty:446},
+  {id:"CH100420",sku:"CH100420",brand:"",name:"حالي مالح ميس سويتيR",price:45.83,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7350edad-0b75-47ff-b664-a3ac457ab481.png",inStock:true,active:true,qty:6},
+  {id:"CH100419",sku:"CH100419",brand:"",name:"موالح رند نتس صغير",price:22.49,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b75a0fc9-c6fe-4caf-a69e-7f7a94d7f48d.png",inStock:true,active:true,qty:31},
+  {id:"CH100418",sku:"CH100418",brand:"",name:"موالح رند نتس كبيرR",price:40.83,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8a222c86-31b1-49bd-a255-9f482d5a4567.jpeg",inStock:true,active:true,qty:65},
+  {id:"CH100417",sku:"CH100417",brand:"",name:"سيلفارة دايموندR",price:65.83,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5991510b-5fc4-4e75-a849-613620a0a548.jpeg",inStock:true,active:true,qty:70},
+  {id:"CH100416",sku:"CH100416",brand:"",name:"سيلفارة دولسيR",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/effd0c54-7b1a-4a5e-a9bc-471112e3dfd0.jpg",inStock:true,active:true,qty:29},
+  {id:"OS100053",sku:"OS100053",brand:"المميز",name:"معمول بالتمر ابيض نص كيلو R",price:35.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a8cc13e5-675c-4035-84af-c8be6bd03615.jpeg",inStock:true,active:true,qty:110},
+  {id:"OS100055",sku:"OS100055",brand:"",name:"المميز-معمول تمر بالدخن نص كيلو R",price:35.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/71338e0b-a0a2-42cb-b17b-1eab73dad61b.png",inStock:true,active:true,qty:68},
+  {id:"OS100054",sku:"OS100054",brand:"",name:"المميز-معمول تمر بالبر نص كيلو R",price:35.65,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fa692efd-2d91-449e-9cc1-af6e5e581443.png",inStock:true,active:true,qty:66},
+  {id:"OS100056",sku:"OS100056",brand:"",name:"المميز-معمول تمر بالحليب المحموس نص كيلو R",price:36.8,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0d9da23f-d7e3-4f52-9c39-d02339f92074.jpeg",inStock:true,active:true,qty:88},
+  {id:"OS100052",sku:"OS100052",brand:"المميز",name:"معمول بالتمر كيلوR",price:71.3,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8debf89c-c66e-45dc-8082-b7d0226d4a3a.jpeg",inStock:true,active:true,qty:22},
+  {id:"CH100415",sku:"CH100415",brand:"",name:"زاد الشرق-فاخورس",price:48.3,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e72690d3-6c52-4c6d-a7f8-4ab0a36f5f63.png",inStock:true,active:true,qty:23},
+  {id:"CH100414",sku:"CH100414",brand:"",name:"لوتشير-باقة ناتورا R",price:55.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f46a5e65-b6d1-4726-b8fe-62e37aa0b325.jpg",inStock:true,active:true,qty:21},
+  {id:"OS100051",sku:"OS100051",brand:"تاوة",name:"معمول ميني(كرات المعمول)",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1feb5b99-1992-4be1-a556-343a2a7ae3bc.jpg",inStock:true,active:true,qty:109},
+  {id:"OS100050",sku:"OS100050",brand:"نورسين",name:"بقلاوة شوكلت",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/45f113d7-3a5f-441c-9dab-070d7b4a1899.jpeg",inStock:true,active:true,qty:31},
+  {id:"OS100049",sku:"OS100049",brand:"نورسين",name:"أصابع بقلاوة",price:28.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fbb9741b-155e-47f3-ba88-2fc6bd115208.jpeg",inStock:true,active:true,qty:25},
+  {id:"OS100048",sku:"OS100048",brand:"نورسين",name:"بقلاوة جوزية بيكان",price:32.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/29798d8f-716d-4526-abe0-d1165b4bbb59.jpeg",inStock:true,active:true,qty:27},
+  {id:"CH100412",sku:"CH100412",brand:"نورسين",name:"لاكجري بوكس",price:82.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e2a24545-83dd-415a-a466-895f30d42f6b.jpeg",inStock:true,active:true,qty:15},
+  {id:"CH100411",sku:"CH100411",brand:"نورسين",name:"تويكس",price:74.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/17a234cb-a73d-427b-a1f7-01e211c367af.jpeg",inStock:true,active:true,qty:36},
+  {id:"CH100410",sku:"CH100410",brand:"نورسين",name:"بوكس الترافيل",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d35bd95e-1ae9-4218-81d6-6d88bba8d28e.jpeg",inStock:true,active:true,qty:56},
+  {id:"CH100401",sku:"CH100401",brand:"ديفون",name:"بوكس فلاورز 001",price:24.87,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/313b3e2d-cb0d-4c16-805a-30a49f15de54.jpeg",inStock:true,active:true,qty:7},
+  {id:"CH100377",sku:"CH100377",brand:"",name:"شوكو بيلا",price:43.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/13bfc581-1996-4814-b1c5-efd56a06327b.png",inStock:true,active:true,qty:106},
+  {id:"CH100378",sku:"CH100378",brand:"",name:"تمرية الحليب المحموس",price:27.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/84b1830f-5cf8-42b8-9ed0-8617e822fcb6.jpg",inStock:true,active:true,qty:44},
+  {id:"CH100379",sku:"CH100379",brand:"",name:"كنافة الجبن",price:41.4,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0284372e-d654-46b6-8666-55018a0c7c38.jpg",inStock:true,active:true,qty:44},
+  {id:"CH100376",sku:"CH100376",brand:"مافري",name:"فيينا R",price:54.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/373d1649-bbac-4f3d-8cfb-5a559592ac3c.jpg",inStock:true,active:true,qty:29},
+  {id:"CH100374",sku:"CH100374",brand:"نوفا",name:"أورا  كاكو",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c34f4457-e872-4c2e-a6ef-a1040a05e766.jpg",inStock:true,active:true,qty:226},
+  {id:"CH100353",sku:"CH100353",brand:"",name:"بلوم-سيليا",price:44.83,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/938cdacd-dd0f-4f03-8fc8-63f99a205c51.jpeg",inStock:true,active:true,qty:0},
+  {id:"CH100358",sku:"CH100358",brand:"",name:"بلوم-روزان",price:44.82,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/cf3c7091-6e43-423c-b951-ed6ec5252653.jpeg",inStock:true,active:true,qty:0},
+  {id:"CH100357",sku:"CH100357",brand:"",name:"بلوم-لورا",price:44.82,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/916b5b02-8bdd-4d62-b8c8-558932b13af0.jpeg",inStock:true,active:true,qty:0},
+  {id:"CH100356",sku:"CH100356",brand:"",name:"بلوم-هييرا",price:44.82,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8c544792-4191-4543-a511-ea909c4be90c.jpeg",inStock:true,active:true,qty:0},
+  {id:"CH100355",sku:"CH100355",brand:"",name:"بلوم-فلوريان",price:44.82,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/139bc369-3fac-40eb-8688-f374530e6ea8.jpeg",inStock:true,active:true,qty:0},
+  {id:"CH100354",sku:"CH100354",brand:"بلوم",name:"آشا",price:44.82,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/40c07de7-fe16-4fac-952b-214a805007c6.jpeg",inStock:true,active:true,qty:0},
+  {id:"OS100045",sku:"OS100045",brand:"حلا البستان",name:"مكس حالي مالح",price:50.03,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ac92f18d-382d-49b7-82fe-fbfb4f62f467.png",inStock:true,active:true,qty:41},
+  {id:"CH100352",sku:"CH100352",brand:"",name:"ليبونير-هارموني",price:108.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/a05df90c-a312-473c-81b7-eb1da4991001.jpg",inStock:true,active:true,qty:2},
+  {id:"CH100349",sku:"CH100349",brand:"",name:"لافا-لونا",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/c13bd6fc-412c-4afc-865c-195ee02a6491.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100348",sku:"CH100348",brand:"",name:"لافا-دروبس",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/60162edb-bdd8-4330-a001-cabcee3c5d5d.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100347",sku:"CH100347",brand:"",name:"لافا-كوزي",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/68f2d140-6c0e-45a3-8136-829a114a0937.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100346",sku:"CH100346",brand:"",name:"لافا-أوليفيا",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/3ba9fa7d-59d4-401a-8c1a-7d2c72daac48.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100345",sku:"CH100345",brand:"",name:"لافا-ساكورا",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/98cb6f88-c4c8-48ca-b674-b92cfdd31474.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100344",sku:"CH100344",brand:"",name:"لافا-دريمز",price:25.88,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/7ed6f6e7-32b4-4ce5-bc3c-a95a2dbd83ab.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100364",sku:"CH100364",brand:"ليوفن",name:"بيراميدز R",price:72.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8dce1928-7d95-479c-9a4c-7a91bb2f79a4.jpg",inStock:true,active:true,qty:20},
+  {id:"CH100340",sku:"CH100340",brand:"",name:"سافور ديلوكس",price:47.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1e4319ee-e26c-49c2-87ac-84ee5a9a5e50.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100341",sku:"CH100341",brand:"",name:"سافور ترافلينو",price:47.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e192a9c3-aa49-46ea-b020-14906fe09638.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100342",sku:"CH100342",brand:"",name:"سافور شوكو كريب",price:59.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/971d73ca-c1aa-4e78-8e56-f9037d31bb15.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100343",sku:"CH100343",brand:"",name:"سافور فليكس",price:59.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d019809d-da3e-41d0-9a53-5214538481e7.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100335",sku:"CH100335",brand:"",name:"غلامور فانسي",price:56.14,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0abf40d8-3574-4892-99b6-c008c86ea81f.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100334",sku:"CH100334",brand:"",name:"غلامور بيكان",price:57.11,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/74c358d4-9ccb-4cf8-8a93-89dec0d80c29.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100337",sku:"CH100337",brand:"",name:"غلامور هاش",price:62.54,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5bff3a69-d4cc-40e7-8bfc-c14c930d697f.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100338",sku:"CH100338",brand:"",name:"غلامور فيولا",price:36.8,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/dd5e40ea-7207-412e-a54e-1e9323b82db6.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100339",sku:"CH100339",brand:"",name:"غلامور ميلا",price:56.03,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/78b7fe07-810f-48e0-be5e-42c5fb8b53f6.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100266",sku:"CH100266",brand:"",name:"شوكولاتة الموند",price:41.4,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8ee5b0c0-f3c9-4b19-8cfa-640b4b09befc.jpg",inStock:true,active:true,qty:43},
+  {id:"CH100075",sku:"CH100075",brand:"كروكنت",name:"كروكنت ابو بنت",price:85.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/96a953ad-f307-44c1-9dbf-928756eb1756.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100087",sku:"CH100087",brand:"فيوتين",name:"مكس نوفيل",price:72.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/79f825ca-6ee7-4c0c-8f06-5c2d1af8a25c.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100088",sku:"CH100088",brand:"فيوتين",name:"امبر",price:63.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/ae388334-f867-4ef5-9895-8a46b2be4649.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100089",sku:"CH100089",brand:"فيوتين",name:"مكس بيستاشيو و فرولينو",price:55.89,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d5ac9134-e8bf-470e-8527-1e99e151f33f.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100002",sku:"CH100002",brand:"جيوفن",name:"جيوفن الدائري",price:67.85,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b2f36358-c094-4eb8-a49e-6955309c4de9.jpg",inStock:true,active:true,qty:241},
+  {id:"CH100108",sku:"CH100108",brand:"لوفر",name:"شوكولاتة لوفرR",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1cb3cf4b-d58e-46a3-9b70-482671e05579.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100081",sku:"CH100081",brand:"هانوفيريان",name:"باوتش",price:145.6,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/16373685-185e-4b44-8236-438c343b1489.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100001",sku:"CH100001",brand:"جيوفن",name:"جيوفن مستطيل",price:51.75,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8571d939-30d2-4f3e-86f8-71e1227fa87d.jpg",inStock:true,active:true,qty:474},
+  {id:"CH100011",sku:"CH100011",brand:"ليوفن",name:"حلقوم كرانشR",price:58.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/83d406b6-8dea-4770-8a71-77fb8d1369c0.jpg",inStock:true,active:true,qty:183},
+  {id:"CH100106",sku:"CH100106",brand:"ميني سنيكرز",name:"رمانR",price:71.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/1e4d9edb-6489-4f32-babc-636d75d5032e.jpg",inStock:true,active:true,qty:37},
+  {id:"CH100107",sku:"CH100107",brand:"ميني كرانش",name:"رمانR",price:71.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/cdf70909-74ce-4b76-8a58-525f6dfed2c8.png",inStock:true,active:true,qty:55},
+  {id:"CH100109",sku:"CH100109",brand:"ويفر",name:"بايتR",price:36.23,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/f1acbd6c-f879-4190-af5a-f655ebf02dc7.jpg",inStock:true,active:true,qty:69},
+  {id:"CH100110",sku:"CH100110",brand:"بايتس",name:"بايتR",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/5703441e-7b3b-4c89-afa7-6ebac6fc1df9.jpg",inStock:true,active:true,qty:32},
+  {id:"CH100111",sku:"CH100111",brand:"كرانشي",name:"بايتR",price:55.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/de2ab6f2-a459-49ab-9462-cc09f8bc0c86.jpg",inStock:true,active:true,qty:2},
+  {id:"CH100082",sku:"CH100082",brand:"كريب دولسي",name:"هانوفيريان",price:125.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/de4886cc-e4c3-448f-a6fd-6a2439a902fd.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100083",sku:"CH100083",brand:"",name:"هانوفيريان بيكان مملح",price:147.7,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/b46f8de4-12a3-433a-9bcb-68cb0e6905a0.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100090",sku:"CH100090",brand:"فيوتين",name:"بيستاشو صغير",price:55.89,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/2251718d-e5f2-4a4b-89af-f65c2eff38ed.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100091",sku:"CH100091",brand:"فيوتين",name:"فرولينو",price:72.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/799297c9-997b-4de0-9f18-c90ecdab90fc.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100074",sku:"CH100074",brand:"",name:"كروكنت سقنتشر",price:101.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/9c815e01-0191-4c74-bab7-905fa46ac4b5.png",inStock:true,active:true,qty:0},
+  {id:"OS100014",sku:"OS100014",brand:"موالح",name:"حلا البستان",price:40.25,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/fea87da5-c0f8-4c24-ba04-3a3f4513b2d2.jpg",inStock:true,active:true,qty:26},
+  {id:"CH100084",sku:"CH100084",brand:"",name:"هانوفيريان كراميل",price:111.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/610d671b-b1a2-4a43-9298-c3c47799ce78.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100085",sku:"CH100085",brand:"",name:"هانوفيريان ترافل",price:111.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/32f032fd-473b-4e6f-ac10-e64d7a447c5e.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100086",sku:"CH100086",brand:"",name:"هانوفيريان مكس براند",price:121.99,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/142f04b2-cbab-4b2a-9c65-9a6e23ffc498.jpg",inStock:true,active:true,qty:0},
+  {id:"OS100047",sku:"OS100047",brand:"زي اللوز",name:"حكاية موالح",price:36.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/63cd2d1b-692a-4d40-ab5b-cca86c63cee6.jpeg",inStock:true,active:true,qty:0},
+  {id:"OS100046",sku:"OS100046",brand:"زي اللوز",name:"ميكس كعك الفرح",price:34.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/d2d9babf-3fd1-43e5-a15d-0d246465efb8.jpeg",inStock:true,active:true,qty:0},
+  {id:"CH100363",sku:"CH100363",brand:"نوشية",name:"حالي مالح R",price:69.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/e6a529ca-6b8d-4151-831c-6c55bdc37cc5.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100278",sku:"CH100278",brand:"نوفا",name:"بقلاوة نوفا بيكان",price:37.95,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/bd84e8c2-29ab-47ad-882d-f2635ea4c25b.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100217",sku:"CH100217",brand:"لوفين",name:"بوكس توزيعات عيد الأضحى",price:59.0,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/dfe5b8c7-0fa9-4dcf-b96a-2e2966184fe2.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100188",sku:"CH100188",brand:"جيوفن",name:"بينك دائري",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/0908680b-ee88-4649-bdfe-20698f3e5714.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100105",sku:"CH100105",brand:"رمان",name:"ميني ويفرR",price:71.2,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/727fe78e-c35c-480f-844d-8b5b3a93e0d1.png",inStock:true,active:true,qty:0},
+  {id:"CH100008",sku:"CH100008",brand:"رهش",name:"فلورنتيناR",price:34.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/83b505bf-ab26-48b8-8ee5-cf3aae4db85d.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100009",sku:"CH100009",brand:"رهش",name:"بيكانوR",price:34.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/8d047a3d-1104-4192-8fdc-424b14bfa4ca.jpg",inStock:true,active:true,qty:0},
+  {id:"CH100003",sku:"CH100003",brand:"رهش",name:"كاكاو لندنR",price:57.5,salePrice:null,img:"https://media.zid.store/2f08b9fe-89fb-44d9-bf27-e0f2d09d2bd7/efeb9f9c-ab68-4bfa-aa57-f9c1cd9b2665.jpg",inStock:true,active:true,qty:0}
 ];
 
 /* ═══════════ CONFIG ═══════════ */
@@ -658,19 +296,21 @@ var IU=[
   {id:'u2', un:'ahmed',   pw:'ahmed123',  name:'أحمد',        role:'marketing'},
   {id:'u3', un:'maher',   pw:'maher123',  name:'ماهر',        role:'warehouse'},
   {id:'u13',un:'ayman',   pw:'ayman123',  name:'أيمن',        role:'warehouse'}
+,
+  {id:'u99',un:'abusaad',pw:'saad2026',name:'أبو سعد',role:'marketing'}
 ];
 
 /* role -> q:(quotes tabs)  s:(stock tabs) */
 var Q_TABS=['dash','newq','quotes','myq','products','inv','users','bundles','settings','board'];
-var S_TABS=['dash','stock','recv','issue','count','expiry','reorder','returns','alert','log','reports','products','users','settings','perms'];
+var S_TABS=['dash','stock','po','recv','issue','count','expiry','reorder','returns','alert','log','reports','products','users','settings','perms'];
 
 var DEF_ROLES={
   admin:     {q:['dash','newq','quotes','products','inv','users','bundles','settings','board'],
-              s:['dash','stock','count','expiry','reorder','returns','alert','log','products','users','settings','perms']},
+              s:['dash','stock','po','count','expiry','reorder','returns','alert','log','products','users','settings','perms']},
   marketing: {q:['dash','newq','quotes','products','inv','users','bundles','settings','board'],
-              s:['dash','stock','count','expiry','reorder','returns','alert','log','products','users','settings','perms']},
+              s:['dash','stock','po','count','expiry','reorder','returns','alert','log','products','users','settings','perms']},
   warehouse: {q:['dash','products','inv','board'],
-              s:['dash','count','expiry','reorder','returns','alert','log']},
+              s:['dash','po','count','expiry','reorder','returns','alert','log']},
   sales:     {q:['dash','newq','myq','inv','board'],
               s:['dash','stock','alert']}
 };
@@ -678,6 +318,17 @@ var DEF_ROLES={
 /* ═══════════ i18n ═══════════ */
 var T={
 ar:{
+ poTab:'طلب شراء', poTitle:'طلب شراء للمشتريات', poNew:'طلب جديد', poItems:'أصناف الطلب',
+ poAdd:'إضافة صنف', poEmpty:'لم تُضف أصناف بعد — ابحث عن المنتج وأضفه', poQty:'الكمية',
+ poTotal:'الإجمالي', poSave:'حفظ الطلب', poPrint:'طباعة / PDF', poList:'الطلبات السابقة',
+ poNo:'رقم الطلب', poDate:'التاريخ', poBy:'بواسطة', poFor:'الجهة', poNotes:'ملاحظات',
+ poSaved:'تم حفظ الطلب', poNoItems:'أضف صنفاً واحداً على الأقل', poRemove:'حذف',
+ poFromReorder:'استيراد النواقص', poImported:'تم استيراد النواقص', poNoOrders:'لا توجد طلبات',
+ poStatus:'الحالة', poDraft:'مسودة', poSent:'مُرسل', poReceived:'مستلم', poCancelled:'ملغي',
+ poMarkSent:'تعليم كمُرسل', poMarkRecv:'تعليم كمستلم', poDelete:'حذف الطلب',
+ poUnitPrice:'سعر الوحدة', poLineTotal:'الإجمالي', poItemsCount:'عدد الأصناف',
+ lockedPerm:'صلاحية مقفلة — لا يمكن حجبها',
+ permsNote:'الرئيسية إجبارية لكل دور. المدير العام لا يمكن حجب الرئيسية وصفحة الصلاحيات عنه حتى لا يُقفل خارج النظام — وما عدا ذلك قابل للتعديل بالكامل.',
  returnsTab:'المرتجعات', returnTitle:'تسجيل مرتجع', returnSub:'تسجيل مرتجع عميل أو تالف أو منتهي الصلاحية',
  rCustomer:'مرتجع عميل', rExpiredR:'منتهي الصلاحية', addToStock:'إعادة الكمية للمخزون',
  returnSaved:'تم تسجيل المرتجع', recentReturns:'آخر المرتجعات',
@@ -781,6 +432,17 @@ ar:{
  items:'صنف', movedQty:'الكمية المتحركة'
 },
 bn:{
+ poTab:'ক্রয় আদেশ', poTitle:'ক্রয়ের জন্য আদেশ', poNew:'নতুন আদেশ', poItems:'আদেশের পণ্য',
+ poAdd:'পণ্য যোগ করুন', poEmpty:'এখনো কোনো পণ্য যোগ হয়নি — পণ্য খুঁজে যোগ করুন', poQty:'পরিমাণ',
+ poTotal:'সর্বমোট', poSave:'আদেশ সংরক্ষণ', poPrint:'প্রিন্ট / PDF', poList:'পূর্ববর্তী আদেশ',
+ poNo:'আদেশ নম্বর', poDate:'তারিখ', poBy:'দ্বারা', poFor:'প্রতিষ্ঠান', poNotes:'মন্তব্য',
+ poSaved:'আদেশ সংরক্ষিত হয়েছে', poNoItems:'অন্তত একটি পণ্য যোগ করুন', poRemove:'মুছুন',
+ poFromReorder:'ঘাটতি আমদানি করুন', poImported:'ঘাটতি আমদানি হয়েছে', poNoOrders:'কোনো আদেশ নেই',
+ poStatus:'অবস্থা', poDraft:'খসড়া', poSent:'পাঠানো', poReceived:'গৃহীত', poCancelled:'বাতিল',
+ poMarkSent:'পাঠানো হিসেবে চিহ্নিত', poMarkRecv:'গৃহীত হিসেবে চিহ্নিত', poDelete:'আদেশ মুছুন',
+ poUnitPrice:'একক মূল্য', poLineTotal:'সর্বমোট', poItemsCount:'পণ্য সংখ্যা',
+ lockedPerm:'লক করা অনুমতি — সরানো যাবে না',
+ permsNote:'প্রতিটি ভূমিকার জন্য হোম বাধ্যতামূলক। প্রশাসকের হোম ও অনুমতি পাতা সরানো যায় না যাতে তিনি সিস্টেমের বাইরে আটকে না যান — বাকি সব সম্পূর্ণ পরিবর্তনযোগ্য।',
  returnsTab:'ফেরত', returnTitle:'ফেরত নিবন্ধন', returnSub:'গ্রাহক, নষ্ট বা মেয়াদোত্তীর্ণ পণ্যের ফেরত রেকর্ড করুন',
  rCustomer:'গ্রাহকের ফেরত', rExpiredR:'মেয়াদ উত্তীর্ণ', addToStock:'পরিমাণ স্টকে ফেরত দিন',
  returnSaved:'ফেরত রেকর্ড হয়েছে', recentReturns:'সাম্প্রতিক ফেরত',
@@ -882,12 +544,23 @@ var LANG='ar';
 function t(k){return (T[LANG]&&T[LANG][k])||T.ar[k]||k;}
 
 var S_LABEL={dash:'dashboard',stock:'stockList',recv:'receive',issue:'issue',
-  count:'countTab',expiry:'expiryTab',reorder:'reorderTab',returns:'returnsTab',
+  count:'countTab',expiry:'expiryTab',reorder:'reorderTab',po:'poTab',returns:'returnsTab',
   alert:'alerts',log:'movements',reports:'reports',products:'products',
   users:'users',settings:'settingsTab',perms:'perms'};
 var Q_LABEL={dash:'tDash',newq:'tNewq',quotes:'tQuotes',myq:'tMyq',products:'tProducts',
   inv:'tInv',users:'tUsers',bundles:'tBundles',settings:'tSettings',board:'tBoard'};
 var ROLE_LABEL={admin:'rAdmin',marketing:'rMarketing',warehouse:'rWarehouse',sales:'rSales'};
+/* الصفحات التي لا يمكن حجبها عن المدير — تمنع إقفاله خارج النظام */
+var LOCKED_ADMIN={q:['dash'], s:['dash','perms']};
+/* Firebase قد يعيد المصفوفة ككائن بمفاتيح رقمية — نقبل الشكلين */
+function tabArr(v){
+  if(Array.isArray(v)) return v.filter(function(x){return typeof x==='string';});
+  if(v&&typeof v==='object'){
+    return Object.keys(v).map(function(k){return v[k];})
+      .filter(function(x){return typeof x==='string';});
+  }
+  return null;
+}
 
 /* ═══════════ STATE ═══════════ */
 var CU=null, prods=[], users=IU, logs=[], mins={}, custom={}, roles=DEF_ROLES;
@@ -1018,10 +691,10 @@ function loadAll(){
     fb('hz4_qty',{}), fb('hz4_u',IU), fb('hz4_sc_log',[]),
     fb('hz4_sc_min',{}), fb('hz4_custom',{}), fb('hz4_roles',null),
     fb('hz4_sc_set',null), fb('hz4_sc_batch',{}), fb('hz4_sc_sup',[]),
-    fb('hz4_brand_class',{}), fb('hz4_sc_lastcount',null)
+    fb('hz4_brand_class',{}), fb('hz4_sc_lastcount',null), fb('hz4_sc_po',{})
   ]).then(function(r){
     var qty=r[0]||{}, dbU=r[1], dbL=r[2], dbM=r[3], dbC=r[4], dbR=r[5],
-        dbS=r[6], dbB2=r[7], dbSup=r[8], dbBC=r[9], dbLC=r[10];
+        dbS=r[6], dbB2=r[7], dbSup=r[8], dbBC=r[9], dbLC=r[10], dbPO=r[11];
     SET={};
     Object.keys(DEF_SET).forEach(function(k){SET[k]=DEF_SET[k];});
     if(dbS&&typeof dbS==='object')
@@ -1039,10 +712,21 @@ function loadAll(){
       .filter(function(x){return x&&x.name;});
     brandClass=(dbBC&&typeof dbBC==='object')?dbBC:{};
     lastCount=(dbLC&&dbLC.date)?dbLC:null;
+    poOrders=[];
+    if(dbPO&&typeof dbPO==='object'){
+      Object.keys(dbPO).forEach(function(k){
+        var o=dbPO[k]; if(!o||!o.no) return;
+        if(!Array.isArray(o.items)&&o.items&&typeof o.items==='object')
+          o.items=Object.keys(o.items).map(function(j){return o.items[j];});
+        poOrders.push(o);
+      });
+      poOrders.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+    }
 
     prods=IP.map(function(ip){
       var q=qty[ip.id];
-      return {id:ip.id,brand:ip.brand,name:ip.name,price:ip.price,img:ip.img,
+      return {id:ip.id,sku:ip.sku||ip.id,brand:ip.brand,name:ip.name,price:ip.price,
+              salePrice:ip.salePrice,img:ip.img,
               qty:(q===undefined||q===null)?num(ip.qty):num(q),
               active:qty[ip.id+'_off']?false:true, custom:false};
     });
@@ -1052,7 +736,7 @@ function loadAll(){
       if(!cp||!cp.id||!cp.name) return;
       if(prods.some(function(p){return p.id===cp.id;})) return;
       var q=qty[cp.id];
-      prods.push({id:cp.id,brand:cp.brand||'',name:cp.name,price:cp.price||0,
+      prods.push({id:cp.id,sku:cp.sku||cp.id,brand:cp.brand||'',name:cp.name,price:cp.price||0,
         img:cp.img||null,qty:(q===undefined||q===null)?num(cp.qty):num(q),
         active:cp.active!==false, custom:true});
     });
@@ -1075,15 +759,25 @@ function loadAll(){
       Object.keys(dbR).forEach(function(k){
         var v=dbR[k]; if(!v) return;
         if(!roles[k]) roles[k]={q:['dash'],s:['dash']};
-        if(Array.isArray(v.q)) roles[k].q=v.q.filter(function(x){return Q_TABS.indexOf(x)>-1;});
-        if(Array.isArray(v.s)) roles[k].s=v.s.filter(function(x){return S_TABS.indexOf(x)>-1;});
+        var vq=tabArr(v.q), vs=tabArr(v.s);
+        if(vq) roles[k].q=vq.filter(function(x){return Q_TABS.indexOf(x)>-1;});
+        if(vs) roles[k].s=vs.filter(function(x){return S_TABS.indexOf(x)>-1;});
       });
     }
-    /* admin always keeps full access so no one can lock themselves out */
-    roles.admin={q:Q_TABS.slice(), s:S_TABS.slice()};
+    /* المدير: نضمن فقط عدم إقفال نفسه خارج الصلاحيات والرئيسية */
+    LOCKED_ADMIN.s.forEach(function(tb){
+      if(roles.admin.s.indexOf(tb)<0) roles.admin.s.push(tb);
+    });
+    LOCKED_ADMIN.q.forEach(function(tb){
+      if(roles.admin.q.indexOf(tb)<0) roles.admin.q.push(tb);
+    });
   });
 }
 
+function money(v){
+  var n=Number(v)||0;
+  return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')+' '+t('riyal');
+}
 function minOf(pid){var m=mins[pid];return (m===undefined||m===null)?LOW_DEFAULT:num(m);}
 function statusOf(p){
   if(p.qty<=0) return 'out';
@@ -1127,6 +821,7 @@ function render(){
   if(page==='expiry')   renderExpiry();
   if(page==='reorder')  renderReorder();
   if(page==='returns')  renderReturns();
+  if(page==='po')       renderPO();
   if(page==='settings') renderSettings();
   if(page==='alert')    renderAlert();
   if(page==='log')      renderLog();
@@ -1179,8 +874,8 @@ function renderDash(){
 var stockFilter='all';
 function brandOf(p){return brandClass[p.brand]==='own'?'own':'other';}
 function prodCode(p){
-  if(p.custom) return String(p.id).toUpperCase();
-  return 'HZ-'+String(p.id).replace(/^p/,'');
+  if(p&&p.sku) return String(p.sku);
+  return String(p&&p.id||'').toUpperCase();
 }
 function renderStock(){
   var ro=CU&&CU.role==='sales';
@@ -1434,6 +1129,16 @@ function doMove(mode){
       .filter(function(x){return x&&x.name;});
     brandClass=(dbBC&&typeof dbBC==='object')?dbBC:{};
     lastCount=(dbLC&&dbLC.date)?dbLC:null;
+    poOrders=[];
+    if(dbPO&&typeof dbPO==='object'){
+      Object.keys(dbPO).forEach(function(k){
+        var o=dbPO[k]; if(!o||!o.no) return;
+        if(!Array.isArray(o.items)&&o.items&&typeof o.items==='object')
+          o.items=Object.keys(o.items).map(function(j){return o.items[j];});
+        poOrders.push(o);
+      });
+      poOrders.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+    }
         return fbPatch('hz4_sc_batch',bp);
       }
     })
@@ -1551,6 +1256,240 @@ function applyCount(){
     toast(t('countDone')+' — '+ids.length+' '+t('items'),'ok');
     renderCount();
   }).catch(function(){toast(t('savingErr'),'err');});
+}
+
+/* ═══════════ PURCHASE ORDER طلب شراء ═══════════ */
+var poItems=[], poOrders=[], poEditing=null;
+
+function renderPO(){
+  var total=poItems.reduce(function(a,it){return a+(it.qty*(it.price||0));},0);
+  var rows=poItems.length?poItems.map(function(it,i){
+    return '<tr><td class="nm">'+esc(it.sku||'')+'</td>'
+     +'<td class="nm">'+esc(it.brand?it.brand+' - '+it.name:it.name)+'</td>'
+     +'<td><input type="number" class="qty-inp" style="width:64px" min="1" value="'+it.qty+'" '
+     +'data-i="'+i+'" oninput="poQtySet(this.getAttribute(\'data-i\'),this.value)"></td>'
+     +'<td>'+money(it.price||0)+'</td>'
+     +'<td style="font-weight:800">'+money(it.qty*(it.price||0))+'</td>'
+     +'<td><button type="button" class="btn btn-r btn-sm" data-i="'+i+'" '
+     +'onclick="poDel(this.getAttribute(\'data-i\'))">&times;</button></td></tr>';
+  }).join(''):'';
+
+  el('pg-po').innerHTML=
+   '<div class="head"><div class="page-title" style="margin:0">'+esc(t('poTitle'))+'</div>'
+  +'<button type="button" class="btn btn-g btn-sm" onclick="poFromReorder()">'+esc(t('poFromReorder'))+'</button>'
+  +'</div>'
+
+  +'<div class="card">'
+  +'<div class="grid2" style="margin-bottom:11px">'
+  +'<div><label class="lbl">'+esc(t('poFor'))+'</label>'
+  +'<input class="inp" id="po-for" list="po-sups" placeholder="—" value="'+esc(poEditing?(poEditing.forWho||''):'')+'">'
+  +'<datalist id="po-sups">'+sups.map(function(x){return '<option value="'+esc(x.name)+'">';}).join('')+'</datalist></div>'
+  +'<div><label class="lbl">'+esc(t('poDate'))+'</label>'
+  +'<input class="inp" id="po-date" type="date" value="'+esc(poEditing?poEditing.date:today())+'"></div></div>'
+
+  +'<label class="lbl">'+esc(t('poAdd'))+'</label>'
+  +'<input class="inp" id="po-srch" placeholder="'+esc(t('search'))+' / '+esc(t('codeLbl'))+'" '
+  +'oninput="poPick()" autocomplete="off" style="margin-bottom:8px">'
+  +'<div id="po-pick" style="max-height:200px;overflow-y:auto"></div></div>'
+
+  +'<div class="card"><div class="sec-title">'+esc(t('poItems'))
+  +' <span class="pill p-info">'+poItems.length+'</span></div>'
+  +(poItems.length?
+     '<div class="scroll-x"><table class="tbl"><tr>'
+     +'<th>'+esc(t('codeLbl'))+'</th><th>'+esc(t('product'))+'</th>'
+     +'<th>'+esc(t('poQty'))+'</th><th>'+esc(t('poUnitPrice'))+'</th>'
+     +'<th>'+esc(t('poLineTotal'))+'</th><th></th></tr>'+rows+'</table></div>'
+     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;'
+     +'padding-top:12px;border-top:2px solid var(--gold)">'
+     +'<div style="font-size:13px;font-weight:800">'+esc(t('poTotal'))+'</div>'
+     +'<div style="font-size:19px;font-weight:900;color:var(--gold-d)">'+money(total)+'</div></div>'
+   :'<div class="empty">'+esc(t('poEmpty'))+'</div>')
+  +'</div>'
+
+  +'<div class="card"><label class="lbl">'+esc(t('poNotes'))+'</label>'
+  +'<input class="inp" id="po-notes" placeholder="—" value="'+esc(poEditing?(poEditing.notes||''):'')+'"></div>'
+
+  +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">'
+  +'<button type="button" class="btn btn-p" style="flex:1;padding:13px" onclick="poSave()">'+esc(t('poSave'))+'</button>'
+  +'<button type="button" class="btn btn-n" style="padding:13px" onclick="poPrint()">'+esc(t('poPrint'))+'</button>'
+  +'</div>'
+
+  +'<div class="card"><div class="sec-title">'+esc(t('poList'))+'</div>'
+  +(poOrders.length?poOrders.map(poRow).join(''):'<div class="empty">'+esc(t('poNoOrders'))+'</div>')
+  +'</div>';
+  poPick();
+}
+
+function poRow(o){
+  var st=o.status||'draft';
+  var cls=st==='received'?'p-ok':st==='sent'?'p-info':st==='cancelled'?'p-out':'p-low';
+  var lbl=st==='received'?t('poReceived'):st==='sent'?t('poSent'):st==='cancelled'?t('poCancelled'):t('poDraft');
+  var tot=(o.items||[]).reduce(function(a,it){return a+(it.qty*(it.price||0));},0);
+  return '<div class="row" style="padding:10px">'
+   +'<div class="row-mid"><div class="row-name" style="font-size:12.5px">'+esc(o.no)
+   +' <span class="pill '+cls+'">'+esc(lbl)+'</span></div>'
+   +'<div class="row-brand">'+esc(o.date)+' &middot; '+esc(o.forWho||'—')
+   +' &middot; '+(o.items||[]).length+' '+esc(t('items'))+' &middot; '+money(tot)+'</div></div>'
+   +'<div style="display:flex;gap:4px;flex-wrap:wrap">'
+   +(st==='draft'?'<button type="button" class="btn btn-n btn-sm" data-k="'+o.no+'" onclick="poMark(this.getAttribute(\'data-k\'),\'sent\')">'+esc(t('poMarkSent'))+'</button>':'')
+   +(st==='sent'?'<button type="button" class="btn btn-ok btn-sm" data-k="'+o.no+'" onclick="poMark(this.getAttribute(\'data-k\'),\'received\')">'+esc(t('poMarkRecv'))+'</button>':'')
+   +'<button type="button" class="btn btn-g btn-sm" data-k="'+o.no+'" onclick="poLoad(this.getAttribute(\'data-k\'))">'+esc(t('poPrint'))+'</button>'
+   +'<button type="button" class="btn btn-r btn-sm" data-k="'+o.no+'" onclick="poDelOrder(this.getAttribute(\'data-k\'))">&times;</button>'
+   +'</div></div>';
+}
+
+function poPick(){
+  var box=el('po-srch'), q=box?box.value.trim():'';
+  var out=el('po-pick'); if(!out) return;
+  if(!q){out.innerHTML='';return;}
+  var qq=q.toLowerCase();
+  var list=actives().filter(function(p){
+    return (p.name+' '+p.brand).indexOf(q)>-1||prodCode(p).toLowerCase().indexOf(qq)>-1;
+  }).slice(0,25);
+  out.innerHTML=list.length?list.map(function(p){
+    return '<div class="row" style="cursor:pointer;margin-bottom:6px;padding:8px" data-pid="'+p.id+'" '
+     +'onclick="poAdd(this.getAttribute(\'data-pid\'))">'+imgTag(p,34)
+     +'<div class="row-mid"><div class="row-name" style="font-size:12.5px">'+esc(p.name)+'</div>'
+     +'<div class="row-brand">'+esc(p.brand)+' &middot; '+esc(prodCode(p))+' &middot; '+money(p.price||0)+'</div></div>'
+     +'<div style="font-weight:900;color:'+(p.qty<=minOf(p.id)?'var(--red)':'var(--navy)')+'">'+p.qty+'</div></div>';
+  }).join(''):'<div class="empty" style="padding:12px">'+esc(t('noResults'))+'</div>';
+}
+
+function poAdd(pid){
+  var p=prods.find(function(x){return x.id===pid;}); if(!p) return;
+  var ex=null;
+  for(var i=0;i<poItems.length;i++){ if(poItems[i].pid===pid){ex=poItems[i];break;} }
+  if(ex){ ex.qty=ex.qty+1; }
+  else {
+    var sug=Math.max(1, minOf(pid)*2-p.qty);
+    poItems.push({pid:pid,sku:prodCode(p),brand:p.brand,name:p.name,
+                  price:p.salePrice||p.price||0,qty:sug});
+  }
+  el('po-srch').value='';
+  renderPO();
+}
+function poQtySet(i,v){
+  var idx=parseInt(i,10); if(isNaN(idx)||!poItems[idx]) return;
+  poItems[idx].qty=Math.max(1,num(v));
+  var tot=poItems.reduce(function(a,it){return a+(it.qty*(it.price||0));},0);
+  var box=el('po-total'); if(box) box.textContent=money(tot);
+}
+function poDel(i){
+  var idx=parseInt(i,10); if(isNaN(idx)) return;
+  poItems.splice(idx,1); renderPO();
+}
+function poFromReorder(){
+  var rows=reorderRows();
+  if(!rows.length){toast(t('nothingToReorder'),'err');return;}
+  rows.forEach(function(r){
+    var dup=false;
+    for(var i=0;i<poItems.length;i++){ if(poItems[i].pid===r.p.id){dup=true;break;} }
+    if(dup) return;
+    poItems.push({pid:r.p.id,sku:prodCode(r.p),brand:r.p.brand,name:r.p.name,
+                  price:r.p.salePrice||r.p.price||0,qty:Math.max(1,r.sug)});
+  });
+  toast(t('poImported')+' — '+rows.length,'ok');
+  renderPO();
+}
+function poSave(){
+  if(!poItems.length){toast(t('poNoItems'),'err');return;}
+  var no=poEditing?poEditing.no:('PO-'+String(Date.now()).slice(-8));
+  var o={no:no, date:el('po-date')?el('po-date').value:today(),
+    forWho:el('po-for')?el('po-for').value.trim():'',
+    notes:el('po-notes')?el('po-notes').value.trim():'',
+    by:CU?CU.name:'-', status:poEditing?(poEditing.status||'draft'):'draft',
+    items:poItems.map(function(it){
+      return {pid:it.pid,sku:it.sku,brand:it.brand,name:it.name,price:it.price,qty:it.qty};
+    }), ts:Date.now()};
+  var pt={}; pt[no]=o;
+  fbPatch('hz4_sc_po',pt).then(function(){
+    var found=false;
+    for(var i=0;i<poOrders.length;i++){ if(poOrders[i].no===no){poOrders[i]=o;found=true;break;} }
+    if(!found) poOrders.unshift(o);
+    poOrders.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+    var supN=o.forWho;
+    poItems=[]; poEditing=null;
+    toast(t('poSaved')+' — '+no,'ok');
+    renderPO();
+    return supN?ensureSupplier(supN):null;
+  }).catch(function(){toast(t('savingErr'),'err');});
+}
+function poLoad(no){
+  var o=null;
+  for(var i=0;i<poOrders.length;i++){ if(poOrders[i].no===no){o=poOrders[i];break;} }
+  if(!o) return;
+  poEditing=o;
+  poItems=(o.items||[]).map(function(it){
+    return {pid:it.pid,sku:it.sku,brand:it.brand,name:it.name,price:it.price,qty:it.qty};
+  });
+  renderPO();
+  poPrint();
+}
+function poMark(no,st){
+  var o=null;
+  for(var i=0;i<poOrders.length;i++){ if(poOrders[i].no===no){o=poOrders[i];break;} }
+  if(!o) return;
+  var pt={}; pt[no+'/status']=st;
+  fbPatch('hz4_sc_po',pt).then(function(){
+    o.status=st; toast(t('saved'),'ok'); renderPO();
+  }).catch(function(){toast(t('savingErr'),'err');});
+}
+function poDelOrder(no){
+  if(!confirm(t('confirmDelete'))) return;
+  fbSet('hz4_sc_po/'+no,null).then(function(){
+    poOrders=poOrders.filter(function(x){return x.no!==no;});
+    toast(t('deletedProduct'),'ok'); renderPO();
+  }).catch(function(){toast(t('savingErr'),'err');});
+}
+function poPrint(){
+  if(!poItems.length){toast(t('poNoItems'),'err');return;}
+  var no=poEditing?poEditing.no:('PO-'+String(Date.now()).slice(-8));
+  var forWho=el('po-for')?el('po-for').value.trim():'';
+  var dt=el('po-date')?el('po-date').value:today();
+  var nt=el('po-notes')?el('po-notes').value.trim():'';
+  var total=poItems.reduce(function(a,it){return a+(it.qty*(it.price||0));},0);
+  var qtyTot=poItems.reduce(function(a,it){return a+it.qty;},0);
+  var rows=poItems.map(function(it,i){
+    return '<tr><td>'+(i+1)+'</td><td>'+esc(it.sku||'')+'</td>'
+     +'<td style="text-align:right">'+esc(it.brand?it.brand+' - '+it.name:it.name)+'</td>'
+     +'<td>'+it.qty+'</td><td>'+money(it.price||0)+'</td>'
+     +'<td><b>'+money(it.qty*(it.price||0))+'</b></td></tr>';
+  }).join('');
+  var w=window.open('','_blank');
+  if(!w){toast(t('savingErr'),'err');return;}
+  w.document.write(
+   '<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8">'
+  +'<title>'+esc(no)+'</title><style>'
+  +'body{font-family:Tahoma,Arial,sans-serif;padding:26px;color:#1a1a2e;direction:rtl}'
+  +'h1{font-size:21px;margin:0 0 4px;color:#b8912f}'
+  +'.sub{font-size:12px;color:#666;margin-bottom:20px}'
+  +'.meta{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:18px;font-size:13px}'
+  +'.meta b{color:#b8912f}'
+  +'table{width:100%;border-collapse:collapse;font-size:12.5px}'
+  +'th,td{border:1px solid #ddd;padding:8px;text-align:center}'
+  +'th{background:#faf6ec;color:#8a6d1f;font-weight:800}'
+  +'tfoot td{background:#faf6ec;font-weight:900;font-size:14px}'
+  +'.nt{margin-top:16px;font-size:12px;color:#555}'
+  +'.sig{margin-top:44px;display:flex;gap:60px;font-size:12.5px}'
+  +'.sig div{flex:1;border-top:1px solid #999;padding-top:7px;text-align:center}'
+  +'@media print{body{padding:10px}}'
+  +'</style></head><body>'
+  +'<h1>حلا زون &mdash; طلب شراء</h1>'
+  +'<div class="sub">Hallazone Purchase Order</div>'
+  +'<div class="meta"><div><b>رقم الطلب:</b> '+esc(no)+'</div>'
+  +'<div><b>التاريخ:</b> '+esc(dt)+'</div>'
+  +'<div><b>الجهة:</b> '+esc(forWho||'—')+'</div>'
+  +'<div><b>بواسطة:</b> '+esc(CU?CU.name:'-')+'</div></div>'
+  +'<table><thead><tr><th>#</th><th>الكود</th><th>الصنف</th>'
+  +'<th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead>'
+  +'<tbody>'+rows+'</tbody>'
+  +'<tfoot><tr><td colspan="3">الإجمالي</td><td>'+qtyTot+'</td><td></td><td>'+money(total)+'</td></tr></tfoot>'
+  +'</table>'
+  +(nt?'<div class="nt"><b>ملاحظات:</b> '+esc(nt)+'</div>':'')
+  +'<div class="sig"><div>طالب الشراء</div><div>مدير المستودع</div><div>الاعتماد</div></div>'
+  +'</body></html>');
+  w.document.close();
+  setTimeout(function(){try{w.print();}catch(e){}},400);
 }
 
 /* ═══════════ RETURNS المرتجعات ═══════════ */
@@ -2000,6 +1939,8 @@ function renderPerms(){
   +'<div class="card"><div style="font-size:12px;color:var(--text2)">'+esc(t('permsSub'))+'</div></div>'
   +permTable('q',t('quotesSystem'),Q_TABS,Q_LABEL,rls)
   +permTable('s',t('stockSystem'),S_TABS,S_LABEL,rls)
+  +'<div class="card" style="border-color:var(--amber)"><div style="font-size:11.5px;color:var(--text2);line-height:1.7">'
+  +esc(t('permsNote'))+'</div></div>'
   +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
   +'<button class="btn btn-p" style="flex:1;padding:13px" onclick="savePerms()">'+esc(t('savePerms'))+'</button>'
   +'<button class="btn btn-g" onclick="resetPerms()">'+esc(t('resetPerms'))+'</button></div>';
@@ -2009,13 +1950,13 @@ function permTable(sys,title,tabs,labels,rls){
    +'<table class="tbl"><tr><th>'+esc(t('role'))+'</th>'
    +tabs.map(function(tb){return '<th>'+esc(t(labels[tb]||tb))+'</th>';}).join('')+'</tr>';
   rls.forEach(function(r){
-    var isAdmin=r==='admin';
     var allowed=(roles[r]&&roles[r][sys])||[];
     h+='<tr><td class="nm">'+esc(t(ROLE_LABEL[r]))+'</td>'
      +tabs.map(function(tb){
         var on=allowed.indexOf(tb)>-1;
+        var lock=(tb==='dash')||(r==='admin'&&LOCKED_ADMIN[sys].indexOf(tb)>-1);
         return '<td><input type="checkbox" class="chk" data-sys="'+sys+'" data-role="'+r+'" data-tab="'+tb+'"'
-         +(on?' checked':'')+(isAdmin?' disabled':'')+'></td>';
+         +((on||lock)?' checked':'')+(lock?' disabled title="'+esc(t('lockedPerm'))+'"':'')+'></td>';
       }).join('')+'</tr>';
   });
   return h+'</table></div>'
@@ -2029,14 +1970,19 @@ function savePerms(){
     var b=boxes[i];
     if(!b.checked) continue;
     var r=b.getAttribute('data-role'), sys=b.getAttribute('data-sys'), tb=b.getAttribute('data-tab');
-    if(next[r]&&next[r][sys]) next[r][sys].push(tb);
+    if(next[r]&&next[r][sys]&&next[r][sys].indexOf(tb)<0) next[r][sys].push(tb);
   }
-  /* admin locked to full access */
-  next.admin={q:Q_TABS.slice(), s:S_TABS.slice()};
-  /* every role keeps dash so nobody gets an empty app */
+  /* الرئيسية إجبارية لكل دور حتى لا يبقى أحد بواجهة فارغة */
   Object.keys(next).forEach(function(r){
     if(next[r].q.indexOf('dash')<0) next[r].q.unshift('dash');
     if(next[r].s.indexOf('dash')<0) next[r].s.unshift('dash');
+  });
+  /* المدير: نعيد فقط الصفحات الحرجة التي تمنع إقفاله خارج النظام */
+  LOCKED_ADMIN.s.forEach(function(tb){
+    if(next.admin.s.indexOf(tb)<0) next.admin.s.push(tb);
+  });
+  LOCKED_ADMIN.q.forEach(function(tb){
+    if(next.admin.q.indexOf(tb)<0) next.admin.q.push(tb);
   });
   fbSet('hz4_roles',next).then(function(){
     roles=next;
