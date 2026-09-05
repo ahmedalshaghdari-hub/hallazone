@@ -536,9 +536,15 @@ function buildNavTabs(){
   var tabs=(ROLES[CU.role]||{tabs:['dash']}).tabs;
   el('navTabs').innerHTML=tabs.map(t=>
     `<button class="nav-tab" data-tab="${t}" onclick="navigate('${t}')">${TAB_LABELS[t]||t}</button>`
-  ).join('');
+  ).join('')
+  +`<button type="button" class="nav-tab" style="background:#1f6f43;color:#fff;font-weight:900;white-space:nowrap"
+      onclick="gotoStock()">⚙ الاستوك كنترول</button>`;
 }
 
+function gotoStock(){
+  try{ window.location.assign('stock.html'); }
+  catch(e){ window.location.href='stock.html'; }
+}
 function navigate(page){
   // Validate page is accessible for this role
   var tabs=(ROLES[CU?CU.role:'sales']||{tabs:['dash']}).tabs;
