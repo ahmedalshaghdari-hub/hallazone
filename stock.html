@@ -651,13 +651,19 @@ function myTabs(){
   return list.filter(function(x){return S_TABS.indexOf(x)>-1;});
 }
 function can(tab){return myTabs().indexOf(tab)>-1;}
+function gotoQuotes(){
+  try{ window.location.assign('index.html'); }
+  catch(e){ window.location.href='index.html'; }
+}
 
 function buildTabs(){
   var box=el('nv-tabs'); if(!box) return;
   box.innerHTML=myTabs().map(function(tb){
     return '<button class="tab'+(tb===page?' active':'')+'" data-tab="'+tb+'" '
       +'onclick="go(this.getAttribute(\'data-tab\'))">'+esc(t(S_LABEL[tb]||tb))+'</button>';
-  }).join('');
+  }).join('')
+  +'<button type="button" class="tab" style="background:#b8912f;color:#fff;font-weight:900;white-space:nowrap" '
+  +'onclick="gotoQuotes()">\u2699 '+esc(t('quotesSystem'))+'</button>';
 }
 
 /* ═══════════ AUTH ═══════════ */
